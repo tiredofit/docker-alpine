@@ -1,14 +1,12 @@
 FROM alpine:edge
 MAINTAINER Dave Conroy <dave at tiredofit dot ca>
 
-ENV ZABBIX_HOSTNAME=alpine.edge
+### Set Defaults/Arguments
+   ARG S6_OVERLAY_VERSION=v1.19.1.1 
 
 ### Zabbix Pre Installation steps
    RUN addgroup zabbix && \
-       adduser -S \
-               -D -G zabbix \
-               -h /var/lib/zabbix/ \
-           zabbix && \
+       adduser -S -D -G zabbix -h /var/lib/zabbix/ zabbix && \
        mkdir -p /etc/zabbix && \
        mkdir -p /etc/zabbix/zabbix_agentd.conf.d && \
        mkdir -p /var/lib/zabbix && \
@@ -17,8 +15,8 @@ ENV ZABBIX_HOSTNAME=alpine.edge
        chown --quiet -R zabbix:root /var/lib/zabbix && \
        apk update && \
        apk add \
-            coreutils \
-            libssl1.0  && \
+               coreutils \
+               libssl1.0  && \
 
        rm -rf /var/cache/apk/* && \
        mkdir -p /assets/cron
@@ -62,31 +60,31 @@ ENV ZABBIX_HOSTNAME=alpine.edge
        cd /tmp/ && \
        rm -rf /tmp/zabbix/ && \
        apk del --purge \
-                zabbix-build-dependencies coreutils libssl1.0
-       
+                coreutils \
+                libssl1.0 \
+                zabbix-build-dependencies 
 
-   ADD /install/zabbix /etc/zabbix/
-
-## Add Core Utils
-
+### Add Core Utils
    RUN apk update && \
        apk add \
-           bash \
-           curl \
-           less \
-           logrotate \
-           nano \
-           tzdata \
-           vim \
-           && \
+            bash \
+            curl \
+            less \
+            logrotate \
+            nano \
+            tzdata \
+            vim \
+            && \
        rm -rf /var/cache/apk/* && \
        rm -rf /etc/logrotate.d/acpid && \
        cp -R /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
-       echo 'America/Vancouver' > /etc/timezone
+       echo 'America/Vancouver' > /etc/timezone && \
 
 ### S6 Installation
-ARG S6_OVERLAY_VERSION=v1.19.1.1 
-RUN curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C /
-ADD install/s6 /etc/s6/
-
-CMD ["bash"]
+       curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C /
+   
+### Add Folders
+   ADD /install /
+   
+### Entrypoint Configuration
+   CMD ["bash"]

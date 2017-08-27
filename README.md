@@ -47,7 +47,7 @@ The following image tags are available:
 * `3.5:latest` - Alpine 3.5
 * `3.6:latest` - Alpine 3.6
 * `edge:latest` - Alpine edge
-
+* `latest` - Alpine 3.6
 
 # Quick Start
 
@@ -73,7 +73,33 @@ Below is the complete list of available options that can be used to customize yo
 
 | Parameter         | Description                                                    |
 |-------------------|----------------------------------------------------------------|
-| `ZABBIX_HOSTNAME` | Generally the container name - For matching with Zabbix Server |
+| `DEBUG_MODE`      | Enable Debug Mode - Default: `FALSE`                            |
+| `ENABLE_CRON`     | Enable Cron - Default: `TRUE`                                   |
+| `ENABLE_ZABBIX`   | Enable Zabbix Agent - Default: `TRUE`                           |
+| `TIMEZONE`        | Set Timezone - Default: `America/Vancouver`                     |
+
+See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/2.2/manual/appendix/config/zabbix_agentd) for information about the following Zabbix values
+
+| Zabbix Parameters | Description                                                    |
+|-------------------|----------------------------------------------------------------|
+| `ZABBIX_LOGFILE` | Logfile Location - Default: `/var/log/zabbix/zabbix_agentd.log` |
+| `ZABBIX_LOGFILESIZE` | Logfile Size - Default: `1` |
+| `ZABBIX_DEBUGLEVEL` | Debug Level - Default: `1` |
+| `ZABBIX_REMOTECOMMANDS` | Enable Remote Commands (0/1) - Default: `1` |
+| `ZABBIX_REMOTECOMMANDS_LOG` | Enable Remote Commands Log (0/1)| - Default: `1` |
+| `ZABBIX_SERVER` | Allow connections from Zabbix Server IP - Default: `0.0.0.0/0` |
+| `ZABBIX_LISTEN_PORT` | Zabbix Agent Listening Port - Default: `10050` |
+| `ZABBIX_LISTEN_IP` | Zabbix Agent Listening IP - Default: `0.0.0.0` |
+| `ZABBIX_START_AGENTS` | How many Zabbix Agents to Start - Default: `3 | 
+| `ZABBIX_SERVER_ACTIVE` | Server for Active Checks - Default: `zabbix-proxy` |
+| `ZABBIX_HOSTNAME` | Container hostname to report to server - Default: `docker` |
+| `ZABBIX_REFRESH_ACTIVE_CHECKS` | Seconds to refresh Active Checks - Default: `120` |
+| `ZABBIX_BUFFER_SEND` | Buffer Send - Default: `5` |
+| `ZABBIX_BUFFER_SIZE` | Buffer Size - Default: `100` |
+| `ZABBIX_MAXLINES_SECOND` | Max Lines Per Second - Default: `20` |
+| `ZABBIX_ALLOW_ROOT` | Allow running as root - Default: `1` |
+| `ZABBIX_USER` | Zabbix user to start as - Default: `zabbix` |
+
 
 ### Networking
 
@@ -82,6 +108,11 @@ The following ports are exposed.
 | Port      | Description  |
 |-----------|--------------|
 | `10050`   | Zabbix Agent |
+
+
+# Debug Mode
+
+When using this as a base image, create statements in your startup scripts to check for existence of `DEBUG_MODE=TRUE` and set various parameters in your applications to output more detail, enable debugging modes, and so on. In this base image all it does is set the Zabbix Agent if enabled to a high level of verbosity. 
 
 
 # Maintenance
@@ -96,7 +127,3 @@ docker exec -it (whatever your container name is e.g. alpine) bash
 # References
 
 * https://www.alpinelinux.org
-
-
-
- 
