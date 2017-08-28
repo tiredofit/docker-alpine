@@ -81,6 +81,10 @@ MAINTAINER Dave Conroy <dave at tiredofit dot ca>
        cp -R /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
        echo 'America/Vancouver' > /etc/timezone && \
 
+### MSMTP
+       rm -f /usr/sbin/sendmail && \
+       ln -s /usr/bin/msmtp /usr/sbin/sendmail && \
+
 ### S6 Installation
        curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C /
    
