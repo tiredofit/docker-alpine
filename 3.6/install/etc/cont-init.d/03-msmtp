@@ -1,0 +1,38 @@
+#!/usr/bin/with-contenv bash
+
+ENABLE_SMTP=${ENABLE_SMTP:-"TRUE"}
+SMTP_HOST=${SMTP_HOST:-"postfix-relay"}
+SMTP_PORT=${SMTP_PORT:-"25"}
+SMTP_DOMAIN=${SMTP_DOMAIN:-"docker"}
+SMTP_MAILDOMAIN=${SMTP_MAILDOMAIN:-"example.org"}
+SMTP_AUTHENTICATION=${SMTP_AUTHENTICATION:-"none"}
+SMTP_USER=${SMTP_USER:-"user"}
+SMTP_PASS=${SMTP_PASS:-"pass"}
+SMTP_TLS=${SMTP_TLS:-"off"}
+SMTP_STARTTLS=${SMTP_STARTTLS:-"off"}
+SMTP_SMTP_TLSCERTCHECK=${SMTP_TLSCERTCHECK:-"off"}
+
+### Enable or Disable SMTP
+if [ "$ENABLE_SMTP" = "TRUE" ] || [ "ENABLE_SMTP" = "true" ];  then
+	echo 'Automatically Generated on Container Start. See Documentation on how to set!' >/etc/msmtp
+	echo 'account default ' >>/etc/msmtp
+	echo 'host ' $SMTP_HOST >>/etc/msmtp
+	echo 'port ' $SMTP_PORT >>/etc/msmtp
+	echo 'domain ' $SMTP_DOMAIN >>/etc/msmtp
+    echo 'auto_from on ' >>/etc/msmtp
+    echo 'maildomain ' >>/etc/msmtp
+	echo 'auth '$SMTP_AUTHENTICATION >>/etc/msmtp
+	echo 'user '$SMTP_USER >>/etc/msmtp
+	echo 'password '$SMTP_PASS >>/etc/msmtp
+	echo 'tls '$SMTP_TLS >>/etc/msmtp
+	echo 'tls_starttls '$SMTP_STARTTLS >>/etc/msmtp
+	echo 'tls_certcheck '$SMTP_TLSCERTCHECK >>/etc/msmtp
+    
+    export ENABLE_SMTP=TRUE
+    
+    echo ''
+    echo '* SMTP Enabled to route mail to: '$SMTP_HOST
+fi
+
+mkdir -p /tmp/state
+touch /tmp/state/03-msmtp-init

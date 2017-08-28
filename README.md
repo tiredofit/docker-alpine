@@ -8,6 +8,7 @@ Dockerfile to build an [alpine](https://www.alpinelinux.org/) container image.
 * [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 Init capabilities
 * [zabbix-agent](https://zabbix.org) based on TRUNK compiled for individual container monitoring.
 * Cron installed along with other tools (bash,curl, less, logrotate, nano, vim) for easier management.
+* MSMTP enabled to send mail from container to external SMTP server.
 
 # Authors
 
@@ -75,8 +76,24 @@ Below is the complete list of available options that can be used to customize yo
 |-------------------|----------------------------------------------------------------|
 | `DEBUG_MODE`      | Enable Debug Mode - Default: `FALSE`                            |
 | `ENABLE_CRON`     | Enable Cron - Default: `TRUE`                                   |
+| `ENABLE_SMTP`     | Enable SMTP services - Default: `TRUE`						|
 | `ENABLE_ZABBIX`   | Enable Zabbix Agent - Default: `TRUE`                           |
 | `TIMEZONE`        | Set Timezone - Default: `America/Vancouver`                     |
+
+If you wish to have this send mail, set `ENABLE_SMTP=TRUE` and configure the following environment variables. See the [MSMTP Configuration Options](http://msmtp.sourceforge.net/doc/msmtp.html) for further information on options to configure MSMTP
+
+| Parameter         | Description                                                    |
+|-------------------|----------------------------------------------------------------|
+| `SMTP_HOST`      | Hostname of SMTP Server - Default: `postfix-relay`                            |
+| `SMTP_PORT`      | Port of SMTP Server - Default: `25`                            |
+| `SMTP_DOMAIN`     | HELO Domain - Default: `docker`                                   |
+| `SMTP_MAILDOMAIN`     | Mail Domain From - Default: `example.org`						|
+| `SMTP_AUTHENTICATION`     | SMTP Authentication - Default: `none`                                   |
+| `SMTP_USER`     | Enable SMTP services - Default: `user`						|
+| `SMTP_PASS`   | Enable Zabbix Agent - Default: `password`                           |
+| `SMTP_TLS`        | Use TLS - Default: `off`                     |
+| `SMTP_STARTTLS`   | Start TLS from within Dession - Default: `off` |
+| `SMTP_TLSCERTCHECK` | Check remote certificate - Default: `off` |
 
 See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/2.2/manual/appendix/config/zabbix_agentd) for information about the following Zabbix values
 

@@ -71,6 +71,7 @@ MAINTAINER Dave Conroy <dave at tiredofit dot ca>
             curl \
             less \
             logrotate \
+            msmtp \
             nano \
             tzdata \
             vim \

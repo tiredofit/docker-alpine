@@ -1,3 +1,7 @@
+## 2.2 2017-08-27 <dave at tiredofit dot ca>
+
+* Added MSMTP to be able to route mail to external hosts
+
 ## 2.1 2017-08-27 <dave at tiredofit dot ca>
 
 * Added DEBUG_MODE environment variable
