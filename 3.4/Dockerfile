@@ -90,6 +90,9 @@ MAINTAINER Dave Conroy <dave at tiredofit dot ca>
    
 ### Add Folders
    ADD /install /
-   
+
+### Networking Configuration
+   EXPOSE 10050/TCP
+      
 ### Entrypoint Configuration
    CMD ["bash"]
