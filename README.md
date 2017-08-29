@@ -75,6 +75,7 @@ Below is the complete list of available options that can be used to customize yo
 | Parameter         | Description                                                    |
 |-------------------|----------------------------------------------------------------|
 | `DEBUG_MODE`      | Enable Debug Mode - Default: `FALSE`                            |
+| `DEBUG_SMTP`      | Setup Mail Catch all on port 1025 (SMTP) and 8025 (HTTP) - Default: `TRUE` |
 | `ENABLE_CRON`     | Enable Cron - Default: `TRUE`                                   |
 | `ENABLE_SMTP`     | Enable SMTP services - Default: `TRUE`						|
 | `ENABLE_ZABBIX`   | Enable Zabbix Agent - Default: `TRUE`                           |
@@ -124,12 +125,18 @@ The following ports are exposed.
 
 | Port      | Description  |
 |-----------|--------------|
+| `1025`    | `DEBUG_MODE` & `DEBUG_SMTP` SMTP Catcher |
+| `8025`    | `DEBUG_MODE` & `DEBUG_SMTP` SMTP HTTP Viewer |
 | `10050`   | Zabbix Agent |
+
 
 
 # Debug Mode
 
-When using this as a base image, create statements in your startup scripts to check for existence of `DEBUG_MODE=TRUE` and set various parameters in your applications to output more detail, enable debugging modes, and so on. In this base image all it does is set the Zabbix Agent if enabled to a high level of verbosity. 
+When using this as a base image, create statements in your startup scripts to check for existence of `DEBUG_MODE=TRUE` and set various parameters in your applications to output more detail, enable debugging modes, and so on. In this base image it does the following:
+
+* Sets zabbix-agent to output logs in verbosity
+* Enables MailHog mailcatcher, which replaces `/usr/sbin/sendmail` with it's own catchall executible. It also opens port `1025` for SMTP trapping, and you can view the messages it's trapped at port `8025`
 
 
 # Maintenance
