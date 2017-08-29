@@ -75,7 +75,7 @@ Below is the complete list of available options that can be used to customize yo
 | Parameter         | Description                                                    |
 |-------------------|----------------------------------------------------------------|
 | `DEBUG_MODE`      | Enable Debug Mode - Default: `FALSE`                            |
-| `DEBUG_SMTP`      | Setup Mail Catch all on port 1025 (SMTP) and 8025 (HTTP) - Default: `TRUE` |
+| `DEBUG_SMTP`      | Setup Mail Catch all on port 1025 (SMTP) and 8025 (HTTP) - Default: `FALSE` |
 | `ENABLE_CRON`     | Enable Cron - Default: `TRUE`                                   |
 | `ENABLE_SMTP`     | Enable SMTP services - Default: `TRUE`						|
 | `ENABLE_ZABBIX`   | Enable Zabbix Agent - Default: `TRUE`                           |
