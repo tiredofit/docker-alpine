@@ -1,3 +1,7 @@
+## 2.3 2017-08-28 <dave at tiredofit dot ca>
+
+* Added `DEBUG_SMTP` environment variable to trap SMTP messages accesible via port 8025
+
 ## 2.2 2017-08-27 <dave at tiredofit dot ca>
 
 * Added MSMTP to be able to route mail to external hosts

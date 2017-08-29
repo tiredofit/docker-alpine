@@ -1,5 +1,7 @@
 #!/usr/bin/with-contenv bash
 
+s6-svc -d /var/run/s6/services/03-smtp
+DEBUG_SMTP=${DEBUG_SMTP:-"FALSE"}
 ENABLE_SMTP=${ENABLE_SMTP:-"TRUE"}
 SMTP_HOST=${SMTP_HOST:-"postfix-relay"}
 SMTP_PORT=${SMTP_PORT:-"25"}
@@ -11,9 +13,24 @@ SMTP_PASS=${SMTP_PASS:-"pass"}
 SMTP_TLS=${SMTP_TLS:-"off"}
 SMTP_STARTTLS=${SMTP_STARTTLS:-"off"}
 SMTP_SMTP_TLSCERTCHECK=${SMTP_TLSCERTCHECK:-"off"}
+DEBUG_SMTP=${DEBUG_SMTP:-"FALSE"}
+
+### Debug Mode - Enable MailHog
+if [ "$DEBUG_SMTP" = "TRUE" ] || [ "DEBUG_SMTP" = "true" ] || [ "DEBUG_MODE" = "true" ] || [ "DEBUG_MODE" = "TRUE" ];  then
+    ENABLE_SMTP=FALSE
+
+    rm -f /usr/sbin/sendmail
+    ln -s /usr/local/bin/mhsendmail /usr/sbin/sendmail
+    s6-svc -u /var/run/s6/services/03-smtp
+    echo '**** SMTP Mailcatcher Enabled at Port 1025, Visit http://127.0.0.1:8025 for Web Interface'
+fi
 
 ### Enable or Disable SMTP
 if [ "$ENABLE_SMTP" = "TRUE" ] || [ "ENABLE_SMTP" = "true" ];  then
+
+    rm -f /usr/sbin/sendmail
+    ln -s /usr/bin/msmtp /usr/sbin/sendmail
+
 	echo 'Automatically Generated on Container Start. See Documentation on how to set!' >/etc/msmtp
 	echo 'account default ' >>/etc/msmtp
 	echo 'host ' $SMTP_HOST >>/etc/msmtp
@@ -35,4 +52,4 @@ if [ "$ENABLE_SMTP" = "TRUE" ] || [ "ENABLE_SMTP" = "true" ];  then
 fi
 
 mkdir -p /tmp/state
-touch /tmp/state/03-msmtp-init
+touch /tmp/state/03-smtp-init
