@@ -103,4 +103,4 @@ MAINTAINER Dave Conroy <dave at tiredofit dot ca>
    EXPOSE 1025 8025 10050/TCP 
    
 ### Entrypoint Configuration
-   CMD ["bash"]
+   ENTRYPOINT ["/init"]
