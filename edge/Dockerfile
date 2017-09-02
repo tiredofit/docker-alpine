@@ -2,7 +2,7 @@ FROM alpine:edge
 MAINTAINER Dave Conroy <dave at tiredofit dot ca>
 
 ### Set Defaults/Arguments
-   ARG S6_OVERLAY_VERSION=v1.19.1.1 
+   ARG S6_OVERLAY_VERSION=v1.20.0.0 
    ARG MAJOR_VERSION=3.4
    ARG ZBX_VERSION=${MAJOR_VERSION}
 

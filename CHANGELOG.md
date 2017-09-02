@@ -1,3 +1,7 @@
+## 2.4 2017-09-01 <dave at tiredofit dot ca>
+
+* Update S6 Overlay to 1.2.0.0
+
 ## 2.3 2017-08-28 <dave at tiredofit dot ca>
 
 * Added `DEBUG_SMTP` environment variable to trap SMTP messages accesible via port 8025
