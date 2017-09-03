@@ -63,7 +63,6 @@ MAINTAINER Dave Conroy <dave at tiredofit dot ca>
       rm -rf /tmp/zabbix-${ZBX_VERSION}/ && \
       apk del --purge \
               coreutils \
-              libssl1.0 \
               zabbix-build-dependencies && \
 
 ### Install MailHog
