@@ -6,7 +6,7 @@ Dockerfile to build an [alpine](https://www.alpinelinux.org/) container image.
 
 * Currently tracking 3.4, 3.5, 3.6, and edge
 * [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 Init capabilities
-* [zabbix-agent](https://zabbix.org) based on TRUNK compiled for individual container monitoring.
+* [zabbix-agent](https://zabbix.org) based on 3.4.x compiled for individual container monitoring.
 * Cron installed along with other tools (bash,curl, less, logrotate, nano, vim) for easier management.
 * MSMTP enabled to send mail from container to external SMTP server.
 
