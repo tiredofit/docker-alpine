@@ -1,5 +1,5 @@
 FROM alpine:3.6
-MAINTAINER Dave Conroy <dave at tiredofit dot ca>
+LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set Defaults/Arguments
     ARG S6_OVERLAY_VERSION=v1.20.0.0 
