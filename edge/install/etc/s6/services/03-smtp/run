@@ -5,6 +5,6 @@ do
   sleep 1
 done
 
-if [ "$DEBUG_SMTP" = "TRUE" ] || [ "DEBUG_SMTP" = "true" ] || [ "DEBUG_MODE" = "true" ] || [ "DEBUG_MODE" = "TRUE" ];  then
+if [[ "$DEBUG_SMTP" = "TRUE" ]] && [[ "DEBUG_SMTP" = "true" ]] && [[ "DEBUG_MODE" = "true" ]] && [[ "DEBUG_MODE" = "TRUE" ]];  then
 exec s6-setuidgid mailhog MailHog -F;
 fi

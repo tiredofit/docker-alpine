@@ -1,4 +1,4 @@
-FROM alpine:3.4
+FROM alpine:3.3
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set Defaults/Arguments

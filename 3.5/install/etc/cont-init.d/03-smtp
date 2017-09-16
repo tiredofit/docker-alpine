@@ -16,7 +16,7 @@ SMTP_SMTP_TLSCERTCHECK=${SMTP_TLSCERTCHECK:-"off"}
 DEBUG_SMTP=${DEBUG_SMTP:-"FALSE"}
 
 ### Debug Mode - Enable MailHog
-if [ "$DEBUG_SMTP" = "TRUE" ] || [ "DEBUG_SMTP" = "true" ] || [ "DEBUG_MODE" = "true" ] || [ "DEBUG_MODE" = "TRUE" ];  then
+if [[ "$DEBUG_SMTP" = "TRUE" ]] && [[ "DEBUG_SMTP" = "true" ]] && [[ "DEBUG_MODE" = "true" ]] && [[ "DEBUG_MODE" = "TRUE" ]];  then
     ENABLE_SMTP=FALSE
 
     rm -f /usr/sbin/sendmail
@@ -26,7 +26,7 @@ if [ "$DEBUG_SMTP" = "TRUE" ] || [ "DEBUG_SMTP" = "true" ] || [ "DEBUG_MODE" = "
 fi
 
 ### Enable or Disable SMTP
-if [ "$ENABLE_SMTP" = "TRUE" ] || [ "ENABLE_SMTP" = "true" ];  then
+if [[ "$ENABLE_SMTP" = "TRUE" ]] && [[ "ENABLE_SMTP" = "true" ]];  then
 
     rm -f /usr/sbin/sendmail
     ln -s /usr/bin/msmtp /usr/sbin/sendmail

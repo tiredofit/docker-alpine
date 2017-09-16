@@ -1,3 +1,8 @@
+## 2.6 2017-09-18 <dave at tiredofit dot ca>
+
+* Add Alpine 3.2, 3.3 for legacy purposes
+* Fix Scripts for checking enabling services
+
 ## 2.5 2017-09-02 <dave at tiredofit dot ca>
 
 * Move to Zabbix 3.4.1 instead of compiling from TRUNK

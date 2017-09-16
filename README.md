@@ -44,10 +44,12 @@ docker pull tiredofit/alpine:(imagetag)
 
 The following image tags are available:
 
-* `3.4:latest` - Alpine 3.4
-* `3.5:latest` - Alpine 3.5
-* `3.6:latest` - Alpine 3.6
-* `edge:latest` - Alpine edge
+* `3.2` - Alpine 3.2
+* `3.3` - Alpine 3.3
+* `3.4` - Alpine 3.4
+* `3.5` - Alpine 3.5
+* `3.6` - Alpine 3.6
+* `edge` - Alpine edge
 * `latest` - Alpine 3.6
 
 # Quick Start
