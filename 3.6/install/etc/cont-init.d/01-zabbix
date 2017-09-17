@@ -21,12 +21,12 @@
   ZABBIX_USER=${ZABBIX_USER:-"zabbix"}
   
 ### Debug Mode
-  if [[ "$DEBUG_MODE" = "TRUE" ]] && [[ "$DEBUG_MODE" = "true" ]];  then
+  if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ];  then
     ZABBIX_DEBUGLEVEL=4
   fi
 
 ### Check to see if Enabled/Disabled
-  if [[ "$ENABLE_ZABBIX" = "TRUE" ]] && [[ "$ENABLE_ZABBIX" = "true" ]];  then
+  if [ "$ENABLE_ZABBIX" = "TRUE" ] || [ "$ENABLE_ZABBIX" = "true" ];  then
     sed -i -e "s|<ZABBIX_LOGFILE>|$ZABBIX_LOGFILE|g" /etc/zabbix/zabbix_agentd.conf
     sed -i -e "s/<ZABBIX_LOGFILESIZE>/$ZABBIX_LOGFILESIZE/g" /etc/zabbix/zabbix_agentd.conf
     sed -i -e "s/<ZABBIX_DEBUGLEVEL>/$ZABBIX_DEBUGLEVEL/g" /etc/zabbix/zabbix_agentd.conf
