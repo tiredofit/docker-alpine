@@ -7,7 +7,6 @@ SMTP_HOST=${SMTP_HOST:-"postfix-relay"}
 SMTP_PORT=${SMTP_PORT:-"25"}
 SMTP_DOMAIN=${SMTP_DOMAIN:-"docker"}
 SMTP_MAILDOMAIN=${SMTP_MAILDOMAIN:-"example.org"}
-SMTP_AUTHENTICATION=${SMTP_AUTHENTICATION:-"none"}
 SMTP_TLS=${SMTP_TLS:-"off"}
 SMTP_STARTTLS=${SMTP_STARTTLS:-"off"}
 SMTP_SMTP_TLSCERTCHECK=${SMTP_TLSCERTCHECK:-"off"}
@@ -35,7 +34,7 @@ if [ "$ENABLE_SMTP" = "TRUE" ] || [ "ENABLE_SMTP" = "true" ];  then
 	echo 'port ' $SMTP_PORT >>/etc/msmtp
 	echo 'domain ' $SMTP_DOMAIN >>/etc/msmtp
         echo 'maildomain ' $SMTP_MAILDOMAIN >>/etc/msmtp
-        echo 'auth '$SMTP_AUTHENTICATION >>/etc/msmtp
+	if [ -n "$SMTP_AUTHENTICATION" ]; then echo 'auth '$SMTP_AUTHENTICATION >>/etc/msmtp; fi
 	if [ -n "$SMTP_USER" ]; then echo 'user '$SMTP_USER >>/etc/msmtp; fi
         if [ -n "$SMTP_PASS" ]; then echo 'password '$SMTP_PASS >>/etc/msmtp; fi
 	echo 'tls '$SMTP_TLS >>/etc/msmtp
