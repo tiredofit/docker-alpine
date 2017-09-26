@@ -49,6 +49,7 @@
     chown -R $ZABBIX_USER ${ZABBIX_LOGFILE%/*}
     chown -R $ZABBIX_USER /etc/zabbix/
   else
+    echo "**** [zabbix] Disabling Zabbix"
     s6-svc -d /var/run/s6/services/01-zabbix
   fi
 

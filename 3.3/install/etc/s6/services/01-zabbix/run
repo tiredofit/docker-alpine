@@ -7,6 +7,6 @@ done
 
 ### Start Zabbix
 echo ''
-echo '** Starting Zabbix Agent'
+echo '** [zabbix] Starting Zabbix Agent'
 
 exec s6-setuidgid zabbix zabbix_agentd -f;

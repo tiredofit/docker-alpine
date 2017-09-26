@@ -19,7 +19,7 @@ if [ "$DEBUG_SMTP" = "TRUE" ] || [ "DEBUG_SMTP" = "true" ] || [ "DEBUG_MODE" = "
     rm -f /usr/sbin/sendmail
     ln -s /usr/local/bin/mhsendmail /usr/sbin/sendmail
     s6-svc -u /var/run/s6/services/03-smtp
-    echo '**** SMTP Mailcatcher Enabled at Port 1025, Visit http://127.0.0.1:8025 for Web Interface'
+    echo '**** [smtp] [debug] SMTP Mailcatcher Enabled at Port 1025, Visit http://127.0.0.1:8025 for Web Interface'
 fi
 
 ### Enable or Disable SMTP
@@ -42,9 +42,9 @@ if [ "$ENABLE_SMTP" = "TRUE" ] || [ "ENABLE_SMTP" = "true" ];  then
 	echo 'tls_certcheck '$SMTP_TLSCERTCHECK >>/etc/msmtp
     
     export ENABLE_SMTP=TRUE
-    
-    echo ''
-    echo '* Sendmail replaced and enabled to route mail to: '$SMTP_HOST
+    echo '**** [smtp] Sendmail replaced and enabled to route mail to: '$SMTP_HOST
+else
+    echo '**** [smtp] Disabling SMTP Features'
 fi
 
 mkdir -p /tmp/state

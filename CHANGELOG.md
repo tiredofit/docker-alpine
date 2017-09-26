@@ -1,3 +1,7 @@
+## 2.7 2017-09-26 <dave at tiredofitdot ca>
+
+* Added more verbosity to services being enabled/disabled
+
 ## 2.6 2017-09-18 <dave at tiredofit dot ca>
 
 * Add Alpine 3.2, 3.3 for legacy purposes

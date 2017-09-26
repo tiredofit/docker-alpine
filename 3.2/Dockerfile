@@ -1,6 +1,12 @@
 FROM alpine:3.2
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
+### Set Defaults
+    ENV DEBUG_MODE=FALSE \
+        ENABLE_CRON=TRUE \
+        ENABLE_SMTP=TRUE \
+        ENABLE_ZABBIX=TRUE
+
 ### Set Defaults/Arguments
     ARG S6_OVERLAY_VERSION=v1.20.0.0 
     ARG MAJOR_VERSION=3.4
