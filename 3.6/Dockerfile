@@ -88,6 +88,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
        adduser -D -u 1025 mailhog && \
 
 ### Add Core Utils
+       apk upgrade \
        apk add \
             bash \
             curl \
