@@ -15,6 +15,6 @@ fi
 
 echo '** [cron] Starting cron'
 /usr/bin/crontab /assets/cron/crontab.txt
-exec /usr/sbin/crond -f -l 8
+exec /usr/sbin/crond -f -l 8 >/dev/null 2>&1;
 
 

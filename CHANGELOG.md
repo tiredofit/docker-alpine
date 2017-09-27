@@ -1,3 +1,8 @@
+## 2.8 2017-09-27 <dave at tiredofitdot ca>
+
+* Updated Alpine Edge to Zabbix-Agent Package as opposed to Compiling
+* Quieted down service startup to avoid duplication
+
 ## 2.7 2017-09-26 <dave at tiredofitdot ca>
 
 * Added more verbosity to services being enabled/disabled

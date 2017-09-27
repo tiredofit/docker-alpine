@@ -9,4 +9,4 @@ done
 echo ''
 echo '** [zabbix] Starting Zabbix Agent'
 
-exec s6-setuidgid zabbix zabbix_agentd -f;
+exec s6-setuidgid zabbix zabbix_agentd -f >/dev/null 2>&1;
