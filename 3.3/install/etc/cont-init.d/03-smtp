@@ -28,18 +28,18 @@ if [ "$ENABLE_SMTP" = "TRUE" ] || [ "ENABLE_SMTP" = "true" ];  then
     rm -f /usr/sbin/sendmail
     ln -s /usr/bin/msmtp /usr/sbin/sendmail
 
-	echo '### Automatically Generated on Container Start. See Documentation on how to set!' >/etc/msmtp
-	echo 'account default ' >>/etc/msmtp
-	echo 'host ' $SMTP_HOST >>/etc/msmtp
-	echo 'port ' $SMTP_PORT >>/etc/msmtp
-	echo 'domain ' $SMTP_DOMAIN >>/etc/msmtp
-        echo 'maildomain ' $SMTP_MAILDOMAIN >>/etc/msmtp
-	if [ -n "$SMTP_AUTHENTICATION" ]; then echo 'auth '$SMTP_AUTHENTICATION >>/etc/msmtp; fi
-	if [ -n "$SMTP_USER" ]; then echo 'user '$SMTP_USER >>/etc/msmtp; fi
-        if [ -n "$SMTP_PASS" ]; then echo 'password '$SMTP_PASS >>/etc/msmtp; fi
-	echo 'tls '$SMTP_TLS >>/etc/msmtp
-	echo 'tls_starttls '$SMTP_STARTTLS >>/etc/msmtp
-	echo 'tls_certcheck '$SMTP_TLSCERTCHECK >>/etc/msmtp
+	echo '### Automatically Generated on Container Start. See Documentation on how to set!' >/etc/msmtprc
+	echo 'account default ' >>/etc/msmtprc
+	echo 'host ' $SMTP_HOST >>/etc/msmtprc
+	echo 'port ' $SMTP_PORT >>/etc/msmtprc
+	echo 'domain ' $SMTP_DOMAIN >>/etc/msmtprc
+        echo 'maildomain ' $SMTP_MAILDOMAIN >>/etc/msmtprc
+	if [ -n "$SMTP_AUTHENTICATION" ]; then echo 'auth '$SMTP_AUTHENTICATION >>/etc/msmtprc; fi
+	if [ -n "$SMTP_USER" ]; then echo 'user '$SMTP_USER >>/etc/msmtprc; fi
+        if [ -n "$SMTP_PASS" ]; then echo 'password '$SMTP_PASS >>/etc/msmtprc; fi
+	echo 'tls '$SMTP_TLS >>/etc/msmtprc
+	echo 'tls_starttls '$SMTP_STARTTLS >>/etc/msmtprc
+	echo 'tls_certcheck '$SMTP_TLSCERTCHECK >>/etc/msmtprc
     
     export ENABLE_SMTP=TRUE
     echo '**** [smtp] Sendmail replaced and enabled to route mail to: '$SMTP_HOST
