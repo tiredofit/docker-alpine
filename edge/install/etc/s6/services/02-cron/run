@@ -17,4 +17,8 @@ echo '** [cron] Starting cron'
 /usr/bin/crontab /assets/cron/crontab.txt
 exec /usr/sbin/crond -f -l 8 >/dev/null 2>&1;
 
-
+echo '** []  '
+while [ ! -f /tmp/state/10- ]
+do
+  sleep 1
+done

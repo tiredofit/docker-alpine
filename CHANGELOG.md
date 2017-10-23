@@ -1,4 +1,8 @@
-## 2.8 2017-09-27 <dave at tiredofitdot ca>
+## 2.9 2017-10-23 <dave at tiredofit dot ca>
+
+* Update S6 overlay to 1.21.1.1
+
+## 2.8 2017-09-27 <dave at tiredofit dot ca>
 
 * Updated Alpine Edge to Zabbix-Agent Package as opposed to Compiling
 * Quieted down service startup to avoid duplication
