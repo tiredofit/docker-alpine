@@ -1,3 +1,9 @@
+## 2.10 2017-12-01 <dave at tiredofit dot ca>
+
+* Update S6 overlay to 1.21.2.1
+* Add Alpine 3.7
+* Remove Alpine 3.2
+
 ## 2.9 2017-10-23 <dave at tiredofit dot ca>
 
 * Update S6 overlay to 1.21.1.1
