@@ -67,7 +67,7 @@ The following directories are used for configuration and can be mapped for persi
 | Directory                           | Description                 |
 |-------------------------------------|-----------------------------|
 | `/etc/zabbix/zabbix_agentd.conf.d/` | Zabbix Agent Configuration Directory |
-
+| `/assets/cron-custom`               | Drop Custom Crontabs here |
 
 
 ### Environment Variables

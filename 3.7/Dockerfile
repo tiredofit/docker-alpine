@@ -48,7 +48,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 ### Add Folders
        mkdir -p /assets/cron
 
-   ADD /install /
+   ADD install /
 
 ### Networking Configuration
    EXPOSE 1025 8025 10050/TCP 

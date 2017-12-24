@@ -14,7 +14,11 @@ if [ ! -f /tmp/state/02-cron ]; then
 fi
 
 echo '** [cron] Starting cron'
+
+if [ -d /assets/cron-custom ]; then
+        echo '** [cron] Found Custom Crontab - Merging'
+        cat /assets/cron-custom/* >>/assets/cron/crontab.txt
+fi
+
 /usr/bin/crontab /assets/cron/crontab.txt
 exec /usr/sbin/crond -f -l 8 >/dev/null 2>&1;
-
-

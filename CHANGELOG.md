@@ -1,3 +1,7 @@
+## 2.11 2017-12-24 <dave at tiredofit dot ca>
+
+* Check for custom cron files in /assets/cron-custom/ on startup
+
 ## 2.10 2017-12-01 <dave at tiredofit dot ca>
 
 * Update S6 overlay to 1.21.2.1
