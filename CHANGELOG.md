@@ -1,3 +1,30 @@
+## 2.17 2017-02-01 <dave at tiredofit dot ca>
+
+* Init Scripts Update
+* msmtp Update
+
+## 2.16 2017-01-29 <dave at tiredofit dot ca>
+
+* More Permissions Fixes
+
+## 2.15 2017-01-29 <dave at tiredofit dot ca>
+
+* Add Grep, sudo
+* Fix Permissions
+
+## 2.14 2017-01-29 <dave at tiredofit dot ca>
+
+* Add Container Package Check
+
+## 2.13 2017-01-28 <dave at tiredofit dot ca>
+
+* Add zabbix-utils to edge
+* Update S6 Overlay to 1.21.2.2
+
+## 2.12 2017-01-28 <dave at tiredofit dot ca>
+
+* Add Zabbix Check for Updated Packages
+
 ## 2.11 2017-12-24 <dave at tiredofit dot ca>
 
 * Check for custom cron files in /assets/cron-custom/ on startup

@@ -2,7 +2,7 @@ FROM alpine:edge
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set Defaults
-    ARG S6_OVERLAY_VERSION=v1.21.2.1 
+    ARG S6_OVERLAY_VERSION=v1.21.2.2 
     ENV DEBUG_MODE=FALSE \
         ENABLE_CRON=TRUE \
         ENABLE_SMTP=TRUE \
@@ -29,18 +29,22 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
        apk --no-cache add \
             bash \
             curl \
+            grep \
             less \
             logrotate \
             msmtp \
             nano \
+            sudo \
             tzdata \
             vim \
             zabbix-agent \
+            zabbix-utils \
             && \
        rm -rf /var/cache/apk/* && \
        rm -rf /etc/logrotate.d/acpid && \
        cp -R /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
        echo 'America/Vancouver' > /etc/timezone && \
+       echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
 
 ### S6 Installation
        curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C / && \
