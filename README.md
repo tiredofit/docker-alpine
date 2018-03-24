@@ -9,6 +9,7 @@ Dockerfile to build an [alpine](https://www.alpinelinux.org/) container image.
 * [zabbix-agent](https://zabbix.org) based on 3.4.x compiled for individual container monitoring.
 * Cron installed along with other tools (bash,curl, less, logrotate, nano, vim) for easier management.
 * MSMTP enabled to send mail from container to external SMTP server.
+* Ability to update User ID and Group ID Permissions for Development Purposes dyanmically.
 
 # Authors
 
@@ -120,8 +121,19 @@ See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentati
 | `ZABBIX_ALLOW_ROOT` | Allow running as root - Default: `1` |
 | `ZABBIX_USER` | Zabbix user to start as - Default: `zabbix` |
 
+If you enable `DEBUG_PERMISSIONS=TRUE` all the users and groups have been modified in accordance with Environmental Variables will be displayed in output.
+e.g. If you add `USER_NGINX=1000` it will reset the containers `nginx` user id from `82` to `1000` - Hint, also change the Group ID to your local development users UID & GID
+and avoid Docker permission issues when developing.
+
+| Parameter | Description |
+|-----------|-------------|
+| `USER_<USERNAME>` |  The user's UID in /etc/passwd will be modified with new UID - Default `N/A` |
+| `GROUP_<GROUPNAME>` | The group's GID in /etc/group and /etc/passwd will be modified with new GID - Default `N/A` |
+| `GROUP_ADD_<USERNAME>` | The username will be added in /etc/group after the group name defined - Default `N/A` | 
+
 
 ### Networking
+
 
 The following ports are exposed.
 

@@ -1,3 +1,16 @@
+## 3.0 2018-03-14 <lesliesit at outlook dot com>
+
+* Add 01-permissions script to support change uid & gid and add user to group:
+* USER_<USERNAME>=<aNewNumber>
+* GROUP_<GROUPNAME>=<aNewNumber>
+* GROUP_ADD_<USERNAME>=<aGroupName>
+* UID & GID in /etc/passwd & /etc/group will be modified.
+* Old 01- 02- 03- scripts renamed after the new 01-permissions as 02- 03- 04-
+
+## 2.18 2017-02-15 <dave at tiredofit dot ca>
+
+* Update File Permissions for logrotate.d
+
 ## 2.17 2017-02-01 <dave at tiredofit dot ca>
 
 * Init Scripts Update
