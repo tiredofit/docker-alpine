@@ -1,7 +1,7 @@
 ## 3.1 2018-03-25 <dave at tiredofit dot ca>
 
-* Fix MailHog issues
-	
+* Update MailHog Test Server Startup
+
 ## 3.0 2018-03-14 <lesliesit at outlook dot com>
 
 * Add 01-permissions script to support change uid & gid and add user to group:
