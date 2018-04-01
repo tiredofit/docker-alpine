@@ -2,7 +2,7 @@ FROM alpine:edge
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set Defaults
-    ARG S6_OVERLAY_VERSION=v1.21.2.2 
+    ARG S6_OVERLAY_VERSION=v1.21.4.0 
     ENV DEBUG_MODE=FALSE \
         ENABLE_CRON=TRUE \
         ENABLE_SMTP=TRUE \
@@ -22,7 +22,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
        mv /usr/src/gocode/bin/mhsendmail /usr/local/bin && \
        rm -rf /usr/src/gocode && \
        apk del --purge mailhog-build-dependencies && \
-       adduser -D -u 1025 mailhog && \
+       adduser -S -D -H -h /dev/null -u 1025 mailhog && \
 
 ### Add Core Utils
        apk --no-cache upgrade && \

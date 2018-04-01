@@ -8,7 +8,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
         ENABLE_ZABBIX=TRUE
 
 ### Set Defaults/Arguments
-    ARG S6_OVERLAY_VERSION=v1.21.2.2 
+    ARG S6_OVERLAY_VERSION=v1.21.4.0 
     ARG MAJOR_VERSION=3.4
     ARG ZBX_VERSION=${MAJOR_VERSION}.6
     ARG ZBX_SOURCES=svn://svn.zabbix.com/tags/${ZBX_VERSION}/
@@ -85,7 +85,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
        mv /usr/src/gocode/bin/mhsendmail /usr/local/bin && \
        rm -rf /usr/src/gocode && \
        apk del --purge mailhog-build-dependencies && \
-       adduser -D -u 1025 mailhog && \
+       adduser -S -D -H -h /dev/null -u 1025 mailhog && \
 
 ### Add Core Utils
        apk upgrade && \
