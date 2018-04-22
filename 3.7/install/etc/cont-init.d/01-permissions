@@ -53,8 +53,10 @@ if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; the
       fi
     done
   done
-
-  echo "**** [permissions] total $counter UIDs modified..."
+  
+  if [ "$counter" -gt "0" ] then;
+  echo "**** [permissions] Total $counter UIDs modified..."
+  fi
 
   counter=0
 
@@ -106,8 +108,10 @@ if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; the
       fi
     done
   done
-
-  echo "**** [permissions] total $counter GIDs modified..."
+  
+  if [ "$counter" -gt "0" ] then;
+    echo "**** [permissions] total $counter GIDs modified..."
+  fi
 
   counter=0
 
