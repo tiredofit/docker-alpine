@@ -16,9 +16,18 @@ DEBUG_SMTP=${DEBUG_SMTP:-"FALSE"}
 if [ "$DEBUG_SMTP" = "TRUE" ] || [ "$DEBUG_SMTP" = "true" ] || [ "$DEBUG_MODE" = "true" ] || [ "$DEBUG_MODE" = "TRUE" ];  then
     ENABLE_SMTP=FALSE
 
+          case "SMTP_HOST" in
+              "postfix-relay")
+              SMTP_HOST=localhost
+              ;;
+              "mailcatcher")
+              echo ''
+              ;;
+          esac
+
     echo '### Automatically Generated on Container Start. See Documentation on how to set!' >/etc/msmtp
     echo 'account default ' >>/etc/msmtp
-    echo 'host localhost' >>/etc/msmtp
+    echo 'host '$SMTP_HOST >>/etc/msmtp
     echo 'port 1025' >>/etc/msmtp
     echo 'domain ' $SMTP_DOMAIN >>/etc/msmtp
     echo 'maildomain ' $SMTP_MAILDOMAIN >>/etc/msmtp
@@ -26,8 +35,6 @@ if [ "$DEBUG_SMTP" = "TRUE" ] || [ "$DEBUG_SMTP" = "true" ] || [ "$DEBUG_MODE" =
     echo 'tls_starttls '$SMTP_STARTTLS >>/etc/msmtp
     echo 'tls_certcheck '$SMTP_TLSCERTCHECK >>/etc/msmtp
 
-#    rm -f /usr/sbin/sendmail
-#    ln -s /usr/local/bin/mhsendmail /usr/sbin/sendmail
     rm -f /usr/sbin/sendmail
     ln -s /usr/bin/msmtp /usr/sbin/sendmail
 
