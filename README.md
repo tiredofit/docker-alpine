@@ -1,10 +1,16 @@
 # hub.docker.com/tiredofit/alpine
 
+[![Build Status](https://img.shields.io/docker/build/tiredofit/alpine.svg)](https://hub.docker.com/r/tiredofit/alpine)
+[![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/alpine.svg)](https://hub.docker.com/r/tiredofit/alpine)
+[![Docker Stars](https://img.shields.io/docker/stars/tiredofit/alpine.svg)](https://hub.docker.com/r/tiredofit/alpine)
+[![Docker 
+Layers](https://images.microbadger.com/badges/image/tiredofit/alpine.svg)](https://microbadger.com/images/tiredofit/alpine)
+
 # Introduction
 
 Dockerfile to build an [alpine](https://www.alpinelinux.org/) container image.
 
-* Currently tracking 3.3, 3.4, 3.5, 3.6, 3.7 and edge
+* Currently tracking 3.3, 3.4, 3.5, 3.6, 3.7, 3.8 and edge
 * [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 Init capabilities
 * [zabbix-agent](https://zabbix.org) based on 3.4.x compiled for individual container monitoring.
 * Cron installed along with other tools (bash,curl, less, logrotate, nano, vim) for easier management.
@@ -50,8 +56,9 @@ The following image tags are available:
 * `3.5` - Alpine 3.5
 * `3.6` - Alpine 3.6
 * `3.7` - Alpine 3.7
+* `3.8` - Alpine 3.8
 * `edge` - Alpine edge
-* `latest` - Alpine 3.7
+* `latest` - Alpine 3.8
 
 # Quick Start
 
@@ -88,6 +95,7 @@ If you wish to have this send mail, set `ENABLE_SMTP=TRUE` and configure the fol
 
 | Parameter         | Description                                                    |
 |-------------------|----------------------------------------------------------------|
+| `ENABLE_SMTP_GMAIL` | Add setting to supoprt sending through Gmail SMTP - Default: `FALSE` |
 | `SMTP_HOST`      | Hostname of SMTP Server - Default: `postfix-relay`                            |
 | `SMTP_PORT`      | Port of SMTP Server - Default: `25`                            |
 | `SMTP_DOMAIN`     | HELO Domain - Default: `docker`                                   |

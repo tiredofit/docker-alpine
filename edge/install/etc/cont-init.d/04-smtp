@@ -25,6 +25,7 @@ if [ "$DEBUG_SMTP" = "TRUE" ] || [ "$DEBUG_SMTP" = "true" ] || [ "$DEBUG_MODE" =
               ;;
           esac
 
+
     echo '### Automatically Generated on Container Start. See Documentation on how to set!' >/etc/msmtp
     echo 'account default ' >>/etc/msmtp
     echo 'host '$SMTP_HOST >>/etc/msmtp
@@ -35,6 +36,11 @@ if [ "$DEBUG_SMTP" = "TRUE" ] || [ "$DEBUG_SMTP" = "true" ] || [ "$DEBUG_MODE" =
     echo 'tls_starttls '$SMTP_STARTTLS >>/etc/msmtp
     echo 'tls_certcheck '$SMTP_TLSCERTCHECK >>/etc/msmtp
 
+### Gmail Specific SMTP Config
+    if [ "$ENABLE_SMTP_GMAIL" = "TRUE" ] || [ "$ENABLE_SMTP_GMAIL" = "true" ]; then
+         echo "auto_from on" >> /etc/msmtp
+    fi
+    
     rm -f /usr/sbin/sendmail
     ln -s /usr/bin/msmtp /usr/sbin/sendmail
 
