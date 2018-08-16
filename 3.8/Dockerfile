@@ -47,8 +47,8 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
             && \
        rm -rf /var/cache/apk/* && \
        rm -rf /etc/logrotate.d/acpid && \
-       cp -R /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
-       echo 'America/Vancouver' > /etc/timezone && \
+       cp -R /usr/share/zoneinfo/Etc/UTC /etc/localtime && \
+       echo 'Etc/UTC' > /etc/timezone && \
        echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
 
 ### S6 Installation

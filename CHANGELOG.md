@@ -1,3 +1,7 @@
+## 3.5 2018-08-16 <dave at tiredofit dot ca>
+
+* Switch Default Timezone to Etc/UTC for public image
+
 ## 3.4 2018-07-02 <dave at tiredofit dot ca>
 
 * Revert back to using && \ instead of ; \ in Dockerfile
