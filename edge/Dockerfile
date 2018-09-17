@@ -2,7 +2,7 @@ FROM alpine:edge
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set Defaults
-    ARG S6_OVERLAY_VERSION=v1.21.4.0 
+    ARG S6_OVERLAY_VERSION=v1.21.7.0 
     ENV DEBUG_MODE=FALSE \
         ENABLE_CRON=TRUE \
         ENABLE_SMTP=TRUE \
