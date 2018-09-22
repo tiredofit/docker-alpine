@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM alpine:edge
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set Defaults
@@ -6,13 +6,14 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
     ENV DEBUG_MODE=FALSE \
         ENABLE_CRON=TRUE \
         ENABLE_SMTP=TRUE \
-        ENABLE_ZABBIX=TRUE
+        ENABLE_ZABBIX=TRUE \
+        TERM=xterm
 
 ### Add Zabbix User First
     RUN set -x && \
         addgroup -g 10050 zabbix && \
         adduser -S -D -H -h /dev/null -s /sbin/nologin -G zabbix -u 10050 zabbix ;\
-        
+
 ### Install MailHog
         apk --no-cache add --virtual mailhog-build-dependencies \
                 go \
@@ -47,8 +48,8 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
             && \
        rm -rf /var/cache/apk/* && \
        rm -rf /etc/logrotate.d/acpid && \
-       cp -R /usr/share/zoneinfo/Etc/UTC /etc/localtime && \
-       echo 'Etc/UTC' > /etc/timezone && \
+       cp -R /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
+       echo 'America/Vancouver' > /etc/timezone && \
        echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
 
 ### S6 Installation
@@ -57,7 +58,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 ### Add Folders
        mkdir -p /assets/cron
 
-   ADD install /
+   ADD /install /
 
 ### Networking Configuration
    EXPOSE 1025 8025 10050/TCP 
