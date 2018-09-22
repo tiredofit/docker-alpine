@@ -5,7 +5,8 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
     ENV DEBUG_MODE=FALSE \
         ENABLE_CRON=TRUE \
         ENABLE_SMTP=TRUE \
-        ENABLE_ZABBIX=TRUE
+        ENABLE_ZABBIX=TRUE \
+        TERM=xterm
 
 ### Set Defaults/Arguments
     ARG S6_OVERLAY_VERSION=v1.21.7.0 
@@ -104,8 +105,8 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
             && \
        rm -rf /var/cache/apk/* && \
        rm -rf /etc/logrotate.d/acpid && \
-       cp -R /usr/share/zoneinfo/Etc/UTC /etc/localtime && \
-       echo 'Etc/UTC' > /etc/timezone && \
+       cp -R /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
+       echo 'America/Vancouver' > /etc/timezone && \
        echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
 
 ### S6 Installation
