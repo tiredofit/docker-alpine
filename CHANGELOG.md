@@ -1,6 +1,10 @@
-## 3.5 2018-08-16 <dave at tiredofit dot ca>
+## 3.6 2018-09-19 <dave at tiredofit dot ca>
 
-* Switch Default Timezone to Etc/UTC for public image
+* Set +x on all descendents of /etc/s6/services
+
+## 3.5 2018-07-27 <dave at tiredofit dot ca>
+
+* Add TERM=xterm
 
 ## 3.4 2018-07-02 <dave at tiredofit dot ca>
 
