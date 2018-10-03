@@ -10,7 +10,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set Defaults/Arguments
     ARG S6_OVERLAY_VERSION=v1.21.7.0 
-    ARG MAJOR_VERSION=4.9
+    ARG MAJOR_VERSION=4.0
     ARG ZBX_VERSION=${MAJOR_VERSION}.0
     ARG ZBX_SOURCES=svn://svn.zabbix.com/tags/${ZBX_VERSION}/
 
