@@ -1,3 +1,7 @@
+## 3.7 2018-10-02 <dave at tiredofit dot ca>
+
+* Update Zabbix Agent to 4.0
+
 ## 3.6 2018-09-19 <dave at tiredofit dot ca>
 
 * Set +x on all descendents of /etc/s6/services

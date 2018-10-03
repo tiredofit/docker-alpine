@@ -5,13 +5,12 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
     ENV DEBUG_MODE=FALSE \
         ENABLE_CRON=TRUE \
         ENABLE_SMTP=TRUE \
-        ENABLE_ZABBIX=TRUE \
-        TERM=xterm
+        ENABLE_ZABBIX=TRUE
 
 ### Set Defaults/Arguments
     ARG S6_OVERLAY_VERSION=v1.21.7.0 
-    ARG MAJOR_VERSION=3.4
-    ARG ZBX_VERSION=${MAJOR_VERSION}.12
+    ARG MAJOR_VERSION=4.0
+    ARG ZBX_VERSION=${MAJOR_VERSION}.0
     ARG ZBX_SOURCES=svn://svn.zabbix.com/tags/${ZBX_VERSION}/
 
 ### Zabbix Pre Installation steps
@@ -32,7 +31,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
                 coreutils \
                 pcre \
                 libssl1.0 && \
-
+      \
 ### Zabbix Compilation
       apk add ${APK_FLAGS_DEV} --virtual zabbix-build-dependencies \
               alpine-sdk \
@@ -70,7 +69,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
       apk del --purge \
               coreutils \
               zabbix-build-dependencies && \
-
+      \
 ### Install MailHog
        apk --no-cache add --virtual mailhog-build-dependencies \
                 go \
@@ -86,7 +85,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
        rm -rf /usr/src/gocode && \
        apk del --purge mailhog-build-dependencies && \
        adduser -S -D -H -h /dev/null -u 1025 mailhog && \
-
+       \
 ### Add Core Utils
        apk upgrade && \
        apk add \
@@ -106,10 +105,10 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
        cp -R /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
        echo 'America/Vancouver' > /etc/timezone && \
        echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
-
+       \
 ### S6 Installation
        curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C / && \
-   
+       \
 ### Add Folders
        mkdir -p /assets/cron
 
