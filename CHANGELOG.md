@@ -1,6 +1,6 @@
-## 3.7 2018-10-02 <dave at tiredofit dot ca>
+## 3.7 2018-10-14 <dave at tiredofit dot ca>
 
-* Update Zabbix Agent to 4.0
+* Bump to Zabbix 4.0
 
 ## 3.6 2018-09-19 <dave at tiredofit dot ca>
 
