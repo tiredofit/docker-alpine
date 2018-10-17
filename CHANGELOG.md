@@ -1,6 +1,10 @@
+## 3.8 2018-10-17 <dave at tiredofit dot ca>
+
+* Force executible permissions on S6 Directories
+
 ## 3.7 2018-10-14 <dave at tiredofit dot ca>
 
-* Bump to Zabbix 4.0
+* Bump Zabbix to 4.0
 
 ## 3.6 2018-09-19 <dave at tiredofit dot ca>
 
