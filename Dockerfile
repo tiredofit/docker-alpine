@@ -48,13 +48,14 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
             && \
        rm -rf /var/cache/apk/* && \
        rm -rf /etc/logrotate.d/acpid && \
+       rm -rf /root/.cache /root/.subversion && \
        cp -R /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
        echo 'America/Vancouver' > /etc/timezone && \
        echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
-
+       \
 ### S6 Installation
        curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C / && \
-   
+       \
 ### Add Folders
        mkdir -p /assets/cron
 

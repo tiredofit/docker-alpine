@@ -1,3 +1,7 @@
+## 3.8.1 2019-01-13 <dave at tiredofit dot ca>
+
+* Cleanup Cache
+
 ## 3.8 2018-10-17 <dave at tiredofit dot ca>
 
 * Force executible permissions on S6 Directories
