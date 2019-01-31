@@ -1,3 +1,7 @@
+## 3.9 2019-01-30 <dave at tiredofit dot ca>
+
+* Switch to Zabbix Agent package
+
 ## 3.8.1 2019-01-13 <dave at tiredofit dot ca>
 
 * Cleanup Cache
