@@ -1,3 +1,11 @@
+## 3.10 2019-05-02 <dave at tiredofit dot ca>
+
+* Add Zabbix Utils
+
+## 3.9.1 2019-04-06 <dave at tiredofit dot ca>
+
+* S6 Overlay 1.22.1.0
+
 ## 3.9 2019-01-30 <dave at tiredofit dot ca>
 
 * Switch to Zabbix Agent package

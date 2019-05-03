@@ -9,7 +9,7 @@ ENV DEBUG_MODE=FALSE \
     TERM=xterm
 
 ### Set Defaults/Arguments
-ARG S6_OVERLAY_VERSION=v1.21.7.0 
+ARG S6_OVERLAY_VERSION=v1.22.1.0 
 
 RUN set -x && \
 
@@ -43,6 +43,7 @@ RUN set -x && \
          tzdata \
          vim \
          zabbix-agent \
+         zabbix-utils \
          && \
     rm -rf /var/cache/apk/* && \
     rm -rf /etc/logrotate.d/acpid && \
