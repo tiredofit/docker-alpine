@@ -41,7 +41,7 @@ No prequisites required
 
 # Installation
 
-Automated builds of the image are available on [Docker Hub](https://hub.docker.com/tiredofit/alpine) and 
+Automated builds of the image are available on [Docker Hub](https://hub.docker.com/t/tiredofit/alpine) and 
 is the recommended method of installation.
 
 
@@ -59,7 +59,7 @@ The following image tags are available:
 * `3.8` - Alpine 3.8
 * `3.9` - Alpine 3.9
 * `3.10` - Alpine 3.10
-* `3.11` - Alpine 3.10
+* `3.11` - Alpine 3.11
 * `edge` - Alpine edge
 * `latest` - Alpine 3.11
 
@@ -87,11 +87,14 @@ Below is the complete list of available options that can be used to customize yo
 
 | Parameter         | Description                                                    |
 |-------------------|----------------------------------------------------------------|
+| `COLORIZE_OUTPUT` | Enable/Disable Colorized Console Output - Default: `TRUE` |
 | `DEBUG_MODE`      | Enable Debug Mode - Default: `FALSE`                            |
 | `DEBUG_SMTP`      | Setup Mail Catch all on port 1025 (SMTP) and 8025 (HTTP) - Default: `FALSE` |
 | `ENABLE_CRON`     | Enable Cron - Default: `TRUE`                                   |
 | `ENABLE_SMTP`     | Enable SMTP services - Default: `TRUE`						|
-| `ENABLE_ZABBIX`   | Enable Zabbix Agent - Default: `TRUE`                           |
+| `ENABLE_ZABBIX`   | Enable Zabbix Agent - Default: `TRUE`  
+                         |
+| `SKIP_SANITY_CHECK` | Disable Container Startup Routine Check - Default: `FALSE` |
 | `TIMEZONE`        | Set Timezone - Default: `America/Vancouver`                     |
 
 If you wish to have this send mail, set `ENABLE_SMTP=TRUE` and configure the following environment variables. See the [MSMTP Configuration Options](http://msmtp.sourceforge.net/doc/msmtp.html) for further information on options to configure MSMTP

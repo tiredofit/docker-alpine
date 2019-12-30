@@ -1,3 +1,15 @@
+## 4.0.0 2020-01-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Now relying on Container Level functions file
+      - Easier methods for displaying console output 
+      - Colorized Prompts 
+      - Cleaner Startup Routines
+      - Sanity Check to not start any processes until all startup scripts completed
+    
+    ### Changed
+      - When DEBUG_MODE set stop taking over SMTP functionality. Require DEBUG_SMTP=TRUE instead
+
 ## 3.9.3 2019-12-20 <dave at tiredofit dot ca>
 
    ### Added
