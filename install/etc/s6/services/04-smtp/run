@@ -1,10 +1,12 @@
 #!/usr/bin/with-contenv bash
 
-while [ ! -f /tmp/state/99-container-init ]
-do
-  sleep 1
-done
+source /assets/functions/00-container
+PROCESS_NAME="smtp"
 
-if [[ "$DEBUG_SMTP" = "TRUE" ]] || [[ "$DEBUG_SMTP" = "true" ]] || [[ "$DEBUG_MODE" = "true" ]] || [[ "$DEBUG_MODE" = "TRUE" ]];  then
-exec s6-setuidgid mailhog MailHog;
+check_initialized
+liftoff
+
+if [[ "$DEBUG_SMTP" = "TRUE" ]] || [[ "$DEBUG_SMTP" = "true" ]] ;  then
+	print_info "Starting MailHog"
+	silent exec s6-setuidgid mailhog MailHog;
 fi

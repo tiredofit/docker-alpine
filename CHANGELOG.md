@@ -1,3 +1,38 @@
+## 4.0.0 2020-01-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Now relying on Container Level functions file
+      - Easier methods for displaying console output 
+      - Colorized Prompts 
+      - Cleaner Startup Routines
+      - Sanity Check to not start any processes until all startup scripts completed
+    
+    ### Changed
+      - When DEBUG_MODE set stop taking over SMTP functionality. Require DEBUG_SMTP=TRUE instead
+      - Zabbix 4.4.3
+
+## 3.9.3 2019-12-20 <dave at tiredofit dot ca>
+
+   ### Added
+      - Alpine 3.11 Base
+
+
+## 3.9.2 2019-08-23 <edisonlee at selfdesign dot org>
+
+* Cleanup lines subversion. 
+
+## 3.9.1 2019-08-23 <edisonlee at selfdesign dot org>
+
+* Cleanup variable. 
+
+## 3.9 2019-07-15 <dave at tiredofit dot ca>
+
+* Add Busybox Extras 
+
+## 3.8.2 2019-04-06 <dave at tiredofit dot ca>
+
+* S6 Overlay 1.22.1.0
+
 ## 3.8.1 2019-01-13 <dave at tiredofit dot ca>
 
 * Cleanup Cache
