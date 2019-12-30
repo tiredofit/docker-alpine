@@ -1,12 +1,10 @@
 #!/usr/bin/with-contenv bash
 
-while [ ! -f /tmp/state/99-container-init ]
-do
-  sleep 1
-done
+source /assets/functions/00-container
+PROCESS_NAME="zabbix"
+check_initialized
+liftoff
 
 ### Start Zabbix
-echo ''
-echo '** [zabbix] Starting Zabbix Agent'
-
-exec s6-setuidgid zabbix zabbix_agentd -f >/dev/null 2>&1;
+print_info "Starting Zabbix Agent"
+silent exec s6-setuidgid zabbix zabbix_agentd -f
