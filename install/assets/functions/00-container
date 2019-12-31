@@ -1,5 +1,9 @@
 #!/usr/bin/with-contenv bash
 
+### Set Defaults
+
+CONTAINER_LOG_LEVEL=${CONTAINER_LOG_LEVEL:-"NOTICE"}
+
 ### Colours
 # Foreground (Text) Colors
 cbl="\e[30m"       # Color Black
@@ -58,15 +62,45 @@ sblf="\e[25m"      # Style Blink Off
 sref="\e[27m"      # Style Reverse Off
 shif="\e[28m"      # Style Hidden Off
 
+
 ### Check to see Initialization Script ran
+check_container_initialized() {
+    while [ ! -f /tmp/state/99-container-init ]
+    do
+      sleep 1
+    done
+}
+
+check_service_initialized() {
+    if [ "$1" = "init" ]; then
+        service_suffix="-init"
+    fi
+
+    if [ ! -v "$2" ]; then
+        service=`basename "$PWD"`
+    else 
+        service=$2
+    fi
+
+    while [ ! -f /tmp/state/${service}${service_suffix} ]
+    do
+      sleep 1
+    done
+}
+
 check_initialized() {
+    while [ ! -f /tmp/state/99-container-init ]
+    do
+      sleep 1
+    done
+
 	while [ ! -f /tmp/state/`basename "$PWD"`-init ]
 	do
 	  sleep 1
 	done
 }
 
-function db_ready() {
+db_ready() {
 ### Usage db_ready <dbtype> 
    case "$1" in
         "couch" )
@@ -163,43 +197,68 @@ liftoff() {
 ### Text Coloration
 print_debug()
 {
-	if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
-		echo -e "[DEBUG] ** [${PROCESS_NAME}] $1"
-	else
-  		echo -e "${bdm}[DEBUG]${boff} ** [${PROCESS_NAME}] $1"
-  	fi
+    case "$CONTAINER_LOG_LEVEL" in
+            "DEBUG" )
+                if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                    echo -e "[DEBUG] ** [${PROCESS_NAME}] $1"
+                else
+                    echo -e "${bdm}[DEBUG]${boff} ** [${PROCESS_NAME}] $1"
+                fi
+            ;;
+    esac
+}
+
+print_error()
+{
+    case "$CONTAINER_LOG_LEVEL" in
+            "DEBUG" | "NOTICE" | "WARN" | "ERROR")
+                if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[ERROR] ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${blr}[ERROR]${boff} ** [${PROCESS_NAME}] $1"
+                fi
+            ;;
+    esac
 }
 
 print_info()
 {
-	if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
 		echo -e "[INFO] ** [${PROCESS_NAME}] $1"
 	else
   		echo -e "${bdg}[INFO]${boff} ** [${PROCESS_NAME}] $1"
   	fi
 }
 
-print_error()
+print_notice()
 {
-	if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
-		echo -e "[ERROR] ** [${PROCESS_NAME}] $1"
-	else
-  		echo -e "${blr}[ERROR]${boff} ** [${PROCESS_NAME}] $1"
-  	fi
+    case "$CONTAINER_LOG_LEVEL" in
+            "DEBUG" | "NOTICE" )
+                if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                    echo -e "[NOTICE] ** [${PROCESS_NAME}] $1"
+                else
+                    echo -e "${bdgy}[NOTICE]${boff} ** [${PROCESS_NAME}] $1"
+                fi
+            ;;
+    esac
 }
+
 
 print_warn()
 {
-	if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
-		echo -e "[WARN] ** [${PROCESS_NAME}] $1"
-	else
-  		echo -e "${bdb}[WARN]${boff} ** [${PROCESS_NAME}] $1"
-  	fi
+    case "$CONTAINER_LOG_LEVEL" in
+            "DEBUG" | "NOTICE" | "WARN" )
+                if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                    echo -e "[WARN] ** [${PROCESS_NAME}] $1"
+                else
+                    echo -e "${bdb}[WARN]${boff} ** [${PROCESS_NAME}] $1"
+                fi
+    esac
 }
 
 ## Quiet down output
 silent() {
-  if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] || [ "SHOW_OUTPUT" = "TRUE" ] || [ "SHOW_OUTPUT" = "true" ];  then
+  if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] || [ "SHOW_OUTPUT" = "TRUE" ] || [ "SHOW_OUTPUT" = "true" ] || [ "CONTAINER_LOG_LEVEL" = "DEBUG" ];  then
 	"$@"
   else
 	"$@" > /dev/null 2>&1
@@ -241,5 +300,6 @@ sanity_var() {
 
 ## Keep this last
 if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
-	set -x
+	CONTAINER_LOG_LEVEL="DEBUG"
+    set -x
 fi
