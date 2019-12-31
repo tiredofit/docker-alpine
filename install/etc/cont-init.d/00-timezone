@@ -1,13 +1,13 @@
 #!/usr/bin/with-contenv bash
 
-source /assets/functions/00-container
+source /assets/functions/*
 PROCESS_NAME="timezone"
 
 ### Timezone Setup
 if [ -n "$TIMEZONE" ]; then 
   set_timezone () {
     if [ -f /usr/share/zoneinfo/${TIMEZONE} ];  then
-      print_info "Setting timezone to '${TIMEZONE}'"
+      print_notice "Setting timezone to '${TIMEZONE}'"
       cp -R /usr/share/zoneinfo/$1 /etc/localtime
       echo $1 > /etc/timezone
     else

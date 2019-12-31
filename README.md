@@ -1,4 +1,4 @@
-# hub.docker.com/tiredofit/alpine
+# hub.docker.com/r/tiredofit/alpine
 
 [![Build Status](https://img.shields.io/docker/build/tiredofit/alpine.svg)](https://hub.docker.com/r/tiredofit/alpine)
 [![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/alpine.svg)](https://hub.docker.com/r/tiredofit/alpine)
@@ -19,7 +19,7 @@ Dockerfile to build an [alpine](https://www.alpinelinux.org/) container image.
 
 # Authors
 
-- [Dave Conroy](dave at tiredofit dot ca) [https://github.com/tiredofit]
+- [Dave Conroy](dave at tiredofit dot ca)
 
 # Table of Contents
 
@@ -88,12 +88,12 @@ Below is the complete list of available options that can be used to customize yo
 | Parameter         | Description                                                    |
 |-------------------|----------------------------------------------------------------|
 | `COLORIZE_OUTPUT` | Enable/Disable Colorized Console Output - Default: `TRUE` |
+| `CONTAINER_LOG_LEVEL` | Control Level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG` - Default `NOTICE` |
 | `DEBUG_MODE`      | Enable Debug Mode - Default: `FALSE`                            |
 | `DEBUG_SMTP`      | Setup Mail Catch all on port 1025 (SMTP) and 8025 (HTTP) - Default: `FALSE` |
 | `ENABLE_CRON`     | Enable Cron - Default: `TRUE`                                   |
-| `ENABLE_SMTP`     | Enable SMTP services - Default: `TRUE`						|
-| `ENABLE_ZABBIX`   | Enable Zabbix Agent - Default: `TRUE`  
-                         |
+| `ENABLE_SMTP`     | Enable SMTP services - Default: `TRUE`                        |
+| `ENABLE_ZABBIX`   | Enable Zabbix Agent - Default: `TRUE`                           |
 | `SKIP_SANITY_CHECK` | Disable Container Startup Routine Check - Default: `FALSE` |
 | `TIMEZONE`        | Set Timezone - Default: `America/Vancouver`                     |
 
@@ -105,9 +105,9 @@ If you wish to have this send mail, set `ENABLE_SMTP=TRUE` and configure the fol
 | `SMTP_HOST`      | Hostname of SMTP Server - Default: `postfix-relay`                            |
 | `SMTP_PORT`      | Port of SMTP Server - Default: `25`                            |
 | `SMTP_DOMAIN`     | HELO Domain - Default: `docker`                                   |
-| `SMTP_MAILDOMAIN`     | Mail Domain From - Default: `example.org`						|
+| `SMTP_MAILDOMAIN`     | Mail Domain From - Default: `example.org`                     |
 | `SMTP_AUTHENTICATION`     | SMTP Authentication - Default: `none`                                   |
-| `SMTP_USER`     | Enable SMTP services - Default: `user`						|
+| `SMTP_USER`     | Enable SMTP services - Default: `user`                      |
 | `SMTP_PASS`   | Enable Zabbix Agent - Default: `password`                           |
 | `SMTP_TLS`        | Use TLS - Default: `off`                     |
 | `SMTP_STARTTLS`   | Start TLS from within Dession - Default: `off` |
@@ -121,7 +121,7 @@ See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentati
 | `ZABBIX_LOGFILESIZE` | Logfile Size - Default: `1` |
 | `ZABBIX_DEBUGLEVEL` | Debug Level - Default: `1` |
 | `ZABBIX_REMOTECOMMANDS` | Enable Remote Commands (0/1) - Default: `1` |
-| `ZABBIX_REMOTECOMMANDS_LOG` | Enable Remote Commands Log (0/1)| - Default: `1` |
+| `ZABBIX_REMOTECOMMANDS_LOG` | Enable Remote Commands Log (0/1) - Default: `1` |
 | `ZABBIX_SERVER` | Allow connections from Zabbix Server IP - Default: `0.0.0.0/0` |
 | `ZABBIX_LISTEN_PORT` | Zabbix Agent Listening Port - Default: `10050` |
 | `ZABBIX_LISTEN_IP` | Zabbix Agent Listening IP - Default: `0.0.0.0` |
