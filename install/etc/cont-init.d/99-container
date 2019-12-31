@@ -1,20 +1,21 @@
 #!/usr/bin/with-contenv bash
 
-source /assets/functions/00-container
+for s in /assets/functions/*; do source $s; done
 
-if [ "$SKIP_SANITY_CHECK" != "FALSE " ]; then
+if [ "$SKIP_SANITY_CHECK" != "FALSE" ]; then
   ### Final Sanity Check to make sure all scripts have executed and initialized properly, otherwise stop 
   files_init=`ls -l /etc/cont-init.d/* | grep -v ^d | wc -l`
   files_init=`expr $files_init - 1`
   init_complete=`ls -l /tmp/state/*-init | grep -v ^d | wc -l`
 
   if [ $files_init != $init_complete ]; then
-    echo -e "${blr}"
     echo "**********************************************************************************************************************"
-    echo "**** ERROR - All scripts have not initialized properly - All services are now halted                              ****"
-    echo "****       - Please enter the container find out why the missing *-init state file hasn't been written            ****" 
+    echo "**********************************************************************************************************************"
     echo "****                                                                                                              ****"
+    echo "****       ERROR - All scripts have not initialized properly - All services are now halted                        ****"
+    echo "****             - Please enter the container find out why the missing *-init state file hasn't been written      ****" 
     echo "****                                                                                                              ****"
+    echo "**********************************************************************************************************************"
     echo "**********************************************************************************************************************"
     echo ""
     echo "/etc/cont-init.d:"
@@ -22,8 +23,8 @@ if [ "$SKIP_SANITY_CHECK" != "FALSE " ]; then
     echo ""
     echo "/tmp/state:"
     echo "`ls -x /tmp/state/*-init`"
-    echo -e "${boff}"
-
+    echo ""
+    
     for services in /var/run/s6/services/[0-9]* ; do
       s6-svc -d "$services"
     done
