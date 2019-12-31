@@ -1,14 +1,12 @@
 #!/usr/bin/with-contenv bash
-
-source /assets/functions/00-container
+for s in /assets/functions/*; do source $s; done
 PROCESS_NAME="permissions"
 
 if [ "$DEBUG_PERMISSIONS" = "TRUE" ] || [ "$DEBUG_PERMISSIONS" = "true" ] ; then
   set -x
+  CONTAINER_LOG_LEVEL="DEBUG"
 fi
 
-DEBUG_PERMISSIONS=${DEBUG_PERMISSIONS:-"FALSE"}
-ENABLE_PERMISSIONS=${ENABLE_PERMISSIONS:-"TRUE"}
 
 ### Enable or Disable permissions
 if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; then
@@ -27,14 +25,12 @@ if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; the
     varpassuserid=(`cat /etc/passwd | grep ^"$strusers" | awk -F: '{print $3}'`)
   fi
 
-  ### Debug Mode - Enable permissions
-  if [ "$DEBUG_PERMISSIONS" = "TRUE" ] || [ "$DEBUG_PERMISSIONS" = "true" ] || [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
-    print_debug "Users (varenvusername) from Docker env are: ${varenvusername[*]}"
-    print_debug "UIDs (varenvuid) from Docker env are: ${varenvuid[*]}"
-    print_debug "The string (strusers) used to grep the users is: $strusers"
-    print_debug "Users (varpassuser) from /etc/passwd are: ${varpassuser[*]}"
-    print_debug "UIDs (varpassuserid) from /etc/passwd are: ${varpassuserid[*]}"
-  fi
+
+  print_debug "Users (varenvusername) from Docker env are: ${varenvusername[*]}"
+  print_debug "UIDs (varenvuid) from Docker env are: ${varenvuid[*]}"
+  print_debug "The string (strusers) used to grep the users is: $strusers"
+  print_debug "Users (varpassuser) from /etc/passwd are: ${varpassuser[*]}"
+  print_debug "UIDs (varpassuserid) from /etc/passwd are: ${varpassuserid[*]}"
 
   counter=0
 
@@ -43,21 +39,21 @@ if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; the
     for j in ${!varpassuser[*]}
     do
       if [ "${varenvusername[$i]}" == "${varpassuser[$j]}" ]; then
-        if [ "$DEBUG_PERMISSIONS" = "TRUE" ] || [ "$DEBUG_PERMISSIONS" = "true" ] || [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
+        if [ "$DEBUG_PERMISSIONS" = "TRUE" ] || [ "$DEBUG_PERMISSIONS" = "true" ] || [ "$CONTAINER_LOG_LEVEL" = "DEBUG" ]; then
           print_debug "current loop is $i==$j and ${varenvusername[$i]} == ${varpassuser[$j]}"
           print_debug "use sed to replace ${varpassuserid[$j]} with ${varenvuid[$i]} in /etc/passwd"
         fi
 
         sed -i 's/'"${varpassuser[$j]}:x:${varpassuserid[$j]}:"'/'"${varpassuser[$j]}:x:${varenvuid[$i]}:"'/' /etc/passwd
 
-        print_info "uid of user ${varpassuser[$j]} has been changed to ${varenvuid[$i]}."
+        print_notice "uid of user ${varpassuser[$j]} has been changed to ${varenvuid[$i]}."
         let counter++
       fi
     done
   done
   
   if [ "$counter" -gt "0" ] ; then
-  print_info "Total $counter UIDs modified"
+  print_notice "Total $counter UIDs modified"
   fi
 
   counter=0
@@ -72,23 +68,20 @@ if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; the
     vargroupid=(`cat /etc/group | grep ^"$strgroups" | awk -F: '{print $3}'`)
   fi
 
-  if [ "$DEBUG_PERMISSIONS" = "TRUE" ] || [ "$DEBUG_PERMISSIONS" = "true" ] || [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
-    print_debug "Group names (varenvgroupname) from Docker environment settings are: ${varenvgroupname[*]}"
-    print_debug "GIDs (grvarenvgid) from Docker environment settings are: ${varenvgid[*]}"
-    print_debug "The string (strgroup) used to grep the groups is: $strgroups"
-    print_debug "Group names (vargroupname) from /etc/group are: ${vargroupname[*]}"
-    print_debug "GIDs (vargroupid) from /etc/group are: ${vargroupid[*]}"
-  fi
+  print_debug "Group names (varenvgroupname) from Docker environment settings are: ${varenvgroupname[*]}"
+  print_debug "GIDs (grvarenvgid) from Docker environment settings are: ${varenvgid[*]}"
+  print_debug "The string (strgroup) used to grep the groups is: $strgroups"
+  print_debug "Group names (vargroupname) from /etc/group are: ${vargroupname[*]}"
+  print_debug "GIDs (vargroupid) from /etc/group are: ${vargroupid[*]}"
+
 
   for i in ${!varenvgroupname[*]}
   do
     for j in ${!vargroupname[*]}
     do
       if [ "${varenvgroupname[$i]}" == "${vargroupname[$j]}" ]; then
-        if [ "$DEBUG_PERMISSIONS" = "TRUE" ] || [ "$DEBUG_PERMISSIONS" = "true" ] || [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
-          print_debug "current loop is: $i==$j and ${varenvgroupname[$i]} == ${vargroupname[$j]}"
-          print_debug "use sed to replace ${vargroupid[$j]} with ${varenvgid[$i]} in /etc/group"
-        fi
+        print_debug "current loop is: $i==$j and ${varenvgroupname[$i]} == ${vargroupname[$j]}"
+        print_debug "use sed to replace ${vargroupid[$j]} with ${varenvgid[$i]} in /etc/group"
 
         oldstr=`cat /etc/group | grep ^${vargroupname[$j]}`
         strarr=(`cat /etc/group | grep ^${vargroupname[$j]} | awk '{n=split($0, tmparr, ":"); \
@@ -104,7 +97,7 @@ if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; the
         deststr=`echo ${strarr[*]} | awk -v OFS=":" '{$1=$1; print}'`
         sed -i 's|'"$oldstr"'|'"$deststr"'|' /etc/passwd
 
-        print_info "gid of group ${vargroupname[$j]} has been changed to ${varenvgid[$i]}."
+        print_notice "gid of group ${vargroupname[$j]} has been changed to ${varenvgid[$i]}."
 
         let counter++
       fi
@@ -112,7 +105,7 @@ if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; the
   done
   
   if [ "$counter" -gt "0" ] ; then
-    print_info "total $counter GIDs modified"
+    print_notice "total $counter GIDs modified"
   fi
 
   counter=0
@@ -121,10 +114,8 @@ if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; the
   varenvuser2add=(`env | grep ^GROUP_ADD_ | awk -F= '{print $1}' | awk -F_ '{print tolower($3)}'`)
   varenvdestgroup=(`env | grep ^GROUP_ADD_ | awk -F= '{print tolower($2)}'`)
 
-  if [ "$DEBUG_PERMISSIONS" = "TRUE" ] || [ "$DEBUG_PERMISSIONS" = "true" ] || [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
-    print_debug "Users (varenvuser2add) to add to groups are: ${varenvuser2add[*]}"
-    print_debug "Groups (varenvdestgroup) to add users are: ${varenvdestgroup[*]}"
-  fi
+  print_debug "Users (varenvuser2add) to add to groups are: ${varenvuser2add[*]}"
+  print_debug "Groups (varenvdestgroup) to add users are: ${varenvdestgroup[*]}"
 
   for i in ${!varenvuser2add[*]}
   do
@@ -137,7 +128,7 @@ if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; the
     fi
   done
 else
-  print_warn "Disabling `basename $0` permissions features"
+  print_notice "Disabling permissions features"
 fi
 
 liftoff

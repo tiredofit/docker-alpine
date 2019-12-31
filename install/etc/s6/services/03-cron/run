@@ -1,8 +1,9 @@
 #!/usr/bin/with-contenv bash
 
-source /assets/functions/00-container
+for s in /assets/functions/*; do source $s; done
 PROCESS_NAME="cron"
-check_initialized
+check_container_initialized
+check_service_initialized init
 
 if [ ! -f /tmp/state/`basename $0` ]; then
     sleep 60
