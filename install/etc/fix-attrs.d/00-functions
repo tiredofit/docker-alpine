@@ -1,0 +1,2 @@
+/etc/cont-init.d/* true root 0755 0755
+/etc/s6/services/*/ true root 0755 0755
