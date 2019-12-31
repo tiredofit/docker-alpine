@@ -1,3 +1,19 @@
+## 4.1.0 2020-01-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Start splitting out Defaults into seperate /assets/functions/* files
+
+   ### Changed
+      - Cleanup of Permissions Changing routines
+
+## 4.0.1 2020-01-01 <dave at tiredofit dot ca>
+
+   ### Added   
+      - New text output for Notices
+
+   ### Changed
+      - Additional checks to ensure cont-init.d scripts have finished executing
+
 ## 4.0.0 2020-01-01 <dave at tiredofit dot ca>
 
    ### Added
@@ -9,7 +25,6 @@
     
     ### Changed
       - When DEBUG_MODE set stop taking over SMTP functionality. Require DEBUG_SMTP=TRUE instead
-      - Zabbix 4.4.3
 
 ## 3.9.3 2019-12-20 <dave at tiredofit dot ca>
 

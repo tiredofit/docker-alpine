@@ -1,28 +1,8 @@
 #!/usr/bin/with-contenv bash
 
-source /assets/functions/00-container
+for s in /assets/functions/*; do source $s; done
 PROCESS_NAME="zabbix"
 
-### Set Defaults
-ENABLE_ZABBIX=${ENABLE_ZABBIX:-"TRUE"}
-ZABBIX_LOGFILE=${ZABBIX_LOGFILE:-"/var/log/zabbix/zabbix_agentd.log"}
-ZABBIX_LOGFILESIZE=${ZABBIX_LOGFILESIZE:-"1"}
-ZABBIX_DEBUGLEVEL=${ZABBIX_DEBUGLEVEL:-"1"}
-ZABBIX_REMOTECOMMANDS=${ZABBIX_REMOTECOMMANDS:-"1"}
-ZABBIX_REMOTECOMMANDS_LOG=${ZABBIX_REMOTECOMMANDS_LOG:-"1"}
-ZABBIX_SERVER=${ZABBIX_SERVER:-"0.0.0.0/0"}
-ZABBIX_LISTEN_PORT=${ZABBIX_LISTEN_PORT:-"10050"}
-ZABBIX_LISTEN_IP=${ZABBIX_LISTEN_IP:-"0.0.0.0"}
-ZABBIX_START_AGENTS=${ZABBIX_START_AGENTS:-"2"}
-ZABBIX_SERVER_ACTIVE=${ZABBIX_SERVER_ACTIVE:-"zabbix-proxy"}
-ZABBIX_HOSTNAME=${ZABBIX_HOSTNAME:-"docker"}
-ZABBIX_REFRESH_ACTIVE_CHECKS=${ZABBIX_REFRESH_ACTIVE_CHECKS:-"120"}
-ZABBIX_BUFFER_SEND=${ZABBIX_BUFFER_SEND:-"5"}
-ZABBIX_BUFFER_SIZE=${ZABBIX_BUFFER_SIZE:-"100"}
-ZABBIX_MAXLINES_SECOND=${ZABBIX_MAXLINES_SECOND:-"20"}
-ZABBIX_ALLOW_ROOT=${ZABBIX_ALLOW_ROOT:-"1"}
-ZABBIX_USER=${ZABBIX_USER:-"zabbix"}
-  
 ### Debug Mode
 if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ];  then
   ZABBIX_DEBUGLEVEL=4
@@ -52,7 +32,7 @@ if [ "$ENABLE_ZABBIX" = "TRUE" ] || [ "$ENABLE_ZABBIX" = "true" ];  then
   chown -R ${ZABBIX_USER} ${ZABBIX_LOGFILE%/*}
   chown -R ${ZABBIX_USER} /etc/zabbix/
 else
-  print_warn "Disabling Zabbix Monitoring Functionality"
+  print_notice "Disabling Zabbix Monitoring Functionality"
   s6-svc -d /var/run/s6/services/`basename $0`
 fi
 
