@@ -1,7 +1,7 @@
 FROM alpine:edge
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
-ENV ZABBIX_VERSION=4.4.3 \
+ENV ZABBIX_VERSION=4.4.4 \
     S6_OVERLAY_VERSION=v1.22.1.0 \
     DEBUG_MODE=FALSE \
     TIMEZONE=America/Vancouver \
@@ -102,11 +102,14 @@ RUN set -ex && \
     echo "${TIMEZONE}" > /etc/timezone && \
     echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
     \
+    ## Quiet Down Sudo
+    echo "Set disable_coredump false" > /etc/sudo.conf && \
+    \
 ### S6 Installation
      curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C / && \
      mkdir -p /assets/cron && \
 ### Clean Up
-    rm -rf /usr/src/*
+    rm -rf /usr/src/* 
 
 ### Networking Configuration
 EXPOSE 1025 8025 10050/TCP 
@@ -116,5 +119,3 @@ ADD /install /
 
 ### Entrypoint Configuration
 ENTRYPOINT ["/init"]
-
-

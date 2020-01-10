@@ -76,8 +76,16 @@ check_service_initialized() {
         service_suffix="-init"
     fi
 
-    if [ ! -v "$2" ]; then
-        service=`basename "$PWD"`
+    if [ -z "$2" ]; then
+    echo $dirname "$0"
+        case "`dirname "$0"`" in
+            "/var/run/s6/etc/cont-init.d")
+                service=`basename "$0"`
+            ;;
+            *)
+                service=`basename "$PWD"`
+            ;;
+        esac
     else 
         service=$2
     fi
@@ -87,6 +95,7 @@ check_service_initialized() {
       sleep 1
     done
 }
+
 
 check_initialized() {
     while [ ! -f /tmp/state/99-container-init ]

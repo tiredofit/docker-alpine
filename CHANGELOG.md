@@ -1,3 +1,16 @@
+## 4.1.2 2020-01-10 <dave at tiredofit dot ca>
+
+   ### Added
+      - Quiet down sudo error
+      - Zabbix 4.4.4 Agent
+
+
+## 4.1.1 2020-01-02 <dave at tiredofit dot ca>
+
+   ### Changed
+      - check_service_initialized was throwing false information
+
+
 ## 4.1.0 2020-01-01 <dave at tiredofit dot ca>
 
    ### Added
