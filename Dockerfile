@@ -56,6 +56,9 @@ RUN set -ex && \
     echo "${TIMEZONE}" > /etc/timezone && \
     echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
     \
+    ## Quiet Down Sudo
+    echo "Set disable_coredump false" > /etc/sudo.conf && \
+    \
 ### S6 Installation
     curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C / && \
     \
