@@ -1,3 +1,9 @@
+## 4.1.3 2020-01-10 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Remove code showing $dirname erronously on process startup
+
+
 ## 4.1.2 2020-01-10 <dave at tiredofit dot ca>
 
    ### Added
