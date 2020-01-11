@@ -82,6 +82,7 @@ check_service_initialized() {
     print_debug "Checking to see if service has initialized"
     if [ "$1" = "init" ]; then
         service_suffix="-init"
+        csi_bypass=FALSE
     else 
         service=$1
         csi_bypass=TRUE
