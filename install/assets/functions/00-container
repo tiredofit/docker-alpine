@@ -77,7 +77,6 @@ check_service_initialized() {
     fi
 
     if [ -z "$2" ]; then
-    echo $dirname "$0"
         case "`dirname "$0"`" in
             "/var/run/s6/etc/cont-init.d")
                 service=`basename "$0"`
