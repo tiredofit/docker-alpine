@@ -65,6 +65,7 @@ shif="\e[28m"      # Style Hidden Off
 
 ### Check to see Initialization Script ran
 check_container_initialized() {
+    print_debug "Checking to see if container initialization scripts have completed"
     while [ ! -f /tmp/state/99-container-init ]
     do
       sleep 1
@@ -72,47 +73,62 @@ check_container_initialized() {
 }
 
 check_service_initialized() {
+    ## Usage:
+    ## check_service_initialized init: Look for the matching filename of /etc/s6/services/<folder-name> in /tmp/state/<folder-name>-init
+    ## ## check_service_initialized <service folder> Look for the matching filename of /etc/s6/services/<folder-name> in /tmp/state/<folder-name>
+    ## Related to liftoff function, which writes /tmp/state/script|foldername
+    ## Scripts that run in /etc/cont-init.d get an -init at the end of their filename
+    ## Scripts that run from /etc/s6/services/* just get the foldername without any suffix
+    print_debug "Checking to see if service has initialized"
     if [ "$1" = "init" ]; then
         service_suffix="-init"
-    fi
-
-    if [ -z "$2" ]; then
-        case "`dirname "$0"`" in
-            "/var/run/s6/etc/cont-init.d")
-                service=`basename "$0"`
-            ;;
-            *)
-                service=`basename "$PWD"`
-            ;;
-        esac
     else 
-        service=$2
+        service=$1
+        csi_bypass=TRUE
     fi
 
+    if [ "$csi_bypass" = "FALSE" ] ; then
+        if [ -z "$2" ]; then
+            case "`dirname "$0"`" in
+                "/var/run/s6/etc/cont-init.d")
+                    service=`basename "$0"`
+                ;;
+                *)
+                    service=`basename "$PWD"`
+                ;;
+            esac
+        else 
+            service=$2
+        fi
+    fi
+
+    print_debug "Looking for existence of /tmp/state/${service}${service_suffix}"
     while [ ! -f /tmp/state/${service}${service_suffix} ]
     do
       sleep 1
     done
+    unset csi_bypass
 }
 
-
 check_initialized() {
+    ## To be removed, used above functions instead
     while [ ! -f /tmp/state/99-container-init ]
     do
       sleep 1
     done
 
-	while [ ! -f /tmp/state/`basename "$PWD"`-init ]
-	do
-	  sleep 1
-	done
+    while [ ! -f /tmp/state/`basename "$PWD"`-init ]
+    do
+      sleep 1
+    done
 }
 
 db_ready() {
-### Usage db_ready <dbtype> 
+### Usage db_ready <dbtype>
+   print_debug "Checking to see if Database Type $1 is ready"
    case "$1" in
         "couch" )
-			DB_PORT=${DB_PORT:-5984}
+            DB_PORT=${DB_PORT:-5984}
             COUNTER=0
             while ! (nc -z ${DB_HOST} ${DB_PORT}) ; do
                 sleep 5
@@ -121,7 +137,7 @@ db_ready() {
             done
         ;;
         "influx" )
-			DB_PORT=${DB_PORT:-8088}
+            DB_PORT=${DB_PORT:-8088}
             COUNTER=0
             while ! (nc -z ${DB_HOST} ${DB_PORT}) ; do
                 sleep 5
@@ -130,7 +146,7 @@ db_ready() {
             done
         ;;
         "mongo" | "mongodb" )
-			DB_PORT=${DB_PORT:-27017}
+            DB_PORT=${DB_PORT:-27017}
             COUNTER=0
             while ! (nc -z ${DB_HOST} ${DB_PORT}) ; do
                 sleep 5
@@ -187,19 +203,19 @@ db_ready() {
 
 ## For writing script initalization state to ensure proper application execution
 liftoff() {
-	mkdir -p /tmp/state
-	case "`dirname "$0"`" in
-		"/var/run/s6/etc/cont-init.d")
-		echo "`basename "$0"`-init initialized on `date`" > /tmp/state/`basename "$0"`-init
-		;;
-		*)
+    mkdir -p /tmp/state
+    case "`dirname "$0"`" in
+        "/var/run/s6/etc/cont-init.d")
+        echo "`basename "$0"`-init initialized on `date`" > /tmp/state/`basename "$0"`-init
+        ;;
+        *)
         if [ ! -f /tmp/state/`basename "$PWD"` ]; then
-			echo "`basename "$PWD"` initialized on `date`" > /tmp/state/`basename "$PWD"`
-		else
-			echo "`basename "$PWD"` reinitialized on `date`" >> /tmp/state/`basename "$PWD"`
-		fi
-		;;
-	esac
+            echo "`basename "$PWD"` initialized on `date`" > /tmp/state/`basename "$PWD"`
+        else
+            echo "`basename "$PWD"` reinitialized on `date`" >> /tmp/state/`basename "$PWD"`
+        fi
+        ;;
+    esac
 }
 
 ### Text Coloration
@@ -232,10 +248,10 @@ print_error()
 print_info()
 {
     if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
-		echo -e "[INFO] ** [${PROCESS_NAME}] $1"
-	else
-  		echo -e "${bdg}[INFO]${boff} ** [${PROCESS_NAME}] $1"
-  	fi
+        echo -e "[INFO] ** [${PROCESS_NAME}] $1"
+    else
+        echo -e "${bdg}[INFO]${boff} ** [${PROCESS_NAME}] $1"
+    fi
 }
 
 print_notice()
@@ -267,47 +283,48 @@ print_warn()
 ## Quiet down output
 silent() {
   if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] || [ "SHOW_OUTPUT" = "TRUE" ] || [ "SHOW_OUTPUT" = "true" ] || [ "CONTAINER_LOG_LEVEL" = "DEBUG" ];  then
-	"$@"
+    "$@"
   else
-	"$@" > /dev/null 2>&1
+    "$@" > /dev/null 2>&1
   fi
 }
 
 ### Make sure DB is defined
 sanity_db() {
-	if [ ! -n "${DB_HOST}" ]; then
-		print_error "No Database Host Entered! - Set '\$DB_HOST'"
-		exit 1
-	fi
+    print_debug "Looking for existence of DB_HOST, DB_NAME, DB_USER, DB_PASS environment variables"
+    if [ ! -n "${DB_HOST}" ]; then
+        print_error "No Database Host Entered! - Set '\$DB_HOST'"
+        exit 1
+    fi
 
-	if [ ! -n "${DB_NAME}" ]; then
-		print_error "No Database Name Entered! - Set '\$DB_NAME'"
-		exit 1
-	fi
+    if [ ! -n "${DB_NAME}" ]; then
+        print_error "No Database Name Entered! - Set '\$DB_NAME'"
+        exit 1
+    fi
 
-	if [ ! -n "${DB_USER}" ]; then
-		print_error "No Database User Entered! - Set '\$DB_USER'"
-		exit 1
-	fi
+    if [ ! -n "${DB_USER}" ]; then
+        print_error "No Database User Entered! - Set '\$DB_USER'"
+        exit 1
+    fi
 
-	if [ ! -n "${DB_PASS}" ]; then
-		print_error "No Database Password Entered! - Set '\$DB_PASS'"
-		exit 1
-	fi
+    if [ ! -n "${DB_PASS}" ]; then
+        print_error "No Database Password Entered! - Set '\$DB_PASS'"
+        exit 1
+    fi
 }
 
 ## Check is Variable is Defined
 ## Usage: sanity_var varname "Description"
 sanity_var() {
-    if [ ! -v "$1" ]; then
+    print_debug "Looking for existence of $1 environment variable"
+        if [ ! -v "$1" ]; then
             print_error "No $2 Entered! - Set '\$$1'"
             exit 1
     fi
 }
 
-
 ## Keep this last
 if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
-	CONTAINER_LOG_LEVEL="DEBUG"
+    CONTAINER_LOG_LEVEL="DEBUG"
     set -x
 fi
