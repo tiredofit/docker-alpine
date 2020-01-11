@@ -1,8 +1,17 @@
+## 4.1.5 2020-01-11 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Additional fix for check_service_initialized function to properly look for finished /etc/s6/services processes
+
+## 4.1.4 2020-01-11 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for check_service_initialized function to properly look for finished /etc/s6/services processes
+
 ## 4.1.3 2020-01-10 <dave at tiredofit dot ca>
 
    ### Changed
       - Remove code showing $dirname erronously on process startup
-
 
 ## 4.1.2 2020-01-10 <dave at tiredofit dot ca>
 
