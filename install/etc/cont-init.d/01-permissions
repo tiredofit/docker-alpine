@@ -2,14 +2,15 @@
 for s in /assets/functions/*; do source $s; done
 PROCESS_NAME="permissions"
 
+output_off
 if [ "$DEBUG_PERMISSIONS" = "TRUE" ] || [ "$DEBUG_PERMISSIONS" = "true" ] ; then
   set -x
   CONTAINER_LOG_LEVEL="DEBUG"
 fi
 
-
 ### Enable or Disable permissions
 if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; then
+  print_notice "Enabling permissions features"
   # handle the following:
   # 1. change uid in /etc/passwd with the ones defined in Docker's environment settings
   # 2. change gid in /etc/group and /etc/passwd with the ones defined in Docker's environment settings
@@ -51,7 +52,7 @@ if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; the
       fi
     done
   done
-  
+
   if [ "$counter" -gt "0" ] ; then
   print_notice "Total $counter UIDs modified"
   fi
@@ -103,7 +104,7 @@ if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; the
       fi
     done
   done
-  
+
   if [ "$counter" -gt "0" ] ; then
     print_notice "total $counter GIDs modified"
   fi
@@ -127,8 +128,7 @@ if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; the
       sed -i 's/'"$varthegroupstr"'/'"$varthegroupstr,${varenvuser2add[$i]}"'/' /etc/group
     fi
   done
-else
-  print_notice "Disabling permissions features"
 fi
 
+output_on
 liftoff
