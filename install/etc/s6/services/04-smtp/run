@@ -2,6 +2,7 @@
 
 for s in /assets/functions/*; do source $s; done
 PROCESS_NAME="smtp"
+output_off
 check_container_initialized
 check_service_initialized init
 liftoff
@@ -10,3 +11,4 @@ if [[ "$DEBUG_SMTP" = "TRUE" ]] || [[ "$DEBUG_SMTP" = "true" ]] ;  then
 	print_info "Starting MailHog"
 	silent exec s6-setuidgid mailhog MailHog;
 fi
+output_on
