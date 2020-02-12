@@ -1,3 +1,10 @@
+## 4.2.0 2020-02-12 <dave at tiredofit dot ca>
+
+   ### Added
+      - Reworked Debug Mode to quiet down output on core services and cut down on unnecessary noise
+      - Reworked Container Initialization Check to clearly show which file hasn't successfully completed
+
+
 ## 4.1.5 2020-01-11 <dave at tiredofit dot ca>
 
    ### Changed
