@@ -1,15 +1,14 @@
 #!/usr/bin/with-contenv bash
 
-for s in /assets/functions/*; do source $s; done 
+for s in /assets/functions/*; do source $s; done
 PROCESS_NAME="cron"
 
-### Set Defaults
-ENABLE_CRON=${ENABLE_CRON:-"TRUE"}
-
+output_off
 ### Check to see if Enabled/Disabled
 if [ "$ENABLE_CRON" = "FALSE" ] || [ "$ENABLE_CRON" = "false" ];  then
 	print_notice "Disabling Cron"
 	s6-svc -d /var/run/s6/services/`basename $0`
 fi
 
+output_on
 liftoff

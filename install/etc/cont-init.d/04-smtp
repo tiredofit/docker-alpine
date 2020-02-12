@@ -3,7 +3,7 @@
 for s in /assets/functions/*; do source $s; done
 PROCESS_NAME="smtp"
 s6-svc -d /var/run/s6/services/`basename $0`
-
+output_off
 ### Debug Mode - Enable MailHog
 if [ "$DEBUG_SMTP" = "TRUE" ] || [ "$DEBUG_SMTP" = "true" ];  then
     ENABLE_SMTP=FALSE
@@ -32,7 +32,7 @@ if [ "$DEBUG_SMTP" = "TRUE" ] || [ "$DEBUG_SMTP" = "true" ];  then
     if [ "$ENABLE_SMTP_GMAIL" = "TRUE" ] || [ "$ENABLE_SMTP_GMAIL" = "true" ]; then
          echo "auto_from on" >> /etc/msmtp
     fi
-    
+
     rm -f /usr/sbin/sendmail
     ln -s /usr/bin/msmtp /usr/sbin/sendmail
 
@@ -58,11 +58,12 @@ if [ "$ENABLE_SMTP" = "TRUE" ] || [ "$ENABLE_SMTP" = "true" ];  then
 	echo "tls ${SMTP_TLS}" >>/etc/msmtp
 	echo "tls_starttls ${SMTP_STARTTLS}" >>/etc/msmtp
 	echo "tls_certcheck ${SMTP_TLSCERTCHECK}" >>/etc/msmtp
-    
+
   export ENABLE_SMTP=TRUE
   print_notice "Sendmail replaced and enabled to route mail to: '${SMTP_HOST}'"
 else
   print_notice "Disabling SMTP Features"
 fi
 
+output_on
 liftoff
