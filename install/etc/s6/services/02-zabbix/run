@@ -2,9 +2,11 @@
 
 for s in /assets/functions/*; do source $s; done
 PROCESS_NAME="zabbix"
+output_off
 check_container_initialized
 check_service_initialized init
 liftoff
+output_on
 
 ### Start Zabbix
 print_info "Starting Zabbix Agent"
