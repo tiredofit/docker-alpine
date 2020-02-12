@@ -1,8 +1,8 @@
 #!/usr/bin/with-contenv bash
-
 ### Set Defaults
 
 CONTAINER_LOG_LEVEL=${CONTAINER_LOG_LEVEL:-"NOTICE"}
+SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
 ### Colours
 # Foreground (Text) Colors
@@ -65,11 +65,15 @@ shif="\e[28m"      # Style Hidden Off
 
 ### Check to see Initialization Script ran
 check_container_initialized() {
+
     print_debug "Checking to see if container initialization scripts have completed"
+    output_off
     while [ ! -f /tmp/state/99-container-init ]
     do
+      print_debug "Checking to see if container initialization scripts have completed"
       sleep 1
     done
+    output_on
 }
 
 check_service_initialized() {
@@ -80,10 +84,11 @@ check_service_initialized() {
     ## Scripts that run in /etc/cont-init.d get an -init at the end of their filename
     ## Scripts that run from /etc/s6/services/* just get the foldername without any suffix
     print_debug "Checking to see if service has initialized"
+    output_off
     if [ "$1" = "init" ]; then
         service_suffix="-init"
         csi_bypass=FALSE
-    else 
+    else
         service=$1
         csi_bypass=TRUE
     fi
@@ -98,36 +103,25 @@ check_service_initialized() {
                     service=`basename "$PWD"`
                 ;;
             esac
-        else 
+        else
             service=$2
         fi
     fi
 
-    print_debug "Looking for existence of /tmp/state/${service}${service_suffix}"
     while [ ! -f /tmp/state/${service}${service_suffix} ]
     do
       sleep 1
+      print_debug "Looking for existence of /tmp/state/${service}${service_suffix}"
     done
     unset csi_bypass
-}
-
-check_initialized() {
-    ## To be removed, used above functions instead
-    while [ ! -f /tmp/state/99-container-init ]
-    do
-      sleep 1
-    done
-
-    while [ ! -f /tmp/state/`basename "$PWD"`-init ]
-    do
-      sleep 1
-    done
+    output_on
 }
 
 db_ready() {
 ### Usage db_ready <dbtype>
-   print_debug "Checking to see if Database Type $1 is ready"
-   case "$1" in
+    output_off
+    print_debug "Checking to see if Database Type $1 is ready"
+    case "$1" in
         "couch" )
             DB_PORT=${DB_PORT:-5984}
             COUNTER=0
@@ -174,7 +168,7 @@ db_ready() {
         "pgsql" | "psql" | "postgres" | "postgresql " )
             DB_PORT=${DB_PORT:-5432}
             COUNTER=0
-            export PGPASSWORD=${DB_PASS} 
+            export PGPASSWORD=${DB_PASS}
             until pg_isready --dbname=${DB_NAME} --host=${DB_HOST} --port=${DB_PORT} --username=${DB_USER} -q
             do
                 sleep 5
@@ -199,11 +193,13 @@ db_ready() {
                 print_warn "RethinkDB Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
             done
         ;;
-    esac    
+    esac
+    output_on
 }
 
 ## For writing script initalization state to ensure proper application execution
 liftoff() {
+    output_off
     mkdir -p /tmp/state
     case "`dirname "$0"`" in
         "/var/run/s6/etc/cont-init.d")
@@ -217,68 +213,114 @@ liftoff() {
         fi
         ;;
     esac
+    output_on
 }
 
 ### Text Coloration
-print_debug()
-{
+print_debug() {
+    output_off
     case "$CONTAINER_LOG_LEVEL" in
             "DEBUG" )
-                if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
-                    echo -e "[DEBUG] ** [${PROCESS_NAME}] $1"
+                if [ "$DEBUG_MODE" = "TRUE" ]; then
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[DEBUG] $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${bdm}[DEBUG]${boff} $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+                    fi
                 else
-                    echo -e "${bdm}[DEBUG]${boff} ** [${PROCESS_NAME}] $1"
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[DEBUG] ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${bdm}[DEBUG]${boff} ** [${PROCESS_NAME}] $1"
+                    fi
                 fi
             ;;
     esac
+    output_on
 }
 
-print_error()
-{
+print_error() {
+    output_off
     case "$CONTAINER_LOG_LEVEL" in
             "DEBUG" | "NOTICE" | "WARN" | "ERROR")
-                if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                if [ "$DEBUG_MODE" = "TRUE" ]; then
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[ERROR] $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${blr}[ERROR]${boff} $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+                    fi
+                else
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
                         echo -e "[ERROR] ** [${PROCESS_NAME}] $1"
                     else
                         echo -e "${blr}[ERROR]${boff} ** [${PROCESS_NAME}] $1"
+                    fi
                 fi
             ;;
     esac
+    output_on
 }
 
-print_info()
-{
-    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
-        echo -e "[INFO] ** [${PROCESS_NAME}] $1"
+print_info() {
+    output_off
+    if [ "$DEBUG_MODE" = "TRUE" ]; then
+        if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+            echo -e "[INFO] $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+        else
+            echo -e "${bdg}[INFO]${boff} $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+        fi
     else
-        echo -e "${bdg}[INFO]${boff} ** [${PROCESS_NAME}] $1"
+        if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+            echo -e "[INFO] ** [${PROCESS_NAME}] $1"
+        else
+            echo -e "${bdg}[INFO]${boff} ** [${PROCESS_NAME}] $1"
+        fi
     fi
+    output_on
 }
 
-print_notice()
-{
+print_notice() {
+    output_off
     case "$CONTAINER_LOG_LEVEL" in
             "DEBUG" | "NOTICE" )
-                if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
-                    echo -e "[NOTICE] ** [${PROCESS_NAME}] $1"
+                if [ "$DEBUG_MODE" = "TRUE" ]; then
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[NOTICE] $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${bdgy}[NOTICE]${boff} $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+                    fi
                 else
-                    echo -e "${bdgy}[NOTICE]${boff} ** [${PROCESS_NAME}] $1"
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[NOTICE] ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${bdgy}[NOTICE]${boff} ** [${PROCESS_NAME}] $1"
+                    fi
                 fi
             ;;
     esac
+    output_on
 }
 
 
-print_warn()
-{
+print_warn() {
+    output_off
     case "$CONTAINER_LOG_LEVEL" in
             "DEBUG" | "NOTICE" | "WARN" )
-                if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
-                    echo -e "[WARN] ** [${PROCESS_NAME}] $1"
+                if [ "$DEBUG_MODE" = "TRUE" ]; then
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[WARN] ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${bdb}[WARN]${boff} $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+                    fi
                 else
-                    echo -e "${bdb}[WARN]${boff} ** [${PROCESS_NAME}] $1"
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[WARN] ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${bdb}[WARN]${boff} ** [${PROCESS_NAME}] $1"
+                    fi
                 fi
     esac
+    output_on
 }
 
 ## Quiet down output
@@ -292,6 +334,7 @@ silent() {
 
 ### Make sure DB is defined
 sanity_db() {
+    output_off
     print_debug "Looking for existence of DB_HOST, DB_NAME, DB_USER, DB_PASS environment variables"
     if [ ! -n "${DB_HOST}" ]; then
         print_error "No Database Host Entered! - Set '\$DB_HOST'"
@@ -312,15 +355,30 @@ sanity_db() {
         print_error "No Database Password Entered! - Set '\$DB_PASS'"
         exit 1
     fi
+    output_on
 }
 
 ## Check is Variable is Defined
 ## Usage: sanity_var varname "Description"
 sanity_var() {
+    output_off
     print_debug "Looking for existence of $1 environment variable"
         if [ ! -v "$1" ]; then
             print_error "No $2 Entered! - Set '\$$1'"
             exit 1
+    fi
+    output_on
+}
+
+output_off() {
+    if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
+        set +x
+    fi
+}
+
+output_on() {
+    if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
+        set -x
     fi
 }
 
