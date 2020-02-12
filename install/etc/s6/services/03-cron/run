@@ -2,6 +2,7 @@
 
 for s in /assets/functions/*; do source $s; done
 PROCESS_NAME="cron"
+output_off
 check_container_initialized
 check_service_initialized init
 
@@ -18,4 +19,5 @@ fi
 
 print_info "Starting cron"
 /usr/bin/crontab /assets/cron/crontab.txt
+output_on
 silent exec /usr/sbin/crond -f -l 8
