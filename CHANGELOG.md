@@ -1,3 +1,9 @@
+## 4.3.0 2020-03-02 <dave at tiredofit dot ca>
+
+   ### Added
+      - New routine to cleanup /tmp/state for users who only restart the container, not fully bring down and remove.
+
+
 ## 4.2.0 2020-02-12 <dave at tiredofit dot ca>
 
    ### Added
