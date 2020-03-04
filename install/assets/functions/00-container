@@ -201,9 +201,12 @@ db_ready() {
 liftoff() {
     output_off
     mkdir -p /tmp/state
+    if [ "$DONOTSTART" = "TRUE" ]; then
+        liftoff_prefix="DONOTSTART "
+    fi
     case "`dirname "$0"`" in
         "/var/run/s6/etc/cont-init.d")
-        echo "`basename "$0"`-init initialized on `date`" > /tmp/state/`basename "$0"`-init
+        echo "${liftoff_prefix} `basename "$0"`-init initialized on `date`" > /tmp/state/`basename "$0"`-init
         ;;
         *)
         if [ ! -f /tmp/state/`basename "$PWD"` ]; then
@@ -214,6 +217,19 @@ liftoff() {
         ;;
     esac
     output_on
+}
+
+### An attempt to shut down so much noise in the log files, specifically for echo statements
+output_off() {
+    if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
+        set +x
+    fi
+}
+
+output_on() {
+    if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
+        set -x
+    fi
 }
 
 ### Text Coloration
@@ -301,7 +317,6 @@ print_notice() {
     output_on
 }
 
-
 print_warn() {
     output_off
     case "$CONTAINER_LOG_LEVEL" in
@@ -332,7 +347,7 @@ silent() {
   fi
 }
 
-### Make sure DB is defined
+## Make sure DB is defined
 sanity_db() {
     output_off
     print_debug "Looking for existence of DB_HOST, DB_NAME, DB_USER, DB_PASS environment variables"
@@ -370,16 +385,14 @@ sanity_var() {
     output_on
 }
 
-output_off() {
-    if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
-        set +x
-    fi
+## Services
+service_start() {
+    s6-svc -u /var/run/s6/services/${1}
 }
 
-output_on() {
-    if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
-        set -x
-    fi
+service_stop() {
+    s6-svc -d /var/run/s6/services/${1}
+    DONOTSTART=TRUE
 }
 
 ## Keep this last
