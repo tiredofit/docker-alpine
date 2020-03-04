@@ -1,3 +1,11 @@
+## 4.4.0 2020-03-04 <dave at tiredofit dot ca>
+
+   ### Added
+      - Added new functions for service starting and stopping
+      - Reworked how services are stopped and started to ensure nothing in services are executed until successful completion of init scripts. This bhas the potential of breaking all downstream images if they are not updated.
+      - Rewrote SMTP confgiuration
+
+
 ## 4.3.0 2020-03-02 <dave at tiredofit dot ca>
 
    ### Added
