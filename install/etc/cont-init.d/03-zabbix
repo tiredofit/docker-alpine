@@ -34,7 +34,7 @@ if [ "$ENABLE_ZABBIX" = "TRUE" ] || [ "$ENABLE_ZABBIX" = "true" ];  then
   chown -R ${ZABBIX_USER} /etc/zabbix/
 else
   print_notice "Disabling Zabbix Monitoring Functionality"
-  service_stop -d `basename $0`
+  service_stop `basename $0`
 fi
 
 output_on
