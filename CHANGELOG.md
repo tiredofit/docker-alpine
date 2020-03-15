@@ -1,3 +1,9 @@
+## 4.4.1 2020-03-14 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix when trying to disable Zabbix Monitoring throwing errors
+
+
 ## 4.4.0 2020-03-04 <dave at tiredofit dot ca>
 
    ### Added
