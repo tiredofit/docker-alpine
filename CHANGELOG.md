@@ -1,3 +1,9 @@
+## 4.4.2 2020-03-16 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change msmtp configuraiton file location
+
+
 ## 4.4.1 2020-03-14 <dave at tiredofit dot ca>
 
    ### Changed
