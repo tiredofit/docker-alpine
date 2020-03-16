@@ -74,7 +74,7 @@ do
            s6-svc -u ${service}
         fi
     else
-        print_debug "No Iinitialization Script Found - Getting ready to start '${service##*/}' service"
+        print_debug "No Initialization Script Found - Getting ready to start '${service##*/}' service"
         s6-svc -u ${service}
     fi
 done
