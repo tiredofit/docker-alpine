@@ -1,3 +1,10 @@
+## 4.5.0 2020-04-16 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add new function for Docker Secrets Support
+      - Add helper for checking if variables are TRUE or FALSE
+
+
 ## 4.4.4 2020-03-16 <dave at tiredofit dot ca>
 
    ### Changed

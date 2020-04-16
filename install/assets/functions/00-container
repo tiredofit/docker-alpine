@@ -197,6 +197,28 @@ db_ready() {
     output_on
 }
 
+## Docker Secrets Support
+## usage: file_env VAR [DEFAULT]
+##    ie: file_env 'XYZ_DB_PASSWORD' 'example'
+##        (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
+function file_env () {
+  local var="$1"
+  local fileVar="${var}_FILE"
+  local def="${2:-}"
+  local val="$def"
+  if [ "${!fileVar:-}" ]; then
+    val="$(cat "${!fileVar}")"
+  elif [ "${!var:-}" ]; then
+    val="${!var}"
+  fi
+  if [ -z ${val} ]; then
+    print_error "error: neither $var nor $fileVar are set but are required"
+    exit 1
+  fi
+  export "$var"="$val"
+  unset "$fileVar"
+}
+
 ## For writing script initalization state to ensure proper application execution
 liftoff() {
     output_off
@@ -394,6 +416,21 @@ service_stop() {
     s6-svc -d /var/run/s6/services/${1}
     DONOTSTART=TRUE
 }
+
+## Timesaver for if statements
+## Usage: if var_false $VARNAME ; then ... fi
+var_false(){ 
+    output_off
+    [ "${1}" = "FALSE" ] || [ "${1}" = "false" ] || [ "${1}" = "f" ] 
+    output_on
+}
+
+var_true(){ 
+    output_off
+    [ "${1}" = "TRUE" ] || [ "${1}" = "true" ] || [ "${1}" = "t" ] 
+    output_on
+}
+
 
 ## Keep this last
 if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
