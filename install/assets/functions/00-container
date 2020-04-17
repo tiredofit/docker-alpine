@@ -65,7 +65,6 @@ shif="\e[28m"      # Style Hidden Off
 
 ### Check to see Initialization Script ran
 check_container_initialized() {
-
     print_debug "Checking to see if container initialization scripts have completed"
     output_off
     while [ ! -f /tmp/state/99-container-init ]
@@ -228,11 +227,11 @@ liftoff() {
     fi
     case "`dirname "$0"`" in
         "/var/run/s6/etc/cont-init.d")
-        echo "${liftoff_prefix} `basename "$0"`-init initialized on `date`" > /tmp/state/`basename "$0"`-init
+        echo "${liftoff_prefix} `basename "$0"`-init initialized on `date`" >> /tmp/state/`basename "$0"`-init
         ;;
         *)
         if [ ! -f /tmp/state/`basename "$PWD"` ]; then
-            echo "`basename "$PWD"` initialized on `date`" > /tmp/state/`basename "$PWD"`
+            echo "`basename "$PWD"` initialized on `date`" >> /tmp/state/`basename "$PWD"`
         else
             echo "`basename "$PWD"` reinitialized on `date`" >> /tmp/state/`basename "$PWD"`
         fi
@@ -413,6 +412,9 @@ service_start() {
 }
 
 service_stop() {
+    if [ "${1}" != `basename "$0"` ] ; then
+        echo "DONOTSTART added by `basename \"$0\"`" >> /tmp/state/${1}-init
+    fi            
     s6-svc -d /var/run/s6/services/${1}
     DONOTSTART=TRUE
 }
@@ -420,27 +422,19 @@ service_stop() {
 ## Timesaver for if statements
 ## Usage: if var_false $VARNAME ; then ... fi
 var_false(){ 
-    output_off
     [ "${1}" = "FALSE" ] || [ "${1}" = "false" ] || [ "${1}" = "f" ] 
-    output_on
 }
 
 var_notfalse(){ 
-    output_off
     [ "${1}" != "FALSE" ] || [ "${1}" != "false" ] || [ "${1}" != "f" ] 
-    output_on
 }
 
 var_nottrue(){ 
-    output_off
     [ "${1}" != "TRUE" ] || [ "${1}" != "true" ] || [ "${1}" != "t" ] 
-    output_on
 }
 
 var_true(){ 
-    output_off
     [ "${1}" = "TRUE" ] || [ "${1}" = "true" ] || [ "${1}" = "t" ] 
-    output_on
 }
 
 
