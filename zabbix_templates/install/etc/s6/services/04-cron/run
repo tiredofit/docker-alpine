@@ -1,0 +1,23 @@
+#!/usr/bin/with-contenv bash
+
+for s in /assets/functions/*; do source $s; done
+PROCESS_NAME="cron"
+output_off
+check_container_initialized
+check_service_initialized init
+
+if [ ! -f /tmp/state/`basename $0` ]; then
+    sleep 60
+    echo '59 23 * * * logrotate -f /etc/logrotate.d/* >/dev/null 2>&1' >>/assets/cron/crontab.txt
+	liftoff
+fi
+
+if [ -d /assets/cron-custom ]; then
+    print_info "Found Custom Crontab - Merging"
+    cat /assets/cron-custom/* >>/assets/cron/crontab.txt
+fi
+
+print_info "Starting cron"
+/usr/bin/crontab /assets/cron/crontab.txt
+output_on
+silent exec /usr/sbin/crond -f -l 8

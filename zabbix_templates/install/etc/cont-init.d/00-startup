@@ -1,0 +1,22 @@
+#!/usr/bin/with-contenv bash
+
+for s in /assets/functions/*; do source $s; done
+PROCESS_NAME="container-init"
+
+### Routine to check if container has been restarted or not
+if [ -d "/tmp/state" ] ; then
+   print_notice "Detected Container that has been restarted - Cleaning '/tmp/state' files"
+   rm -rf /tmp/state/*
+else
+   print_debug "Cold Container startup detected - Proceeding to initialize services normally"
+fi
+
+### Disable all user services until /etc/cont-init.d scripts have completed
+for services in /var/run/s6/services/[0-9][0-9]-*/
+do
+    service=${services%*/}      # remove the trailing "/"
+    print_debug "Disabling '${service##*/}' temporarily to allow for proper container setup"
+    s6-svc -d "$services"
+done
+
+liftoff
