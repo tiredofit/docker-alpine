@@ -1,3 +1,13 @@
+## 4.5.1 2020-04-17 <dave at tiredofit dot ca>
+
+   ### Added
+      - Additional functions for timesaving/avoiding errors
+      - Upgrade Zabbix to 4.4.7
+
+   ### Changed
+      - Rework variable helpers
+      - Allow ability to use service_stop outside of the main script
+
 ## 4.5.0 2020-04-16 <dave at tiredofit dot ca>
 
    ### Added
