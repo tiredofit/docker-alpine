@@ -1,7 +1,7 @@
 FROM alpine:3.7
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
-ENV ZABBIX_VERSION=4.4.4 \
+ENV ZABBIX_VERSION=4.4.7 \
     S6_OVERLAY_VERSION=v1.22.1.0 \
     DEBUG_MODE=FALSE \
     TIMEZONE=America/Vancouver \
