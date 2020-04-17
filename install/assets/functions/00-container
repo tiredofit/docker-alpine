@@ -425,6 +425,18 @@ var_false(){
     output_on
 }
 
+var_notfalse(){ 
+    output_off
+    [ "${1}" != "FALSE" ] || [ "${1}" != "false" ] || [ "${1}" != "f" ] 
+    output_on
+}
+
+var_nottrue(){ 
+    output_off
+    [ "${1}" != "TRUE" ] || [ "${1}" != "true" ] || [ "${1}" != "t" ] 
+    output_on
+}
+
 var_true(){ 
     output_off
     [ "${1}" = "TRUE" ] || [ "${1}" = "true" ] || [ "${1}" = "t" ] 
