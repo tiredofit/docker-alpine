@@ -5,7 +5,7 @@ PROCESS_NAME="cron"
 
 output_off
 ### Check to see if Enabled/Disabled
-if [ "$ENABLE_CRON" = "FALSE" ] || [ "$ENABLE_CRON" = "false" ];  then
+if var_false $ENABLE_CRON ; then
 	print_notice "Disabling Cron"
 	service_stop `basename $0`
 fi

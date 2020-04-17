@@ -3,13 +3,13 @@ for s in /assets/functions/*; do source $s; done
 PROCESS_NAME="permissions"
 
 output_off
-if [ "$DEBUG_PERMISSIONS" = "TRUE" ] || [ "$DEBUG_PERMISSIONS" = "true" ] ; then
+if var_true $DEBUG_PERMISSIONS ; then
   set -x
   CONTAINER_LOG_LEVEL="DEBUG"
 fi
 
 ### Enable or Disable permissions
-if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; then
+if var_true $ENABLE_PERMISSIONS ; then
   print_notice "Enabling permissions features"
   # handle the following:
   # 1. change uid in /etc/passwd with the ones defined in Docker's environment settings
@@ -40,7 +40,7 @@ if [ "$ENABLE_PERMISSIONS" = "TRUE" ] || [ "$ENABLE_PERMISSIONS" = "true" ]; the
     for j in ${!varpassuser[*]}
     do
       if [ "${varenvusername[$i]}" == "${varpassuser[$j]}" ]; then
-        if [ "$DEBUG_PERMISSIONS" = "TRUE" ] || [ "$DEBUG_PERMISSIONS" = "true" ] || [ "$CONTAINER_LOG_LEVEL" = "DEBUG" ]; then
+        if var_true $DEBUG_PERMISSIONS || [ "$CONTAINER_LOG_LEVEL" = "DEBUG" ]; then
           print_debug "current loop is $i==$j and ${varenvusername[$i]} == ${varpassuser[$j]}"
           print_debug "use sed to replace ${varpassuserid[$j]} with ${varenvuid[$i]} in /etc/passwd"
         fi

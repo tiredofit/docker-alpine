@@ -3,7 +3,7 @@
 for s in /assets/functions/*; do source $s; done
 PROCESS_NAME="container"
 
-if [ "$SKIP_SANITY_CHECK" != "FALSE" ]; then
+if var_false $SKIP_SANITY_CHECK ; then
   output_off
   ### Final Sanity Check to make sure all scripts have executed and initialized properly, otherwise stop
   files_init=`ls -l /etc/cont-init.d/* | grep -v ^d | wc -l`
