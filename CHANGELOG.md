@@ -1,3 +1,12 @@
+## 4.5.2 2020-04-20 <dave at tiredofit dot ca>
+
+   ### Added
+      - DEBUG_MODE can now take `script_name` as argument for debugging
+
+   ### Changed
+      - Rework container sanity check
+
+
 ## 4.5.1 2020-04-17 <dave at tiredofit dot ca>
 
    ### Added
