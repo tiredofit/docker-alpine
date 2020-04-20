@@ -1,8 +1,10 @@
 #!/usr/bin/with-contenv bash
-### Set Defaults
 
+### Set Defaults
 CONTAINER_LOG_LEVEL=${CONTAINER_LOG_LEVEL:-"NOTICE"}
+PROCESS_NAME=${PROCESS_NAME:-"container"}
 SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+SKIP_SANITY_CHECK=${SKIP_SANITY_CHECK:-"FALSE"}
 
 ### Colours
 # Foreground (Text) Colors
@@ -422,24 +424,48 @@ service_stop() {
 ## Timesaver for if statements
 ## Usage: if var_false $VARNAME ; then ... fi
 var_false(){ 
-    [ "${1}" = "FALSE" ] || [ "${1}" = "false" ] || [ "${1}" = "f" ] 
+    [ "${1}" = "FALSE" ] || [ "${1}" = "false" ] 
 }
 
 var_notfalse(){ 
-    [ "${1}" != "FALSE" ] || [ "${1}" != "false" ] || [ "${1}" != "f" ] 
+    [ "${1}" != "FALSE" ] || [ "${1}" != "false" ] 
 }
 
 var_nottrue(){ 
-    [ "${1}" != "TRUE" ] || [ "${1}" != "true" ] || [ "${1}" != "t" ] 
+    [ "${1}" != "TRUE" ] || [ "${1}" != "true" ] 
 }
 
 var_true(){ 
-    [ "${1}" = "TRUE" ] || [ "${1}" = "true" ] || [ "${1}" = "t" ] 
+    [ "${1}" = "TRUE" ] || [ "${1}" = "true" ] 
 }
 
 
 ## Keep this last
-if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
-    CONTAINER_LOG_LEVEL="DEBUG"
-    set -x
-fi
+case "$DEBUG_MODE" in
+            "TRUE" | "true" )
+                CONTAINER_LOG_LEVEL="DEBUG"
+                set -x
+            ;;
+            "FALSE" | "false" )
+                :
+            ;;
+            * )
+                if [ "`dirname "$0"`" = "/var/run/s6/etc/cont-init.d" ] ; then
+                        if [ "$DEBUG_MODE" = "`basename \"$0\"`" ] ; then
+                            print_notice "Enabling Debug mode for `basename \"$0\"` scripts"
+                            set -x
+                        fi
+                fi
+                if [ "$DEBUG_MODE" = "`basename $PWD`" ] ; then
+                    print_notice "Enabling Debug mode for `basename $PWD` scripts"
+                    set -x
+                fi
+                
+            ;;
+esac
+
+
+#if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
+#    CONTAINER_LOG_LEVEL="DEBUG"
+#    set -x
+#fi
