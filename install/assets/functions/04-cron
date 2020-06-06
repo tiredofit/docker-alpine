@@ -1,4 +1,4 @@
 #!/usr/bin/with-contenv bash
 
-### Set Defaults
+### Set defaults
 ENABLE_CRON=${ENABLE_CRON:-"TRUE"}
