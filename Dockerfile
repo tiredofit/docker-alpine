@@ -83,6 +83,7 @@ RUN set -ex && \
 ### Add core utils
     apk add -t .base-rundeps \
             bash \
+            busybox-extras \
             curl \
             grep \
             less \
