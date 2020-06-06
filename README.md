@@ -3,19 +3,18 @@
 [![Build Status](https://img.shields.io/docker/build/tiredofit/alpine.svg)](https://hub.docker.com/r/tiredofit/alpine)
 [![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/alpine.svg)](https://hub.docker.com/r/tiredofit/alpine)
 [![Docker Stars](https://img.shields.io/docker/stars/tiredofit/alpine.svg)](https://hub.docker.com/r/tiredofit/alpine)
-[![Docker 
-Layers](https://images.microbadger.com/badges/image/tiredofit/alpine.svg)](https://microbadger.com/images/tiredofit/alpine)
+[![Docker Layers](https://images.microbadger.com/badges/image/tiredofit/alpine.svg)](https://microbadger.com/images/tiredofit/alpine)
 
 # Introduction
 
 Dockerfile to build an [alpine](https://www.alpinelinux.org/) container image.
 
-* Currently tracking 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11 and edge
+* Currently tracking 3.3, 3.4, 3.5, 3.6, 3.7, 3.8 and edge
 * [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 Init capabilities
-* [zabbix-agent](https://zabbix.org) for individual container monitoring.
+* [zabbix-agent](https://zabbix.org) based on 4.x compiled for individual container monitoring.
 * Cron installed along with other tools (bash,curl, less, logrotate, nano, vim) for easier management.
 * MSMTP enabled to send mail from container to external SMTP server.
-* Ability to update User ID and Group ID Permissions for Development Purposes dyanmically.
+* Ability to update User ID and Group ID Permissions for Development Purposes dynamically.
 
 # Authors
 
@@ -37,11 +36,11 @@ Dockerfile to build an [alpine](https://www.alpinelinux.org/) container image.
 
 # Prerequisites
 
-No prequisites required
+No prerequisites required
 
 # Installation
 
-Automated builds of the image are available on [Docker Hub](https://hub.docker.com/t/tiredofit/alpine) and 
+Automated builds of the image are available on [Docker Hub](https://hub.docker.com/tiredofit/alpine) and 
 is the recommended method of installation.
 
 
@@ -57,15 +56,12 @@ The following image tags are available:
 * `3.6` - Alpine 3.6
 * `3.7` - Alpine 3.7
 * `3.8` - Alpine 3.8
-* `3.9` - Alpine 3.9
-* `3.10` - Alpine 3.10
-* `3.11` - Alpine 3.11
 * `edge` - Alpine edge
-* `latest` - Alpine 3.11
+* `latest` - Alpine 3.8
 
 # Quick Start
 
-Utilize this image as a base for further builds. By default it does not start the S6 Overlay system, but 
+Utilize this image as a base for further builds. By default, it does not start the S6 Overlay system, but 
 Bash. Please visit the [s6 overlay repository](https://github.com/just-containers/s6-overlay) for 
 instructions on how to enable the S6 Init system when using this base or look at some of my other images 
 which use this as a base.
@@ -73,7 +69,7 @@ which use this as a base.
 # Configuration
 
 ### Data-Volumes
-The following directories are used for configuration and can be mapped for persistent storage.
+The following directories are used for a configuration and can be mapped for persistent storage.
 
 | Directory                           | Description                 |
 |-------------------------------------|-----------------------------|
@@ -87,17 +83,15 @@ Below is the complete list of available options that can be used to customize yo
 
 | Parameter         | Description                                                    |
 |-------------------|----------------------------------------------------------------|
-| `COLORIZE_OUTPUT` | Enable/Disable Colorized Console Output - Default: `TRUE` |
 | `DEBUG_MODE`      | Enable Debug Mode - Default: `FALSE`                            |
 | `DEBUG_SMTP`      | Setup Mail Catch all on port 1025 (SMTP) and 8025 (HTTP) - Default: `FALSE` |
 | `ENABLE_CRON`     | Enable Cron - Default: `TRUE`                                   |
 | `ENABLE_SMTP`     | Enable SMTP services - Default: `TRUE`						|
-| `ENABLE_ZABBIX`   | Enable Zabbix Agent - Default: `TRUE`  
-                         |
-| `SKIP_SANITY_CHECK` | Disable Container Startup Routine Check - Default: `FALSE` |
-| `TIMEZONE`        | Set Timezone - Default: `America/Vancouver`                     |
+| `ENABLE_ZABBIX`   | Enable Zabbix Agent - Default: `TRUE`                           |
+| `TIMEZONE`        | Set Timezone - Default: `Etc/GMT`                     |
 
-If you wish to have this send mail, set `ENABLE_SMTP=TRUE` and configure the following environment variables. See the [MSMTP Configuration Options](http://msmtp.sourceforge.net/doc/msmtp.html) for further information on options to configure MSMTP
+If you wish to have this sends mail, set `ENABLE_SMTP=TRUE` and configure the following environment variables. 
+See the [MSMTP Configuration Options](http://msmtp.sourceforge.net/doc/msmtp.html) for further information on options to configure MSMTP.
 
 | Parameter         | Description                                                    |
 |-------------------|----------------------------------------------------------------|
@@ -105,7 +99,7 @@ If you wish to have this send mail, set `ENABLE_SMTP=TRUE` and configure the fol
 | `SMTP_HOST`      | Hostname of SMTP Server - Default: `postfix-relay`                            |
 | `SMTP_PORT`      | Port of SMTP Server - Default: `25`                            |
 | `SMTP_DOMAIN`     | HELO Domain - Default: `docker`                                   |
-| `SMTP_MAILDOMAIN`     | Mail Domain From - Default: `example.org`						|
+| `SMTP_MAILDOMAIN`     | Mail Domain From - Default: `local`						|
 | `SMTP_AUTHENTICATION`     | SMTP Authentication - Default: `none`                                   |
 | `SMTP_USER`     | Enable SMTP services - Default: `user`						|
 | `SMTP_PASS`   | Enable Zabbix Agent - Default: `password`                           |
@@ -113,7 +107,8 @@ If you wish to have this send mail, set `ENABLE_SMTP=TRUE` and configure the fol
 | `SMTP_STARTTLS`   | Start TLS from within Dession - Default: `off` |
 | `SMTP_TLSCERTCHECK` | Check remote certificate - Default: `off` |
 
-See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/2.2/manual/appendix/config/zabbix_agentd) for information about the following Zabbix values
+See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/2.2/manual/appendix/config/zabbix_agentd) 
+for information about the following Zabbix values.
 
 | Zabbix Parameters | Description                                                    |
 |-------------------|----------------------------------------------------------------|
@@ -135,9 +130,9 @@ See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentati
 | `ZABBIX_ALLOW_ROOT` | Allow running as root - Default: `1` |
 | `ZABBIX_USER` | Zabbix user to start as - Default: `zabbix` |
 
-If you enable `DEBUG_PERMISSIONS=TRUE` all the users and groups have been modified in accordance with Environmental Variables will be displayed in output.
-e.g. If you add `USER_NGINX=1000` it will reset the containers `nginx` user id from `82` to `1000` - Hint, also change the Group ID to your local development users UID & GID
-and avoid Docker permission issues when developing.
+If you enable `DEBUG_PERMISSIONS=TRUE` all the users and groups have been modified in accordance with environmental variables will be displayed in output.
+e.g. If you add `USER_NGINX=1000` it will reset the containers `nginx` user id from `82` to `1000` - 
+Hint, also change the Group ID to your local development users UID & GID and avoid docker permission issues when developing.
 
 | Parameter | Description |
 |-----------|-------------|
@@ -161,10 +156,13 @@ The following ports are exposed.
 
 # Debug Mode
 
-When using this as a base image, create statements in your startup scripts to check for existence of `DEBUG_MODE=TRUE` and set various parameters in your applications to output more detail, enable debugging modes, and so on. In this base image it does the following:
+When using this as a base image, create statements in your startup scripts to check for existence of `DEBUG_MODE=TRUE` 
+and set various parameters in your applications to output more detail, enable debugging modes, and so on. 
+In this base image it does the following:
 
 * Sets zabbix-agent to output logs in verbosity
-* Enables MailHog mailcatcher, which replaces `/usr/sbin/sendmail` with it's own catchall executible. It also opens port `1025` for SMTP trapping, and you can view the messages it's trapped at port `8025`
+* Enables MailHog mailcatcher, which replaces `/usr/sbin/sendmail` with it's own catchall executable. 
+It also opens port `1025` for SMTP trapping, and you can view the messages it's trapped at port `8025`
 
 
 # Maintenance
