@@ -1,16 +1,16 @@
 FROM alpine:3.11
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
-### Set Defaults
-ENV S6_OVERLAY_VERSION=v1.22.1.0 \
+### Set defaults
+ENV S6_OVERLAY_VERSION=v2.0.0.1 \
     DEBUG_MODE=FALSE \
-    TIMEZONE=America/Vancouver \
+    TIMEZONE=Etc/GMT \
     ENABLE_CRON=TRUE \
     ENABLE_SMTP=TRUE \
     ENABLE_ZABBIX=TRUE \
     ZABBIX_HOSTNAME=alpine
 
-### Add Zabbix User First
+### Add Zabbix user first
 RUN set -ex && \
     addgroup -g 10050 zabbix && \
     adduser -S -D -H -h /dev/null -s /sbin/nologin -G zabbix -u 10050 zabbix && \
@@ -33,7 +33,7 @@ RUN set -ex && \
     apk del --purge .mailhog-build-deps && \
     adduser -S -D -H -h /dev/null -u 1025 mailhog && \
     \
-### Add Core Utils
+### Add core utils
     apk add -t .core-deps \
                bash \
                busybox-extras \
@@ -56,19 +56,19 @@ RUN set -ex && \
     echo "${TIMEZONE}" > /etc/timezone && \
     echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
     \
-    ## Quiet Down Sudo
+    ## Quiet down sudo
     echo "Set disable_coredump false" > /etc/sudo.conf && \
     \
-### S6 Installation
+### S6 installation
     curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C / && \
     \
-### Add Folders
+### Add folders
     mkdir -p /assets/cron
 
 ADD /install /
 
-### Networking Configuration
-EXPOSE 1025 8025 10050/TCP 
+### Networking configuration
+EXPOSE 1025 8025 10050/TCP
 
-### Entrypoint Configuration
+### Entrypoint configuration
 ENTRYPOINT ["/init"]
