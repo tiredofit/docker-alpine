@@ -1,0 +1,471 @@
+#!/usr/bin/with-contenv bash
+
+### Set Defaults
+CONTAINER_LOG_LEVEL=${CONTAINER_LOG_LEVEL:-"NOTICE"}
+PROCESS_NAME=${PROCESS_NAME:-"container"}
+SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+SKIP_SANITY_CHECK=${SKIP_SANITY_CHECK:-"FALSE"}
+
+### Colours
+# Foreground (Text) Colors
+cbl="\e[30m"       # Color Black
+cdr="\e[31m"       # Color Dark Red
+cdg="\e[32m"       # Color Dark Green
+cdy="\e[33m"       # Color Dark Yellow
+cdb="\e[34m"       # Color Dark Blue
+cdm="\e[35m"       # Color Dark Magenta
+cdc="\e[36m"       # Color Dark Cyan
+cdgy="\e[90m"      # Color Dark Gray
+clgy="\e[37m"      # Color Light Gray
+clr="\e[91m"       # Color Light Red
+clg="\e[92m"       # Color Light Green
+cly="\e[93m"       # Color Light Yellow
+clb="\e[94m"       # Color Light Blue
+clm="\e[95m"       # Color Light Magenta
+clc="\e[96m"       # Color Light Cyan
+cwh="\e[97m"       # Color White
+
+# Turns off all formatting
+coff="\e[0m"       # Color Off
+
+# Background Colors
+bbl="\e[40m"       # Background Color Black
+bdr="\e[41m"       # Background Color Dark Red
+bdg="\e[42m"       # Background Color Dark Green
+bdy="\e[43m"       # Background Color Dark Yellow
+bdb="\e[44m"       # Background Color Dark Blue
+bdm="\e[45m"       # Background Color Dark Magenta
+bdc="\e[46m"       # Background Color Dark Cyan
+bdgy="\e[100m"     # Background Color Dark Gray
+blgy="\e[47m"      # Background Color Light Gray
+blr="\e[101m"      # Background Color Light Red
+blg="\e[102m"      # Background Color Light Green
+bly="\e[103m"      # Background Color Light Yellow
+blb="\e[104m"      # Background Color Light Blue
+blm="\e[105m"      # Background Color Light Magenta
+blc="\e[106m"      # Background Color Light Cyan
+bwh="\e[107m"      # Background Color White
+
+# Turns off only the background color
+boff="\e[49m"      # Background Color Off
+
+# Styles
+sbo="\e[1m"        # Style Bold
+sdi="\e[2m"        # Style Dim
+sun="\e[4m"        # Style Underline
+sbl="\e[5m"        # Style Blink
+sre="\e[7m"        # Style Reverse
+shi="\e[8m"        # Style Hidden
+
+sbof="\e[21m"      # Style Bold Off
+sdif="\e[22m"      # Style Dim Off
+sunf="\e[24m"      # Style Underline Off
+sblf="\e[25m"      # Style Blink Off
+sref="\e[27m"      # Style Reverse Off
+shif="\e[28m"      # Style Hidden Off
+
+
+### Check to see Initialization Script ran
+check_container_initialized() {
+    print_debug "Checking to see if container initialization scripts have completed"
+    output_off
+    while [ ! -f /tmp/state/99-container-init ]
+    do
+      print_debug "Checking to see if container initialization scripts have completed"
+      sleep 1
+    done
+    output_on
+}
+
+check_service_initialized() {
+    ## Usage:
+    ## check_service_initialized init: Look for the matching filename of /etc/s6/services/<folder-name> in /tmp/state/<folder-name>-init
+    ## ## check_service_initialized <service folder> Look for the matching filename of /etc/s6/services/<folder-name> in /tmp/state/<folder-name>
+    ## Related to liftoff function, which writes /tmp/state/script|foldername
+    ## Scripts that run in /etc/cont-init.d get an -init at the end of their filename
+    ## Scripts that run from /etc/s6/services/* just get the foldername without any suffix
+    print_debug "Checking to see if service has initialized"
+    output_off
+    if [ "$1" = "init" ]; then
+        service_suffix="-init"
+        csi_bypass=FALSE
+    else
+        service=$1
+        csi_bypass=TRUE
+    fi
+
+    if [ "$csi_bypass" = "FALSE" ] ; then
+        if [ -z "$2" ]; then
+            case "`dirname "$0"`" in
+                "/var/run/s6/etc/cont-init.d")
+                    service=`basename "$0"`
+                ;;
+                *)
+                    service=`basename "$PWD"`
+                ;;
+            esac
+        else
+            service=$2
+        fi
+    fi
+
+    while [ ! -f /tmp/state/${service}${service_suffix} ]
+    do
+      sleep 1
+      print_debug "Looking for existence of /tmp/state/${service}${service_suffix}"
+    done
+    unset csi_bypass
+    output_on
+}
+
+db_ready() {
+### Usage db_ready <dbtype>
+    output_off
+    print_debug "Checking to see if Database Type $1 is ready"
+    case "$1" in
+        "couch" )
+            DB_PORT=${DB_PORT:-5984}
+            COUNTER=0
+            while ! (nc -z ${DB_HOST} ${DB_PORT}) ; do
+                sleep 5
+                let COUNTER+=5
+                print_warn "CouchDB Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
+            done
+        ;;
+        "influx" )
+            DB_PORT=${DB_PORT:-8088}
+            COUNTER=0
+            while ! (nc -z ${DB_HOST} ${DB_PORT}) ; do
+                sleep 5
+                let COUNTER+=5
+                print_warn "InfluxDB Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
+            done
+        ;;
+        "mongo" | "mongodb" )
+            DB_PORT=${DB_PORT:-27017}
+            COUNTER=0
+            while ! (nc -z ${DB_HOST} ${DB_PORT}) ; do
+                sleep 5
+                let COUNTER+=5
+                print_warn "Mongo Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
+            done
+        ;;
+        "mysql" | "mariadb" | "MARIADB" | "MYSQL" )
+            DB_PORT=${DB_PORT:-3306}
+            COUNTER=0
+            while true; do
+                mysqlcmd='mysql -u'${DB_USER}' -P '${DB_PORT}' -h '${DB_HOST}' -p'${DB_PASS}
+                out="`$mysqlcmd -e "SELECT COUNT(*) FROM information_schema.FILES;" 2>&1`"
+                echo "$out" | grep -E "COUNT|Enter" 2>&1 > /dev/null
+                if [ $? -eq 0 ]; then
+                    :
+                    break
+                fi
+                print_warn "MySQL/MariaDB Server '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
+                sleep 5
+                let COUNTER+=5
+            done
+        ;;
+        "pgsql" | "psql" | "postgres" | "postgresql " )
+            DB_PORT=${DB_PORT:-5432}
+            COUNTER=0
+            export PGPASSWORD=${DB_PASS}
+            until pg_isready --dbname=${DB_NAME} --host=${DB_HOST} --port=${DB_PORT} --username=${DB_USER} -q
+            do
+                sleep 5
+                let COUNTER+=5
+                print_warn "Postgres Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
+            done
+        ;;
+        "redis" )
+            COUNTER=0
+            REDIS_PORT=${REDIS_PORT:-27017}
+            while ! (nc -z ${REDIS_HOST} ${REDIS_PORT}) ; do
+                sleep 5
+                let COUNTER+=5
+                print_warn "Redis Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
+            done
+        ;;
+        "rethink" )
+            COUNTER=0
+            while ! (nc -z ${DB_HOST} ${DB_PORT}) ; do
+                sleep 5
+                let COUNTER+=5
+                print_warn "RethinkDB Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
+            done
+        ;;
+    esac
+    output_on
+}
+
+## Docker Secrets Support
+## usage: file_env VAR [DEFAULT]
+##    ie: file_env 'XYZ_DB_PASSWORD' 'example'
+##        (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
+function file_env () {
+  local var="$1"
+  local fileVar="${var}_FILE"
+  local def="${2:-}"
+  local val="$def"
+  if [ "${!fileVar:-}" ]; then
+    val="$(cat "${!fileVar}")"
+  elif [ "${!var:-}" ]; then
+    val="${!var}"
+  fi
+  if [ -z ${val} ]; then
+    print_error "error: neither $var nor $fileVar are set but are required"
+    exit 1
+  fi
+  export "$var"="$val"
+  unset "$fileVar"
+}
+
+## For writing script initalization state to ensure proper application execution
+liftoff() {
+    output_off
+    mkdir -p /tmp/state
+    if [ "$DONOTSTART" = "TRUE" ]; then
+        liftoff_prefix="DONOTSTART "
+    fi
+    case "`dirname "$0"`" in
+        "/var/run/s6/etc/cont-init.d")
+        echo "${liftoff_prefix} `basename "$0"`-init initialized on `date`" >> /tmp/state/`basename "$0"`-init
+        ;;
+        *)
+        if [ ! -f /tmp/state/`basename "$PWD"` ]; then
+            echo "`basename "$PWD"` initialized on `date`" >> /tmp/state/`basename "$PWD"`
+        else
+            echo "`basename "$PWD"` reinitialized on `date`" >> /tmp/state/`basename "$PWD"`
+        fi
+        ;;
+    esac
+    output_on
+}
+
+### An attempt to shut down so much noise in the log files, specifically for echo statements
+output_off() {
+    if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
+        set +x
+    fi
+}
+
+output_on() {
+    if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
+        set -x
+    fi
+}
+
+### Text Coloration
+print_debug() {
+    output_off
+    case "$CONTAINER_LOG_LEVEL" in
+            "DEBUG" )
+                if [ "$DEBUG_MODE" = "TRUE" ]; then
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[DEBUG] $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${bdm}[DEBUG]${boff} $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+                    fi
+                else
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[DEBUG] ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${bdm}[DEBUG]${boff} ** [${PROCESS_NAME}] $1"
+                    fi
+                fi
+            ;;
+    esac
+    output_on
+}
+
+print_error() {
+    output_off
+    case "$CONTAINER_LOG_LEVEL" in
+            "DEBUG" | "NOTICE" | "WARN" | "ERROR")
+                if [ "$DEBUG_MODE" = "TRUE" ]; then
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[ERROR] $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${blr}[ERROR]${boff} $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+                    fi
+                else
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[ERROR] ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${blr}[ERROR]${boff} ** [${PROCESS_NAME}] $1"
+                    fi
+                fi
+            ;;
+    esac
+    output_on
+}
+
+print_info() {
+    output_off
+    if [ "$DEBUG_MODE" = "TRUE" ]; then
+        if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+            echo -e "[INFO] $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+        else
+            echo -e "${bdg}[INFO]${boff} $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+        fi
+    else
+        if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+            echo -e "[INFO] ** [${PROCESS_NAME}] $1"
+        else
+            echo -e "${bdg}[INFO]${boff} ** [${PROCESS_NAME}] $1"
+        fi
+    fi
+    output_on
+}
+
+print_notice() {
+    output_off
+    case "$CONTAINER_LOG_LEVEL" in
+            "DEBUG" | "NOTICE" )
+                if [ "$DEBUG_MODE" = "TRUE" ]; then
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[NOTICE] $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${bdgy}[NOTICE]${boff} $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+                    fi
+                else
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[NOTICE] ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${bdgy}[NOTICE]${boff} ** [${PROCESS_NAME}] $1"
+                    fi
+                fi
+            ;;
+    esac
+    output_on
+}
+
+print_warn() {
+    output_off
+    case "$CONTAINER_LOG_LEVEL" in
+            "DEBUG" | "NOTICE" | "WARN" )
+                if [ "$DEBUG_MODE" = "TRUE" ]; then
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[WARN] ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${bdb}[WARN]${boff} $SCRIPTPATH/`basename "$0"` ** [${PROCESS_NAME}] $1"
+                    fi
+                else
+                    if [ "$COLORIZE_OUTPUT" = "FALSE" ]; then
+                        echo -e "[WARN] ** [${PROCESS_NAME}] $1"
+                    else
+                        echo -e "${bdb}[WARN]${boff} ** [${PROCESS_NAME}] $1"
+                    fi
+                fi
+    esac
+    output_on
+}
+
+## Quiet down output
+silent() {
+  if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] || [ "SHOW_OUTPUT" = "TRUE" ] || [ "SHOW_OUTPUT" = "true" ] || [ "CONTAINER_LOG_LEVEL" = "DEBUG" ];  then
+    "$@"
+  else
+    "$@" > /dev/null 2>&1
+  fi
+}
+
+## Make sure DB is defined
+sanity_db() {
+    output_off
+    print_debug "Looking for existence of DB_HOST, DB_NAME, DB_USER, DB_PASS environment variables"
+    if [ ! -n "${DB_HOST}" ]; then
+        print_error "No Database Host Entered! - Set '\$DB_HOST'"
+        exit 1
+    fi
+
+    if [ ! -n "${DB_NAME}" ]; then
+        print_error "No Database Name Entered! - Set '\$DB_NAME'"
+        exit 1
+    fi
+
+    if [ ! -n "${DB_USER}" ]; then
+        print_error "No Database User Entered! - Set '\$DB_USER'"
+        exit 1
+    fi
+
+    if [ ! -n "${DB_PASS}" ]; then
+        print_error "No Database Password Entered! - Set '\$DB_PASS'"
+        exit 1
+    fi
+    output_on
+}
+
+## Check is Variable is Defined
+## Usage: sanity_var varname "Description"
+sanity_var() {
+    output_off
+    print_debug "Looking for existence of $1 environment variable"
+        if [ ! -v "$1" ]; then
+            print_error "No $2 Entered! - Set '\$$1'"
+            exit 1
+    fi
+    output_on
+}
+
+## Services
+service_start() {
+    s6-svc -u /var/run/s6/services/${1}
+}
+
+service_stop() {
+    if [ "${1}" != `basename "$0"` ] ; then
+        echo "DONOTSTART added by `basename \"$0\"`" >> /tmp/state/${1}-init
+    fi            
+    s6-svc -d /var/run/s6/services/${1}
+    DONOTSTART=TRUE
+}
+
+## Timesaver for if statements
+## Usage: if var_false $VARNAME ; then ... fi
+var_false(){ 
+    [ "${1}" = "FALSE" ] || [ "${1}" = "false" ] 
+}
+
+var_notfalse(){ 
+    [ "${1}" != "FALSE" ] || [ "${1}" != "false" ] 
+}
+
+var_nottrue(){ 
+    [ "${1}" != "TRUE" ] || [ "${1}" != "true" ] 
+}
+
+var_true(){ 
+    [ "${1}" = "TRUE" ] || [ "${1}" = "true" ] 
+}
+
+
+## Keep this last
+case "$DEBUG_MODE" in
+            "TRUE" | "true" )
+                CONTAINER_LOG_LEVEL="DEBUG"
+                set -x
+            ;;
+            "FALSE" | "false" )
+                :
+            ;;
+            * )
+                if [ "`dirname "$0"`" = "/var/run/s6/etc/cont-init.d" ] ; then
+                        if [ "$DEBUG_MODE" = "`basename \"$0\"`" ] ; then
+                            print_notice "Enabling Debug mode for `basename \"$0\"` scripts"
+                            set -x
+                        fi
+                fi
+                if [ "$DEBUG_MODE" = "`basename $PWD`" ] ; then
+                    print_notice "Enabling Debug mode for `basename $PWD` scripts"
+                    set -x
+                fi
+                
+            ;;
+esac
+
+
+#if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ]; then
+#    CONTAINER_LOG_LEVEL="DEBUG"
+#    set -x
+#fi
