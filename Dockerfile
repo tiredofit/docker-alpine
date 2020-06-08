@@ -1,16 +1,17 @@
 FROM alpine:3.7
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
-ENV ZABBIX_VERSION=4.4.7 \
-    S6_OVERLAY_VERSION=v1.22.1.0 \
+### Set defaults
+ENV ZABBIX_VERSION=4.4.9 \
+    S6_OVERLAY_VERSION=v2.0.0.1 \
     DEBUG_MODE=FALSE \
-    TIMEZONE=America/Vancouver \
+    TIMEZONE=Etc/GMT \
     ENABLE_CRON=TRUE \
     ENABLE_SMTP=TRUE \
     ENABLE_ZABBIX=TRUE \
     ZABBIX_HOSTNAME=alpine
 
-### Zabbix Pre Installation steps
+### Zabbix pre installation steps
 RUN set -ex && \
     addgroup -g 10050 zabbix && \
     adduser -S -D -H -h /dev/null -s /sbin/nologin -G zabbix -u 10050 zabbix && \
@@ -23,14 +24,14 @@ RUN set -ex && \
     apk update && \
     apk upgrade && \
     apk add \
-            iputils \
-            bash \
-            coreutils \
-            pcre \
-            libssl1.0 && \
+        iputils \
+        bash \
+        pcre \
+        libssl1.0 && \
     \
-### Zabbix Compilation
-    apk add -t .zabbix-build-deps \
+### Zabbix compilation
+    apk add --no-cache -t .zabbix-build-deps \
+            coreutils \
             alpine-sdk \
             automake \
             autoconf \
@@ -60,12 +61,8 @@ RUN set -ex && \
     chown -R zabbix:root /var/log/zabbix && \
     chown --quiet -R zabbix:root /etc/zabbix && \
     rm -rf /usr/src/zabbix && \
-    apk del --purge \
-            coreutils \
-            .zabbix-build-deps && \
-    \
 ### Install MailHog
-    apk add -t .mailhog-build-deps \
+    apk add --no-cache -t .mailhog-build-deps \
             go \
             git \
             musl-dev \
@@ -78,23 +75,25 @@ RUN set -ex && \
     mv /usr/src/gocode/bin/MailHog /usr/local/bin && \
     mv /usr/src/gocode/bin/mhsendmail /usr/local/bin && \
     rm -rf /usr/src/gocode && \
-    apk del --purge .mailhog-build-deps && \
+    apk del --purge \
+            .mailhog-build-deps .zabbix-build-deps && \
+    \
     adduser -D -u 1025 mailhog && \
     \
-### Add Core Utils
+### Add core utils
     apk add -t .base-rundeps \
-         bash \
-         busybox-extras \
-         curl \
-         grep \
-         less \
-         logrotate \
-         msmtp \
-         nano \
-         sudo \
-         tzdata \
-         vim \
-         && \
+            bash \
+            busybox-extras \
+            curl \
+            grep \
+            less \
+            logrotate \
+            msmtp \
+            nano \
+            sudo \
+            tzdata \
+            vim \
+            && \
     rm -rf /var/cache/apk/* && \
     rm -rf /etc/logrotate.d/acpid && \
     rm -rf /root/.cache /root/.subversion && \
@@ -102,20 +101,20 @@ RUN set -ex && \
     echo "${TIMEZONE}" > /etc/timezone && \
     echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
     \
-    ## Quiet Down Sudo
+    ## Quiet down sudo
     echo "Set disable_coredump false" > /etc/sudo.conf && \
     \
-### S6 Installation
-     curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C / && \
-     mkdir -p /assets/cron && \
-### Clean Up
+### S6 installation
+    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C / && \
+    mkdir -p /assets/cron && \
+### Clean up
     rm -rf /usr/src/*
 
-### Networking Configuration
-EXPOSE 1025 8025 10050/TCP 
+### Networking configuration
+EXPOSE 1025 8025 10050/TCP
 
-### Add Folders
+### Add folders
 ADD /install /
 
-### Entrypoint Configuration
+### Entrypoint configuration
 ENTRYPOINT ["/init"]
