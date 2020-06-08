@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bash
 
-### Set Defaults
+### Set defaults
 ENABLE_ZABBIX=${ENABLE_ZABBIX:-"TRUE"}
 ZABBIX_LOGFILE=${ZABBIX_LOGFILE:-"/var/log/zabbix/zabbix_agentd.log"}
 ZABBIX_LOGFILESIZE=${ZABBIX_LOGFILESIZE:-"1"}
