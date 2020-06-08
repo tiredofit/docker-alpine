@@ -1,95 +1,88 @@
 FROM alpine:3.3
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
-### Set Defaults
-    ENV DEBUG_MODE=FALSE \
-        ENABLE_CRON=TRUE \
-        ENABLE_SMTP=TRUE \
-        ENABLE_ZABBIX=TRUE \
-        TERM=xterm
+### Set defaults
+ENV ZABBIX_VERSION=4.4.9 \
+    S6_OVERLAY_VERSION=v2.0.0.1 \
+    DEBUG_MODE=FALSE \
+    TIMEZONE=Etc/GMT \
+    ENABLE_CRON=TRUE \
+    ENABLE_SMTP=TRUE \
+    ENABLE_ZABBIX=TRUE \
+    ZABBIX_HOSTNAME=alpine
 
-### Set Defaults/Arguments
-    ARG S6_OVERLAY_VERSION=v1.21.7.0 
-    ARG MAJOR_VERSION=3.4
-    ARG ZBX_VERSION=${MAJOR_VERSION}.9
-    ARG ZBX_SOURCES=svn://svn.zabbix.com/tags/${ZBX_VERSION}/
-
-### Zabbix Pre Installation steps
-    ### Add Zabbix User First
-    RUN set -x && \
-        addgroup -g 10050 zabbix && \
-        adduser -S -D -H -h /dev/null -s /sbin/nologin -G zabbix -u 10050 zabbix ;\
-        mkdir -p /etc/zabbix && \
-        mkdir -p /etc/zabbix/zabbix_agentd.d && \
-        mkdir -p /var/lib/zabbix && \
-        mkdir -p /var/lib/zabbix/enc && \
-        mkdir -p /var/lib/zabbix/modules && \
-        chown --quiet -R zabbix:root /var/lib/zabbix && \
-        apk update && \
-        apk add \
-                iputils \
-                bash \
-                coreutils \
-                pcre \
-                libssl1.0 && \
-
-### Zabbix Compilation
-      apk add ${APK_FLAGS_DEV} --virtual zabbix-build-dependencies \
-              alpine-sdk \
-              automake \
-              autoconf \
-              openssl-dev \
-              pcre-dev \
-              subversion && \
-      cd /tmp/ && \
-      svn --quiet export ${ZBX_SOURCES} zabbix-${ZBX_VERSION} 1>/dev/null && \
-      cd /tmp/zabbix-${ZBX_VERSION} && \
-      zabbix_revision=`svn info ${ZBX_SOURCES} |grep "Last Changed Rev"|awk '{print $4;}'` && \
-      sed -i "s/{ZABBIX_REVISION}/$zabbix_revision/g" include/version.h && \
-      ./bootstrap.sh 1>/dev/null && \
-      export CFLAGS="-fPIC -pie -Wl,-z,relro -Wl,-z,now" && \
-      ./configure \
-              --prefix=/usr \
-              --silent \
-              --sysconfdir=/etc/zabbix \
-              --libdir=/usr/lib/zabbix \
-              --datadir=/usr/lib \
-              --enable-agent \
-              --enable-ipv6 \
-              --with-openssl && \
-      make -j"$(nproc)" -s 1>/dev/null && \
-      cp src/zabbix_agent/zabbix_agentd /usr/sbin/zabbix_agentd && \
-      cp src/zabbix_sender/zabbix_sender /usr/sbin/zabbix_sender && \
-      cp conf/zabbix_agentd.conf /etc/zabbix && \
-      mkdir -p /etc/zabbix/zabbix_agentd.conf.d && \
-      mkdir -p /var/log/zabbix && \
-      chown -R zabbix:root /var/log/zabbix && \
-      chown --quiet -R zabbix:root /etc/zabbix && \
-      cd /tmp/ && \
-      rm -rf /tmp/zabbix-${ZBX_VERSION}/ && \
-      apk del --purge \
-              coreutils \
-              zabbix-build-dependencies && \
-
+### Zabbix pre installation steps
+RUN set -ex && \
+    addgroup -g 10050 zabbix && \
+    adduser -S -D -H -h /dev/null -s /sbin/nologin -G zabbix -u 10050 zabbix && \
+    mkdir -p /etc/zabbix && \
+    mkdir -p /etc/zabbix/zabbix_agentd.d && \
+    mkdir -p /var/lib/zabbix && \
+    mkdir -p /var/lib/zabbix/enc && \
+    mkdir -p /var/lib/zabbix/modules && \
+    chown --quiet -R zabbix:root /var/lib/zabbix && \
+    apk update && \
+    apk upgrade && \
+    apk add \
+        iputils \
+        bash \
+        pcre \
+        libssl1.0 && \
+    \
+### Zabbix compilation
+    apk add --no-cache -t .zabbix-build-deps \
+            coreutils \
+            alpine-sdk \
+            automake \
+            autoconf \
+            openssl-dev \
+            pcre-dev && \
+    \
+    mkdir -p /usr/src/zabbix && \
+    curl -sSL https://github.com/zabbix/zabbix/archive/${ZABBIX_VERSION}.tar.gz | tar xfz - --strip 1 -C /usr/src/zabbix && \
+    cd /usr/src/zabbix && \
+    ./bootstrap.sh 1>/dev/null && \
+    export CFLAGS="-fPIC -pie -Wl,-z,relro -Wl,-z,now" && \
+    ./configure \
+            --prefix=/usr \
+            --silent \
+            --sysconfdir=/etc/zabbix \
+            --libdir=/usr/lib/zabbix \
+            --datadir=/usr/lib \
+            --enable-agent \
+            --enable-ipv6 \
+            --with-openssl && \
+    make -j"$(nproc)" -s 1>/dev/null && \
+    cp src/zabbix_agent/zabbix_agentd /usr/sbin/zabbix_agentd && \
+    cp src/zabbix_sender/zabbix_sender /usr/sbin/zabbix_sender && \
+    cp conf/zabbix_agentd.conf /etc/zabbix && \
+    mkdir -p /etc/zabbix/zabbix_agentd.conf.d && \
+    mkdir -p /var/log/zabbix && \
+    chown -R zabbix:root /var/log/zabbix && \
+    chown --quiet -R zabbix:root /etc/zabbix && \
 ### Install MailHog
-       apk --no-cache add --virtual mailhog-build-dependencies \
-                go \
-                git \
-                musl-dev \
-                && \
-       mkdir -p /usr/src/gocode && \
-       export GOPATH=/usr/src/gocode && \
-       go get github.com/mailhog/MailHog && \
-       go get github.com/mailhog/mhsendmail && \
-       mv /usr/src/gocode/bin/MailHog /usr/local/bin && \
-       mv /usr/src/gocode/bin/mhsendmail /usr/local/bin && \
-       rm -rf /usr/src/gocode && \
-       apk del --purge mailhog-build-dependencies && \
-       adduser -S -D -H -h /dev/null -u 1025 mailhog && \
-
-### Add Core Utils
-       apk upgrade && \
-       apk add \
+    mkdir -p /usr/src/go && \
+    apk add --no-cache -t .mailhog-build-deps gcc musl-dev go git && \
+    curl -sSL https://dl.google.com/go/go1.14.4.src.tar.gz | tar xfz - --strip 1 -C /usr/src/go && \
+    cd /usr/src/go/src && \
+    ./make.bash 1>/dev/null && \
+    mkdir -p /usr/src/gocode && \
+    export GOPATH=/usr/src/gocode && \
+    export PATH="/usr/src/go/bin:$PATH:$GOPATH/bin" && \
+    go get github.com/mailhog/MailHog && \
+    go get github.com/mailhog/mhsendmail && \
+    mv /usr/src/gocode/bin/MailHog /usr/local/bin && \
+    mv /usr/src/gocode/bin/mhsendmail /usr/local/bin && \
+    rm -rf /usr/src/zabbix && \
+    rm -rf /usr/src/gocode && \
+    rm -rf /usr/src/go && \
+    apk del --purge \
+            .mailhog-build-deps .zabbix-build-deps && \
+    \
+    adduser -D -u 1025 mailhog && \
+    \
+### Add core utils
+    apk add -t .base-rundeps \
             bash \
             curl \
             grep \
@@ -101,22 +94,27 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
             tzdata \
             vim \
             && \
-       rm -rf /var/cache/apk/* && \
-       rm -rf /etc/logrotate.d/acpid && \
-       cp -R /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
-       echo 'America/Vancouver' > /etc/timezone && \
-       echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
+    rm -rf /var/cache/apk/* && \
+    rm -rf /etc/logrotate.d/acpid && \
+    rm -rf /root/.cache /root/.subversion && \
+    cp -R /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
+    echo "${TIMEZONE}" > /etc/timezone && \
+    echo '%zabbix ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
+    \
+    ## Quiet down sudo
+    echo "Set disable_coredump false" > /etc/sudo.conf && \
+    \
+### S6 installation
+    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C / && \
+    mkdir -p /assets/cron && \
+### Clean up
+    rm -rf /usr/src/*
 
-### S6 Installation
-       curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-amd64.tar.gz | tar xfz - -C / && \
-   
-### Add Folders
-       mkdir -p /assets/cron
+### Networking configuration
+EXPOSE 1025 8025 10050/TCP
 
-   ADD /install /
+### Add folders
+ADD /install /
 
-### Networking Configuration
-   EXPOSE 1025 8025 10050/TCP 
-
-### Entrypoint Configuration
-   ENTRYPOINT ["/init"]
+### Entrypoint configuration
+ENTRYPOINT ["/init"]
