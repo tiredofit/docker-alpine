@@ -1,0 +1,28 @@
+#!/usr/bin/with-contenv bash
+
+for s in /assets/functions/*; do source $s; done
+PROCESS_NAME="timezone"
+
+### Timezone Setup
+if [ -n "$TIMEZONE" ]; then
+  set_timezone () {
+    if [ -f /usr/share/zoneinfo/${TIMEZONE} ];  then
+      print_notice "Setting timezone to '${TIMEZONE}'"
+      cp -R /usr/share/zoneinfo/$1 /etc/localtime
+      echo $1 > /etc/timezone
+    else
+      print_warn "Timezone ${TIMEZONE} does not exist - Skipping.."
+    fi
+  }
+
+  if [ ! -d /usr/share/zoneinfo ];  then
+    apk add --update tzdata
+    set_timezone $TIMEZONE
+    apk del tzdata
+    rm -rf /var/cache/apk/*
+  else
+    set_timezone $TIMEZONE
+  fi
+fi
+
+liftoff
