@@ -1,3 +1,9 @@
+## 4.6.1 2020-06-08 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 5.0.1
+
+
 ## 4.6.0 2020-06-06 <rusxakep@github>
 
    ### Added
