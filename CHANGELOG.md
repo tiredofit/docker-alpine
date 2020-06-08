@@ -16,11 +16,6 @@
       - Timezone changed to `Etc/GMT`
       - Default mail domain changed to non internet-domain 'local'
 
-## 4.5.3 2020-06-05 <dave at tiredofit dot ca>
-
-   ### Changed
-      - Move s6 scripts from /etc/s6/services to /etc/services.d
-
 
 ## 4.5.2 2020-04-20 <dave at tiredofit dot ca>
 
