@@ -1,3 +1,175 @@
+## 4.6.1 2020-06-08 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 5.0.1
+
+
+## 4.6.0 2020-06-06 <rusxakep@github>
+
+   ### Added
+      - Zabbix 4.4.9
+      - S6 Overlay 2.0.0.1
+      - Go version bump to 1.14.4
+
+   ### Changed
+      - Libssl downgraded to 1.0 for compilation issues
+      - Timezone changed to `Etc/GMT`
+      - Default mail domain changed to non internet-domain 'local'
+
+## 4.5.3 2020-06-05 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Move s6 scripts from /etc/s6/services to /etc/services.d
+
+
+## 4.5.2 2020-04-20 <dave at tiredofit dot ca>
+
+   ### Added
+      - DEBUG_MODE can now take `script_name` as argument for debugging
+
+   ### Changed
+      - Rework container sanity check
+
+
+## 4.5.1 2020-04-17 <dave at tiredofit dot ca>
+
+   ### Added
+      - Additional functions for timesaving/avoiding errors
+
+   ### Changed
+      - Rework variable helpers
+      - Allow ability to use service_stop outside of the main script
+
+## 4.5.0 2020-04-16 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add new function for Docker Secrets Support
+      - Add helper for checking if variables are TRUE or FALSE
+
+
+## 4.4.4 2020-03-16 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Spelling mistake in 4.4.3
+
+
+## 4.4.3 2020-03-16 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Patchup for Services that do not have initialization scripts
+
+
+## 4.4.2 2020-03-16 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change msmtp configuraiton file location
+
+
+## 4.4.1 2020-03-14 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix when trying to disable Zabbix Monitoring throwing errors
+
+
+## 4.4.0 2020-03-04 <dave at tiredofit dot ca>
+
+   ### Added
+      - Added new functions for service starting and stopping
+      - Reworked how services are stopped and started to ensure nothing in services are executed until successful completion of init scripts. This bhas the potential of breaking all downstream images if they are not updated.
+      - Rewrote SMTP confgiuration
+
+
+## 4.3.0 2020-03-02 <dave at tiredofit dot ca>
+
+   ### Added
+      - New routine to cleanup /tmp/state for users who only restart the container, not fully bring down and remove.
+
+
+## 4.2.0 2020-02-12 <dave at tiredofit dot ca>
+
+   ### Added
+      - Reworked Debug Mode to quiet down output on core services and cut down on unnecessary noise
+      - Reworked Container Initialization Check to clearly show which file hasn't successfully completed
+
+
+## 4.1.5 2020-01-11 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Additional fix for check_service_initialized function to properly look for finished /etc/s6/services processes
+
+## 4.1.4 2020-01-11 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for check_service_initialized function to properly look for finished /etc/s6/services processes
+
+## 4.1.3 2020-01-10 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Remove code showing $dirname erronously on process startup
+
+## 4.1.2 2020-01-10 <dave at tiredofit dot ca>
+
+   ### Added
+      - Quiet down sudo error
+      - Zabbix 4.4.4 Agent
+
+
+## 4.1.1 2020-01-02 <dave at tiredofit dot ca>
+
+   ### Changed
+      - check_service_initialized was throwing false information
+
+
+## 4.1.0 2020-01-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Start splitting out Defaults into seperate /assets/functions/* files
+
+   ### Changed
+      - Cleanup of Permissions Changing routines
+
+## 4.0.1 2020-01-01 <dave at tiredofit dot ca>
+
+   ### Added   
+      - New text output for Notices
+
+   ### Changed
+      - Additional checks to ensure cont-init.d scripts have finished executing
+
+## 4.0.0 2020-01-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Now relying on Container Level functions file
+      - Easier methods for displaying console output 
+      - Colorized Prompts 
+      - Cleaner Startup Routines
+      - Sanity Check to not start any processes until all startup scripts completed
+    
+    ### Changed
+      - When DEBUG_MODE set stop taking over SMTP functionality. Require DEBUG_SMTP=TRUE instead
+
+## 3.9.3 2019-12-20 <dave at tiredofit dot ca>
+
+   ### Added
+      - Alpine 3.11 Base
+
+
+## 3.9.2 2019-08-23 <edisonlee at selfdesign dot org>
+
+* Cleanup lines subversion. 
+
+## 3.9.1 2019-08-23 <edisonlee at selfdesign dot org>
+
+* Cleanup variable. 
+
+## 3.9 2019-07-15 <dave at tiredofit dot ca>
+
+* Add Busybox Extras 
+
+## 3.8.2 2019-04-06 <dave at tiredofit dot ca>
+
+* S6 Overlay 1.22.1.0
+
 ## 3.8.1 2019-01-13 <dave at tiredofit dot ca>
 
 * Cleanup Cache
