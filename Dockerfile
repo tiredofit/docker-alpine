@@ -2,13 +2,9 @@ FROM alpine:3.6
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set defaults
-ENV ZABBIX_VERSION=4.4.9 \
+ENV ZABBIX_VERSION=5.0.1 \
     S6_OVERLAY_VERSION=v2.0.0.1 \
-    DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
-    ENABLE_CRON=TRUE \
-    ENABLE_SMTP=TRUE \
-    ENABLE_ZABBIX=TRUE \
     ZABBIX_HOSTNAME=alpine
 
 ### Zabbix pre installation steps
