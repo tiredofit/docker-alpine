@@ -1,3 +1,15 @@
+## 5.0.0 2020-06-10 <dave at tiredofit dot ca>
+
+   ### Added
+      - Split Defaults and Functions into seperate files for cleanliness
+      - Additional functions to load defaults/functions per script
+      - Additional functions for checking if files/directories/sockets/ports are available before proceeding
+      - Cleanup Container functions file to satisy shellcheck
+
+   ### Changed
+      - All /etc/s6/services files moved to /etc/services.available - Legacy images that have not been updated will still function but will always execute
+
+
 ## 4.6.1 2020-06-08 <dave at tiredofit dot ca>
 
    ### Added
