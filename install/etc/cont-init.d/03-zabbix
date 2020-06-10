@@ -1,6 +1,7 @@
 #!/usr/bin/with-contenv bash
 
-for s in /assets/functions/*; do source $s; done
+source /assets/functions/00-container
+prepare_service single
 PROCESS_NAME="zabbix"
 
 output_off
@@ -8,7 +9,6 @@ output_off
 if var_true $DEBUG_MODE ; then
   ZABBIX_DEBUGLEVEL=4
 fi
-
 ### Check to see if Enabled/Disabled
 if var_true $ENABLE_ZABBIX ;  then
   sed -i -e "s|<ZABBIX_LOGFILE>|$ZABBIX_LOGFILE|g" /etc/zabbix/zabbix_agentd.conf

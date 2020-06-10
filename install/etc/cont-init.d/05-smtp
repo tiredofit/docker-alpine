@@ -1,6 +1,7 @@
 #!/usr/bin/with-contenv bash
 
-for s in /assets/functions/*; do source $s; done
+source /assets/functions/00-container
+prepare_service single
 PROCESS_NAME="smtp"
 
 output_off
@@ -38,9 +39,9 @@ if var_true $ENABLE_SMTP ; then
          echo "auto_from on" >> /etc/msmtprc
     fi
 
-  print_notice "Sendmail replaced and enabled to route mail to: '${SMTP_HOST}'"
+    print_notice "Sendmail replaced and enabled to route mail to: '${SMTP_HOST}'"
 else
-  print_notice "Disabling SMTP Features"
+    print_notice "Disabling SMTP Features"
 fi
 
 output_on
