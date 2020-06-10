@@ -326,7 +326,7 @@ get_functions() {
         for f in /assets/functions/* ; do
             if [ "$f" != "/assets/functions/00-container" ] ; then
                 print_debug "Container: Getting functions for $f"
-                source "$f"
+                source "$d"
             fi
         done
     fi
@@ -381,15 +381,11 @@ prepare_service() {
             ;;
         *)
                 case "$1" in
-                    "BOTH" | "both" | "ALL" | "all" )
-                        get_defaults "$2"
-                        get_functions "$2"
-                    ;;
                     "DEFAULTS" | "defaults" )
-                        get_defaults "$2"
+                    get_defaults "$2"
                     ;;
                     "FUNCTIONS" | "functions" )
-                        get_functions "$2"
+                    get_functions "$2"
                     ;;
                 esac
             ;;
