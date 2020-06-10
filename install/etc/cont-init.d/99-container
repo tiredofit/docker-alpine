@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bash
 
-for s in /assets/functions/*; do source $s; done
+source /assets/functions/00-container
 PROCESS_NAME="container"
 
 if var_false $SKIP_SANITY_CHECK ; then
@@ -54,16 +54,12 @@ if var_false $SKIP_SANITY_CHECK ; then
     echo "****                                                                                                              ****"
     echo "**********************************************************************************************************************"
     echo "**********************************************************************************************************************"
-
-    for services in /var/run/s6/services/[0-9][0-9]-* ; do
-      s6-svc -d "$services"
-    done
     exit 1
   fi
   output_on
 fi
 
-for services in /var/run/s6/services/[0-9][0-9]-*/
+for services in /etc/services.available/*/
 do
     service=${services%*/}
     if [ -f "/tmp/state/${service##*/}-init" ]; then
@@ -71,11 +67,11 @@ do
            print_debug "Skipping '${service##*/}' service for startup routines"
         else
            print_debug "Getting ready to start '${service##*/}' service"
-           s6-svc -u ${service}
+           ln -sf ${service} /etc/services.d
         fi
     else
         print_debug "No Initialization Script Found - Getting ready to start '${service##*/}' service"
-        s6-svc -u ${service}
+        ln -sf ${service} /etc/services.d
     fi
 done
 
