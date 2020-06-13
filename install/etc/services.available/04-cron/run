@@ -8,15 +8,19 @@ check_container_initialized
 check_service_initialized init
 
 if [ ! -f /tmp/state/`basename $0` ]; then
-    sleep 60
-    echo '59 23 * * * logrotate -f /etc/logrotate.d/* >/dev/null 2>&1' >>/assets/cron/crontab.txt
-	liftoff
+    if var_true $ENABLE_LOGROTATE ; then
+	    sleep 60
+	    print_debug "Enabling Log Rotation"
+	    echo '59 23 * * * logrotate -f /etc/logrotate.d/* >/dev/null 2>&1' >>/assets/cron/crontab.txt
+	fi
 fi
 
 if [ -d /assets/cron-custom ]; then
     print_info "Found Custom Crontab - Merging"
     cat /assets/cron-custom/* >>/assets/cron/crontab.txt
 fi
+
+liftoff
 
 print_info "Starting cron"
 /usr/bin/crontab /assets/cron/crontab.txt
