@@ -9,7 +9,7 @@
 
 Dockerfile to build an [alpine](https://www.alpinelinux.org/) container image.
 
-* Currently tracking 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11 and edge.
+* Currently tracking 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12 and edge.
 * [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 init capabilities.
 * [zabbix-agent](https://zabbix.org) for individual container monitoring.
 * Cron installed along with other tools (bash, curl, less, logrotate, nano, vim) for easier management.
@@ -59,8 +59,9 @@ The following image tags are available:
 * `3.9` - Alpine 3.9
 * `3.10` - Alpine 3.10
 * `3.11` - Alpine 3.11
+* `3.12` - Alpine 3.12
 * `edge` - Alpine edge
-* `latest` - Alpine 3.11
+* `latest` - Alpine 3.12
 
 # Quick Start
 
@@ -91,6 +92,7 @@ Below is the complete list of available options that can be used to customize yo
 | `DEBUG_MODE`      | Enable debug mode - Default: `FALSE`                            |
 | `DEBUG_SMTP`      | Setup mail catch all on port 1025 (SMTP) and 8025 (HTTP) - Default: `FALSE` |
 | `ENABLE_CRON`     | Enable Cron - Default: `TRUE`                                   |
+| `ENABLE_LOGROTATE` | Enable Logrotate (if Cron enabled) - Default `TRUE` | 
 | `ENABLE_SMTP`     | Enable SMTP services - Default: `TRUE`                        |
 | `ENABLE_ZABBIX`   | Enable Zabbix Agent - Default: `TRUE`                           |
 | `SKIP_SANITY_CHECK` | Disable container startup routine check - Default: `FALSE` |
@@ -113,7 +115,7 @@ See the [MSMTP Configuration Options](http://msmtp.sourceforge.net/doc/msmtp.htm
 | `SMTP_STARTTLS`   | Start TLS from within session - Default: `off` |
 | `SMTP_TLSCERTCHECK` | Check remote certificate - Default: `off` |
 
-See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/4.4/manual/appendix/config/zabbix_agentd) 
+See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/5.0/manual/appendix/config/zabbix_agentd) 
 for information about the following Zabbix values.
 
 | Zabbix Parameters | Description                                                    |
