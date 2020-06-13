@@ -92,6 +92,7 @@ Below is the complete list of available options that can be used to customize yo
 | `DEBUG_MODE`      | Enable debug mode - Default: `FALSE`                            |
 | `DEBUG_SMTP`      | Setup mail catch all on port 1025 (SMTP) and 8025 (HTTP) - Default: `FALSE` |
 | `ENABLE_CRON`     | Enable Cron - Default: `TRUE`                                   |
+| `ENABLE_LOGROTATE` | Enable Logrotate (if Cron enabled) - Default `TRUE` | 
 | `ENABLE_SMTP`     | Enable SMTP services - Default: `TRUE`                        |
 | `ENABLE_ZABBIX`   | Enable Zabbix Agent - Default: `TRUE`                           |
 | `SKIP_SANITY_CHECK` | Disable container startup routine check - Default: `FALSE` |
@@ -114,7 +115,7 @@ See the [MSMTP Configuration Options](http://msmtp.sourceforge.net/doc/msmtp.htm
 | `SMTP_STARTTLS`   | Start TLS from within session - Default: `off` |
 | `SMTP_TLSCERTCHECK` | Check remote certificate - Default: `off` |
 
-See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/4.4/manual/appendix/config/zabbix_agentd) 
+See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/5.0/manual/appendix/config/zabbix_agentd) 
 for information about the following Zabbix values.
 
 | Zabbix Parameters | Description                                                    |
