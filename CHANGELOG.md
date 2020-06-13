@@ -1,3 +1,9 @@
+## 5.0.1 2020-06-13 <dave at tiredofit dot ca>
+
+   ### Added
+      - Ability to disable logrotate
+
+
 ## 5.0.0 2020-06-10 <dave at tiredofit dot ca>
 
    ### Added
