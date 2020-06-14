@@ -9,8 +9,9 @@ check_container_initialized
 check_service_initialized init
 liftoff
 
-if var_true $DEBUG_SMTP ; then
-    print_info "Starting MailHog - Enabled at Port 1025, Map an exposed port and visit Visit http://127.0.0.1:8025 for Web Interface"
+if var_true "$DEBUG_SMTP" ; then
+  print_info "Starting MailHog - enabled at port 1025, map an exposed port and visit Visit http://127.0.0.1:8025 for web interface"
 	silent exec s6-setuidgid mailhog MailHog;
 fi
+
 output_on
