@@ -6,11 +6,11 @@ PROCESS_NAME="zabbix"
 
 output_off
 ### Debug Mode
-if var_true $DEBUG_MODE ; then
+if var_true "$DEBUG_MODE" ; then
   ZABBIX_DEBUGLEVEL=4
 fi
 ### Check to see if Enabled/Disabled
-if var_true $ENABLE_ZABBIX ;  then
+if var_true "$ENABLE_ZABBIX" ;  then
   sed -i -e "s|<ZABBIX_LOGFILE>|$ZABBIX_LOGFILE|g" /etc/zabbix/zabbix_agentd.conf
   sed -i -e "s/<ZABBIX_LOGFILESIZE>/$ZABBIX_LOGFILESIZE/g" /etc/zabbix/zabbix_agentd.conf
   sed -i -e "s/<ZABBIX_DEBUGLEVEL>/$ZABBIX_DEBUGLEVEL/g" /etc/zabbix/zabbix_agentd.conf
@@ -29,12 +29,12 @@ if var_true $ENABLE_ZABBIX ;  then
   sed -i -e "s/<ZABBIX_ALLOW_ROOT>/$ZABBIX_ALLOW_ROOT/g" /etc/zabbix/zabbix_agentd.conf
   sed -i -e "s/<ZABBIX_USER>/$ZABBIX_USER/g" /etc/zabbix/zabbix_agentd.conf
 
-  mkdir -p ${ZABBIX_LOGFILE%/*}
-  chown -R ${ZABBIX_USER} ${ZABBIX_LOGFILE%/*}
-  chown -R ${ZABBIX_USER} /etc/zabbix/
+  mkdir -p "${ZABBIX_LOGFILE%/*}"
+  chown -R "${ZABBIX_USER}" "${ZABBIX_LOGFILE%/*}"
+  chown -R "${ZABBIX_USER}" /etc/zabbix/
 else
   print_notice "Disabling Zabbix Monitoring Functionality"
-  service_stop `basename $0`
+  service_stop "$(basename "$0")"
 fi
 
 output_on
