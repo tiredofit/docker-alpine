@@ -1,3 +1,9 @@
+## 5.0.3 2020-06-15 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix broken db_ready command
+
+
 ## 5.0.2 2020-06-15 <rusxakep@github>
 
    ### Changed
