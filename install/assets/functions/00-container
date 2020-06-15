@@ -101,7 +101,7 @@ check_service_initialized() {
         fi
     fi
 
-    while [ ! -f /tmp/state/${service}${service_suffix} ]
+    while [ ! -f /tmp/state/"${service}"${service_suffix} ]
     do
       sleep 1
       print_debug "Looking for existence of /tmp/state/${service}${service_suffix}"
@@ -118,27 +118,28 @@ db_ready() {
         "couch" )
             DB_PORT=${DB_PORT:-5984}
             COUNTER=0
-            while ! (nc -z ${DB_HOST} ${DB_PORT}) ; do
+            # shellcheck disable=SC2086
+            while ! (nc -z "${DB_HOST}" ${DB_PORT}) ; do
                 sleep 5
-                let COUNTER+=5
+                (( COUNTER+=5 ))
                 print_warn "CouchDB Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
             done
         ;;
         "influx" )
             DB_PORT=${DB_PORT:-8088}
             COUNTER=0
-            while ! (nc -z ${DB_HOST} ${DB_PORT}) ; do
+            while ! (nc -z "${DB_HOST}" "${DB_PORT}") ; do
                 sleep 5
-                let COUNTER+=5
+                (( COUNTER+=5 ))
                 print_warn "InfluxDB Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
             done
         ;;
         "mongo" | "mongodb" )
             DB_PORT=${DB_PORT:-27017}
             COUNTER=0
-            while ! (nc -z ${DB_HOST} ${DB_PORT}) ; do
+            while ! (nc -z "${DB_HOST}" "${DB_PORT}") ; do
                 sleep 5
-                let COUNTER+=5
+                (( COUNTER+=5 ))
                 print_warn "Mongo Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
             done
         ;;
@@ -146,43 +147,41 @@ db_ready() {
             DB_PORT=${DB_PORT:-3306}
             COUNTER=0
             while true; do
-                mysqlcmd='mysql -u'${DB_USER}' -P '${DB_PORT}' -h '${DB_HOST}' -p'${DB_PASS}
-                out="`$mysqlcmd -e "SELECT COUNT(*) FROM information_schema.FILES;" 2>&1`"
-                echo "$out" | grep -E "COUNT|Enter" 2>&1 > /dev/null
-                if [ $? -eq 0 ]; then
-                    :
-                    break
+                if ! 'mysql -u'"${DB_USER}"' -P '"${DB_PORT}"' -h '"${DB_HOST}"' -p'"${DB_PASS}" -e "SELECT COUNT(*) FROM information_schema.FILES;" 2>&1 | grep -E "COUNT|Enter" > /dev/null 2>&1
+                then
+                  print_warn "MySQL/MariaDB Server '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
+                  sleep 5
+                  (( COUNTER+=5 ))
+                else
+                  break;
                 fi
-                print_warn "MySQL/MariaDB Server '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
-                sleep 5
-                let COUNTER+=5
             done
         ;;
         "pgsql" | "psql" | "postgres" | "postgresql " )
             DB_PORT=${DB_PORT:-5432}
             COUNTER=0
             export PGPASSWORD=${DB_PASS}
-            until pg_isready --dbname=${DB_NAME} --host=${DB_HOST} --port=${DB_PORT} --username=${DB_USER} -q
+            until pg_isready --dbname="${DB_NAME}" --host="${DB_HOST}" --port="${DB_PORT}" --username="${DB_USER}" -q
             do
                 sleep 5
-                let COUNTER+=5
+                (( COUNTER+=5 ))
                 print_warn "Postgres Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
             done
         ;;
         "redis" )
             COUNTER=0
-            REDIS_PORT=${REDIS_PORT:-6379}
-            while ! (nc -z ${REDIS_HOST} ${REDIS_PORT}) ; do
+            DB_PORT=${DB_PORT:-6379}
+            while ! (nc -z "${DB_HOST}" "${DB_PORT}") ; do
                 sleep 5
-                let COUNTER+=5
+                (( COUNTER+=5 ))
                 print_warn "Redis Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
             done
         ;;
         "rethink" )
             COUNTER=0
-            while ! (nc -z ${DB_HOST} ${DB_PORT}) ; do
+            while ! (nc -z "${DB_HOST}" "${DB_PORT}") ; do
                 sleep 5
-                let COUNTER+=5
+                (( COUNTER+=5 ))
                 print_warn "RethinkDB Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
             done
         ;;
@@ -227,6 +226,7 @@ get_defaults() {
                 for d in /assets/defaults/* ; do
                     if [ "$d" != "/assets/defaults/00-container" ] ; then
                         print_debug "Container: Getting defaults for $d"
+                        # shellcheck source=/assets/defaults/
                         source "$d"
                     fi
                 done
@@ -234,19 +234,21 @@ get_defaults() {
             "APP" | "app" | "SINGLE" | "single" )
                 case "$(dirname "$0")" in
                     "/var/run/s6/etc/cont-init.d")
-                        if [ -f "/assets/defaults/$(basename $0)" ] ; then
-                            print_debug "Container: Getting defaults for $(basename $0)"
-                            source /assets/defaults/$(basename "$0")
+                        if [ -f "/assets/defaults/$(basename "$0")" ] ; then
+                            print_debug "Container: Getting defaults for $(basename "$0")"
+                            # shellcheck source=/assets/defaults/
+                            source /assets/defaults/"$(basename "$0")"
                         else
-                            print_debug "Container: No defaults available for $(basename $0)"
+                            print_debug "Container: No defaults available for $(basename "$0")"
                         fi
                     ;;
                     *)
-                        if [ -f "/assets/defaults/$(basename $PWD)" ] ; then
-                            print_debug "Container: Getting defaults for $(basename $PWD)"
-                            source /assets/defaults/$(basename "$PWD")
+                        if [ -f "/assets/defaults/$(basename "$PWD")" ] ; then
+                            print_debug "Container: Getting defaults for $(basename "$PWD")"
+                            # shellcheck source=/assets/defaults/
+                            source /assets/defaults/"$(basename "$PWD")"
                         else
-                            print_debug "Container: No defaults available for $(basename $PWD)"
+                            print_debug "Container: No defaults available for $(basename "$PWD")"
                         fi
                     ;;
                 esac
@@ -256,7 +258,8 @@ get_defaults() {
                     for d in $defaults; do
                         if [ -f "/assets/defaults/${d}" ] ; then
                             print_debug "Container: Getting defaults for $d"
-                            source /assets/defaults/${d}
+                            # shellcheck source=/assets/defaults/
+                            source /assets/defaults/"${d}"
                         else
                             print_debug "Container: No defaults available for $d"
                         fi
@@ -267,6 +270,7 @@ get_defaults() {
         for d in /assets/defaults/* ; do
             if [ "$d" != "/assets/defaults/00-container" ] ; then
                 print_debug "Container: Getting Defaults for $d"
+                # shellcheck source=/assets/defaults/
                 source "$d"
             fi
         done
@@ -286,6 +290,7 @@ get_functions() {
                 for f in /assets/functions/* ; do
                     if [ "$f" != "/assets/functions/00-container" ] ; then
                         print_debug "Container: Getting functions for $f"
+                        # shellcheck source=/assets/functions/
                         source "$f"
                     fi
                 done
@@ -293,19 +298,21 @@ get_functions() {
             "APP" | "app" | "SINGLE" | "single" )
                 case "$(dirname "$0")" in
                     "/var/run/s6/etc/cont-init.d")
-                        if [ -f "/assets/functions/$(basename $0)" ] ; then
-                            print_debug "Container: Getting functions for $(basename $0)"
-                            source /assets/functions/$(basename "$0")
+                        if [ -f "/assets/functions/$(basename "$0")" ] ; then
+                            print_debug "Container: Getting functions for $(basename "$0")"
+                            # shellcheck source=/assets/functions/
+                            source /assets/functions/"$(basename "$0")"
                         else
-                            print_debug "Container: No functions available for $(basename $0)"
+                            print_debug "Container: No functions available for $(basename "$0")"
                         fi
                     ;;
                     *)
-                        if [ -f "/assets/functions/$(basename $PWD)" ] ; then
-                            print_debug "Container: Getting functions for $(basename $PWD)"
-                            source /assets/functions/$(basename "$PWD")
+                        if [ -f "/assets/functions/$(basename "$PWD")" ] ; then
+                            print_debug "Container: Getting functions for $(basename "$PWD")"
+                            # shellcheck source=/assets/functions/
+                            source /assets/functions/"$(basename "$PWD")"
                         else
-                            print_debug "Container: No functions available for $(basename $PWD)"
+                            print_debug "Container: No functions available for $(basename "$PWD")"
                         fi
                     ;;
                 esac
@@ -315,7 +322,8 @@ get_functions() {
                 for f in $functions; do
                     if [ -f "/assets/functions/${f}" ] ; then
                         print_debug "Container: Getting functions for $f"
-                        source /assets/functions/${f}
+                        # shellcheck source=/assets/functions/
+                        source /assets/functions/"${f}"
                     else
                         print_debug "Container: No functions available for: $f"
                     fi
@@ -326,6 +334,7 @@ get_functions() {
         for f in /assets/functions/* ; do
             if [ "$f" != "/assets/functions/00-container" ] ; then
                 print_debug "Container: Getting functions for $f"
+                # shellcheck source=/assets/functions/
                 source "$f"
             fi
         done
@@ -341,10 +350,10 @@ liftoff() {
     fi
     case "$(dirname "$0")" in
         "/var/run/s6/etc/cont-init.d")
-            echo "${liftoff_prefix} $(basename "$0")-init initialized on $(date)" >> /tmp/state/$(basename "$0")-init
+            echo "${liftoff_prefix} $(basename "$0")-init initialized on $(date)" >> /tmp/state/"$(basename "$0")"-init
         ;;
         *)
-            if [ ! -f /tmp/state/$(basename "$PWD") ]; then
+            if [ ! -f /tmp/state/"$(basename "$PWD")" ]; then
                 echo "$(basename "$PWD") initialized on $(date)" >> /tmp/state/"$(basename "$PWD")"
             else
                 echo "$(basename "$PWD") reinitialized on $(date)" >> /tmp/state/"$(basename "$PWD")"
@@ -566,15 +575,15 @@ service_start() {
 }
 
 service_stop() {
-    if [ "${1}" != $(basename "$0") ] ; then
-        echo "DONOTSTART added by $(basename \"$0\")" >> /tmp/state/${1}-init
+    if [ "${1}" != "$(basename "$0")" ] ; then
+        echo "DONOTSTART added by $(basename \""$0"\")" >> /tmp/state/"${1}"-init
     fi            
     DONOTSTART=TRUE
 }
 
 ## Timezone Setup
 set_timezone () {
-    if [ -f /usr/share/zoneinfo/${TIMEZONE} ]; then
+    if [ -f /usr/share/zoneinfo/"${TIMEZONE}" ]; then
         if [ "${TIMEZONE}" != "$(cat /etc/timezone)" ] ; then
         print_notice "Timezone: Setting to '${TIMEZONE}' from '$(cat /etc/timezone)'"
         cp -R /usr/share/zoneinfo/"${1}" /etc/localtime
@@ -590,8 +599,8 @@ set_timezone () {
 ## Don't prefix it with a $
 ## Optionally add "uppercase" / "lowercase" as second value on how you wish it to be replaced
 truefalse_yesno() {
-    value=$(set | grep ${1}= | cut -d '=' -f2)
-    var=$(set | grep ${1}= | sed "s/=.*//g")
+    value=$(set | grep "${1}"= | cut -d '=' -f2)
+    var=$(set | grep "${1}"= | sed "s/=.*//g")
 
     if [ "$value" = "TRUE" ] || [ "$value" = "true" ] || [ "$value" = "YES" ] || [ "$value" = "yes" ] ; then
             print_debug "Converting Variable Name ${var} value to 'yes'"
@@ -599,29 +608,29 @@ truefalse_yesno() {
             if [ -n "$2" ] ; then
                 case "$2" in
                     "UPPERCASE" | "uppercase" | "UPPER" | "upper" | "UC" | "uc" )
-                        export "$1"="YES"
+                        export "$1=YES"
                     ;;
                     "LOWERCASE" | "lowercase" | "LOWER" | "lower" | "LC" | "lc" )
-                        export "$1"="yes"
+                        export "$1=yes"
                     ;;
                 esac
             else 
-                export $1="yes"
+                export "$1=yes"
             fi
     elif [ "$value" = "FALSE" ] || [ "$value" = "false" ] || [ "$value" = "NO" ] || [ "$value" = "no" ] ; then
             print_debug "Converting Variable Name ${var} value to 'no'"
-            unset $1
+            unset "$1"
             if [ -n "$2" ] ; then
                 case "$2" in
                     "UPPERCASE" | "uppercase" | "UPPER" | "upper" | "UC" | "uc" )
-                        export $1="NO"
+                        export "$1=NO"
                     ;;
                     "LOWERCASE" | "lowercase" | "LOWER" | "lower" | "LC" | "lc" )
-                        export $1="no"
+                        export "$1=no"
                     ;;
                 esac
             else 
-                export $1="no"
+                export "$1=no"
             fi
     fi
 }
@@ -669,7 +678,7 @@ wait_for_port() {
     COUNTER=0
     while ! (nc -z "${1}" "${2}") ; do
             sleep 5
-            let COUNTER+=5
+            (( COUNTER+=5 ))
             print_warn "Host '${1}' is not listening on port '${2}', retrying.. ($COUNTER seconds so far)"
     done
 }
@@ -689,38 +698,38 @@ wait_for_socket() {
 ## Don't prefix it with a $
 ## Optionally add "uppercase" / "lowercase" as second value on how you wish it to be replaced
 yesno_truefalse() {
-    value=$(set | grep ${1}= | cut -d '=' -f2)
-    var=$(set | grep ${1}= | sed "s/=.*//g")
+    value=$(set | grep "${1}"= | cut -d '=' -f2)
+    var=$(set | grep "${1}"= | sed "s/=.*//g")
 
     if [ "$value" = "TRUE" ] || [ "$value" = "true" ] || [ "$value" = "YES" ] || [ "$value" = "yes" ] ; then
             print_debug "Converting Variable Name ${var} value to 'yes'"
-            unset $1
+            unset "$1"
             if [ -n "$2" ] ; then
                 case "$2" in
                     "UPPERCASE" | "uppercase" | "UPPER" | "upper" | "UC" | "uc" )
-                        export $1="TRUE"
+                        export "$1=TRUE"
                     ;;
                     "LOWERCASE" | "lowercase" | "LOWER" | "lower" | "LC" | "lc" )
-                        export $1="true"
+                        export "$1=true"
                     ;;
                 esac
             else 
-                export $1="TRUE"
+                export "$1=TRUE"
             fi
     elif [ "$value" = "FALSE" ] || [ "$value" = "false" ] || [ "$value" = "NO" ] || [ "$value" = "no" ] ; then
             print_debug "Converting Variable Name ${var} value to 'no'"
-            unset $1
+            unset "$1"
             if [ -n "$2" ] ; then
                 case "$2" in
                     "UPPERCASE" | "uppercase" | "UPPER" | "upper" | "UC" | "uc" )
-                        export "$1"="FALSE"
+                        export "$1=FALSE"
                     ;;
                     "LOWERCASE" | "lowercase" | "LOWER" | "lower" | "LC" | "lc" )
-                        export "$1"="false"
+                        export "$1=false"
                     ;;
                 esac
             else 
-                export $1="FALSE"
+                export "$1=FALSE"
             fi
     fi
 }
@@ -736,12 +745,12 @@ case "$DEBUG_MODE" in
             ;;
             * )
                 if [ "$(dirname "$0")" = "/var/run/s6/etc/cont-init.d" ] ; then
-                        if [ "$DEBUG_MODE" = "$(basename \"$0\")" ] ; then
-                            print_notice "Enabling Debug mode for $(basename \"$0\") scripts"
+                        if [ "$DEBUG_MODE" = "$(basename \""$0"\")" ] ; then
+                            print_notice "Enabling Debug mode for $(basename \""$0"\") scripts"
                             set -x
                         fi
                 fi
-                if [ "$DEBUG_MODE" = "$(basename $PWD)" ] ; then
+                if [ "$DEBUG_MODE" = "$(basename "$PWD")" ] ; then
                     print_notice "Enabling Debug mode for $(basename "$PWD") scripts"
                     set -x
                 fi
