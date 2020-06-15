@@ -2,6 +2,7 @@
 
 source /assets/functions/00-container
 PROCESS_NAME="cron"
+prepare_service defaults single
 
 output_off
 check_container_initialized
@@ -23,6 +24,7 @@ fi
 liftoff
 
 print_info "Starting cron"
+touch /assets/cron/crontab.txt
 /usr/bin/crontab /assets/cron/crontab.txt
 output_on
 silent exec /usr/sbin/crond -f -l 8
