@@ -3,9 +3,9 @@
 source /assets/functions/00-container
 PROCESS_NAME="timezone"
 
-### Timezone Setup
+### Timezone setup
 if [ -n "$TIMEZONE" ]; then
-  set_timezone ${TIMEZONE}
+  set_timezone "${TIMEZONE}"
 fi
 
 liftoff
