@@ -34,29 +34,33 @@ if var_false "$SKIP_SANITY_CHECK" ; then
   declare uninitialized_scripts
 
   if [ $files_init != "$init_complete" ]; then
-    echo "**********************************************************************************************************************"
-    echo "**********************************************************************************************************************"
-    echo "****                                                                                                              ****"
-    echo "****       ERROR - Some initialization scripts haven't completed - All services are now halted                    ****"
-    echo "****             - The following scripts in '/etc/cont-init.d' did not pass their completion check                ****"
-    echo "****                                                                                                              ****"
-    echo "**********************************************************************************************************************"
-    echo "**********************************************************************************************************************"
-    echo ""
-    echo "${uninitialized_scripts[@]}" | tr ' ' '\n' | uniq -u
-    echo ""
-    echo "**********************************************************************************************************************"
-    echo "**********************************************************************************************************************"
-    echo "****                                                                                                              ****"
-    echo "****       This could have happened for a variety of reasons. Please make sure you have followed the README       ****"
-    echo "****       relating to this image and have proper configuration such as environment variables and volumes set     ****"
-    echo "****                                                                                                              ****"
-    echo "****       If you feel that you have encountered a bug, please submit an issue on the revision control system     ****"
-    echo "****       and provide full debug logs by setting the environment variable 'DEBUG_MODE=TRUE'                      ****"
-    echo "****                                                                                                              ****"
-    echo "**********************************************************************************************************************"
-    echo "**********************************************************************************************************************"
-    exit 1
+    if [ "$init_complete" -gt "$files_init" ] ; then
+      :
+    else
+      echo "**********************************************************************************************************************"
+      echo "**********************************************************************************************************************"
+      echo "****                                                                                                              ****"
+      echo "****       ERROR - Some initialization scripts haven't completed - All services are now halted                    ****"
+      echo "****             - The following scripts in '/etc/cont-init.d' did not pass their completion check                ****"
+      echo "****                                                                                                              ****"
+      echo "**********************************************************************************************************************"
+      echo "**********************************************************************************************************************"
+      echo ""
+      echo "${uninitialized_scripts[@]}" | tr ' ' '\n' | uniq -u
+      echo ""
+      echo "**********************************************************************************************************************"
+      echo "**********************************************************************************************************************"
+      echo "****                                                                                                              ****"
+      echo "****       This could have happened for a variety of reasons. Please make sure you have followed the README       ****"
+      echo "****       relating to this image and have proper configuration such as environment variables and volumes set     ****"
+      echo "****                                                                                                              ****"
+      echo "****       If you feel that you have encountered a bug, please submit an issue on the revision control system     ****"
+      echo "****       and provide full debug logs by setting the environment variable 'DEBUG_MODE=TRUE'                      ****"
+      echo "****                                                                                                              ****"
+      echo "**********************************************************************************************************************"
+      echo "**********************************************************************************************************************"
+      exit 1
+    fi
   fi
   output_on
 fi
