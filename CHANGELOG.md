@@ -1,3 +1,9 @@
+## 5.0.5 2020-08-11 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for container startup routine check script
+
+
 ## 5.0.4 2020-07-26 <dave at tiredofit dot ca>
 
    ### Added
