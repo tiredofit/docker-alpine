@@ -9,12 +9,13 @@ output_off
 if var_true "$DEBUG_MODE" ; then
   ZABBIX_DEBUGLEVEL=4
 fi
+
 ### Check to see if Enabled/Disabled
 if var_true "$ENABLE_ZABBIX" ;  then
   sed -i -e "s|<ZABBIX_LOGFILE>|$ZABBIX_LOGFILE|g" /etc/zabbix/zabbix_agentd.conf
   sed -i -e "s/<ZABBIX_LOGFILESIZE>/$ZABBIX_LOGFILESIZE/g" /etc/zabbix/zabbix_agentd.conf
   sed -i -e "s/<ZABBIX_DEBUGLEVEL>/$ZABBIX_DEBUGLEVEL/g" /etc/zabbix/zabbix_agentd.conf
-  sed -i -e "s/<ZABBIX_REMOTECOMMANDS>/$ZABBIX_REMOTECOMMANDS/g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_REMOTECOMMANDS_ALLOW>/$ZABBIX_REMOTECOMMANDS_ALLOW/g" /etc/zabbix/zabbix_agentd.conf
   sed -i -e "s/<ZABBIX_REMOTECOMMANDS_LOG>/$ZABBIX_REMOTECOMMANDS_LOG/g" /etc/zabbix/zabbix_agentd.conf
   sed -i -e "s|<ZABBIX_SERVER>|$ZABBIX_SERVER|g" /etc/zabbix/zabbix_agentd.conf
   sed -i -e "s/<ZABBIX_LISTEN_PORT>/$ZABBIX_LISTEN_PORT/g" /etc/zabbix/zabbix_agentd.conf
@@ -28,6 +29,10 @@ if var_true "$ENABLE_ZABBIX" ;  then
   sed -i -e "s/<ZABBIX_MAXLINES_SECOND>/$ZABBIX_MAXLINES_SECOND/g" /etc/zabbix/zabbix_agentd.conf
   sed -i -e "s/<ZABBIX_ALLOW_ROOT>/$ZABBIX_ALLOW_ROOT/g" /etc/zabbix/zabbix_agentd.conf
   sed -i -e "s/<ZABBIX_USER>/$ZABBIX_USER/g" /etc/zabbix/zabbix_agentd.conf
+
+  if [ -n "${ZABBIX_REMOTECOMMANDS_DENY}" ]; then
+    echo "DenyKey=system.run[${ZABBIX_REMOTECOMMANDS_DENY}]" >> /etc/zabbix/zabbix_agentd.conf
+  fi
 
   mkdir -p "${ZABBIX_LOGFILE%/*}"
   chown -R "${ZABBIX_USER}" "${ZABBIX_LOGFILE%/*}"
