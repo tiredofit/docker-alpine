@@ -126,20 +126,22 @@ See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentati
 for information about the following Zabbix values.
 
 #### Zabbix Options
+
 | Parameter                      | Description                             | Default                             |
 | ------------------------------ | --------------------------------------- | ----------------------------------- |
 | `ZABBIX_LOGFILE`               | Logfile location                        | `/var/log/zabbix/zabbix_agentd.log` |
 | `ZABBIX_LOGFILESIZE`           | Logfile size                            | `1`                                 |
 | `ZABBIX_DEBUGLEVEL`            | Debug level                             | `1`                                 |
-| `ZABBIX_REMOTECOMMANDS`        | Enable remote commands (0/1)            | `1`                                 |
-| `ZABBIX_REMOTECOMMANDS_LOG`    | Enable remote commands log (0/1)        | `1`                                 |
-| `ZABBIX_SERVER`                | Allow connections from Zabbix Server IP | `0.0.0.0/0`                         |
+| `ZABBIX_REMOTECOMMANDS_ALLOW`  | Enable remote commands                  | `*`                                 |
+| `ZABBIX_REMOTECOMMANDS_DENY`   | Deny remote commands                    |                                     |
+| `ZABBIX_REMOTECOMMANDS_LOG`    | Enable remote commands Log (`0`/`1`)    | `1`                                 |
+| `ZABBIX_SERVER`                | Allow connections from Zabbix server IP | `0.0.0.0/0`                         |
 | `ZABBIX_LISTEN_PORT`           | Zabbix Agent listening port             | `10050`                             |
 | `ZABBIX_LISTEN_IP`             | Zabbix Agent listening IP               | `0.0.0.0`                           |
 | `ZABBIX_START_AGENTS`          | How many Zabbix Agents to start         | `3`                                 |
 | `ZABBIX_SERVER_ACTIVE`         | Server for active checks                | `zabbix-proxy`                      |
 | `ZABBIX_HOSTNAME`              | Container hostname to report to server  | `docker`                            |
-| `ZABBIX_REFRESH_ACTIVE_CHECKS` | Seconds to refresh active checks        | `120`                               |
+| `ZABBIX_REFRESH_ACTIVE_CHECKS` | Seconds to refresh Active Checks        | `120`                               |
 | `ZABBIX_BUFFER_SEND`           | Buffer Send                             | `5`                                 |
 | `ZABBIX_BUFFER_SIZE`           | Buffer Size                             | `100`                               |
 | `ZABBIX_MAXLINES_SECOND`       | Max Lines Per Second                    | `20`                                |
