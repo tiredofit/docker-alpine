@@ -1,3 +1,10 @@
+## 5.1.0 2020-09-20 <dave at tiredofit dot ca>
+
+   ### Added
+      - Multiarch Support (x86_64, armhf, aarch64, ppc64le)
+      - S6 Overlay 2.1.0.0
+
+
 ## 5.0.7 2020-08-25 <dave at tiredofit dot ca>
 
    ### Changed
