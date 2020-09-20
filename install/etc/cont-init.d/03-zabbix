@@ -11,7 +11,7 @@ if var_true "$DEBUG_MODE" ; then
 fi
 
 ### Check to see if Enabled/Disabled
-if var_true "$ENABLE_ZABBIX" ;  then
+if var_true "${ENABLE_ZABBIX}" ;  then
   sed -i -e "s|<ZABBIX_LOGFILE>|$ZABBIX_LOGFILE|g" /etc/zabbix/zabbix_agentd.conf
   sed -i -e "s/<ZABBIX_LOGFILESIZE>/$ZABBIX_LOGFILESIZE/g" /etc/zabbix/zabbix_agentd.conf
   sed -i -e "s/<ZABBIX_DEBUGLEVEL>/$ZABBIX_DEBUGLEVEL/g" /etc/zabbix/zabbix_agentd.conf
