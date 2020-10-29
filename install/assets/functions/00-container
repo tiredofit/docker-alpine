@@ -150,7 +150,8 @@ db_ready() {
               sleep 5
               (( COUNTER+=5 ))
               print_warn "MySQL/MariaDB Server '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
-            done        ;;
+            done
+        ;;
         "pgsql" | "psql" | "postgres" | "postgresql " )
             DB_PORT=${DB_PORT:-5432}
             COUNTER=0
