@@ -146,15 +146,10 @@ db_ready() {
         "mysql" | "mariadb" | "MARIADB" | "MYSQL" )
             DB_PORT=${DB_PORT:-3306}
             COUNTER=0
-            while true; do
-                if ! 'mysql -u'"${DB_USER}"' -P '"${DB_PORT}"' -h '"${DB_HOST}"' -p'"${DB_PASS}"' -e "SELECT COUNT(*) FROM information_schema.FILES;"' 2>&1 | grep -E "COUNT|Enter" > /dev/null 2>&1
-                then
-                  print_warn "MySQL/MariaDB Server '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
-                  sleep 5
-                  (( COUNTER+=5 ))
-                else
-                  break;
-                fi
+            while ! (mysql -u"${DB_USER}" -P"${DB_PORT}" -h"${DB_HOST}" -p"${DB_PASS}" -e "SELECT COUNT(*) FROM information_schema.FILES;" 2>&1 | grep -E "COUNT|Enter" > /dev/null 2>&1) ; do
+              sleep 5
+              (( COUNTER+=5 ))
+              print_warn "MySQL/MariaDB Server '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
             done
         ;;
         "pgsql" | "psql" | "postgres" | "postgresql " )
