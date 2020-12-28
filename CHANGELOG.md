@@ -1,3 +1,9 @@
+## 5.1.2 2020-12-28 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 5.2.3
+
+
 ## 5.1.1 2020-11-14 <dave at tiredofit dot ca>
 
    ### Added
