@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM alpine:3.13
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set defaults
