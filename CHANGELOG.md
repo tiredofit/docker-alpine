@@ -1,3 +1,10 @@
+## 5.2.0 2021-01-21 <dave at tiredofit dot ca>
+
+   ### Added
+      - S6 Overlay 2.2.0.0
+      - Multi Arch Buidls offered on Docker Hub
+
+
 ## 5.1.2 2020-12-28 <dave at tiredofit dot ca>
 
    ### Added

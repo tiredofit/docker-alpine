@@ -3,7 +3,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set defaults
 ENV ZABBIX_VERSION=5.2.3 \
-    S6_OVERLAY_VERSION=v2.1.0.2 \
+    S6_OVERLAY_VERSION=v2.2.0.0
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
     ENABLE_CRON=TRUE \
@@ -107,7 +107,7 @@ RUN set -ex && \
     apkArch="$(apk --print-arch)"; \
 	case "$apkArch" in \
 		x86_64) s6Arch='amd64' ;; \
-		armhf) s6Arch='armhf' ;; \
+		'armhf' | 'armv7' ) s6Arch='armhf' ;; \
 		aarch64) s6Arch='aarch64' ;; \
 		ppc64le) s6Arch='ppc64le' ;; \
 		*) echo >&2 "Error: unsupported architecture ($apkArch)"; exit 1 ;; \
