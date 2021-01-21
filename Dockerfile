@@ -3,7 +3,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set defaults
 ENV ZABBIX_VERSION=5.2.3 \
-    S6_OVERLAY_VERSION=v2.2.0.0
+    S6_OVERLAY_VERSION=v2.2.0.0 \ 
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
     ENABLE_CRON=TRUE \
