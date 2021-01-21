@@ -19,7 +19,7 @@ jobs:
         id: prep
         run: |
           DOCKER_IMAGE=${GITHUB_REPOSITORY/docker-/}
-
+          set -x
           if [[ $GITHUB_REF == refs/heads/* ]]; then
             BRANCH=${GITHUB_REF#refs/heads/}
 
@@ -37,13 +37,17 @@ jobs:
                     else
                       BRANCHTAG="${DOCKER_IMAGE}:${BRANCH},${DOCKER_IMAGE}:${BRANCH}-latest"
                     fi
+                  else
+                    BRANCHTAG="${DOCKER_IMAGE}:${BRANCH},${DOCKER_IMAGE}:${BRANCH}-latest"
                   fi
                 ;;
             esac
           fi
 
+
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            GITTAG="${DOCKER_IMAGE}:${GITHUB_REF#refs/tags/v}"
+            GITTAG="${DOCKER_IMAGE}:$(echo $GITHUB_REF | sed 's|refs/tags/||g')"
+            echo "GIT TAG: $GITTAG"
           fi
 
           if [ -n "${BRANCHTAG}" ] && [ -n "${GITTAG}" ]; then
