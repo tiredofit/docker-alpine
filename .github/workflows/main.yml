@@ -67,6 +67,9 @@ jobs:
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@master
+        run: |
+             docker buildx inspect --bootstrap
+
 
       - name: Login to DockerHub
         if: github.event_name != 'pull_request'
