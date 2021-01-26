@@ -108,7 +108,8 @@ RUN set -ex && \
     apkArch="$(apk --print-arch)"; \
 	case "$apkArch" in \
 		x86_64) s6Arch='amd64' ;; \
-		'armhf' | 'armv7' ) s6Arch='armhf' ;; \
+		armv7) s6Arch='arm' ;; \
+                armhf) s6Arch='armhf' ;; \
 		aarch64) s6Arch='aarch64' ;; \
 		ppc64le) s6Arch='ppc64le' ;; \
 		*) echo >&2 "Error: unsupported architecture ($apkArch)"; exit 1 ;; \
