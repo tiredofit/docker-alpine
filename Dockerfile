@@ -2,7 +2,7 @@ FROM alpine:edge
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set defaults
-ENV S6_OVERLAY_VERSION=v2.2.0.1 \
+ENV S6_OVERLAY_VERSION=v2.2.0.3 \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
     ENABLE_CRON=TRUE \
