@@ -18,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${RELEASE}
+          ref: "${RELEASE}"
       - name: Prepare
         id: prep
         run: |
@@ -127,7 +127,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${RELEASE}
+          ref: "${RELEASE}"
       - name: Prepare
         id: prep
         run: |
@@ -236,7 +236,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${RELEASE}
+          ref: "${RELEASE}"
       - name: Prepare
         id: prep
         run: |
@@ -345,7 +345,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${RELEASE}
+          ref: "${RELEASE}"
       - name: Prepare
         id: prep
         run: |
@@ -454,7 +454,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${RELEASE}
+          ref: "${RELEASE}"
       - name: Prepare
         id: prep
         run: |
@@ -563,7 +563,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${RELEASE}
+          ref: "${RELEASE}"
       - name: Prepare
         id: prep
         run: |
@@ -672,7 +672,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${RELEASE}
+          ref: "${RELEASE}"
       - name: Prepare
         id: prep
         run: |
@@ -781,7 +781,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${RELEASE}
+          ref: "${RELEASE}"
       - name: Prepare
         id: prep
         run: |
@@ -890,7 +890,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${RELEASE}
+          ref: "${RELEASE}"
       - name: Prepare
         id: prep
         run: |
@@ -999,7 +999,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${RELEASE}
+          ref: "${RELEASE}"
       - name: Prepare
         id: prep
         run: |
@@ -1108,7 +1108,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${RELEASE}
+          ref: "${RELEASE}"
       - name: Prepare
         id: prep
         run: |
@@ -1217,7 +1217,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${RELEASE}
+          ref: "${RELEASE}"
       - name: Prepare
         id: prep
         run: |
