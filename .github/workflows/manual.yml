@@ -1,16 +1,10 @@
-### Top Level Base Image (Alpine, Debian etc)
-### Dave Conroy <dave at tiredofit dot ca>
-### Mikhail Baykov <mike at baikov dot com>
+# Manual Workflow
 
-name: 'Build Images'
+name: 'Manual build'
 
 on:
-  schedule:
-    - cron: 1 0 * * 6
-  push:
-    paths:
-      - '**'
-      - '!README.md'
+  workflow_dispatch:
+
 jobs:
   alpine_3_3:
     env:
