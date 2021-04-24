@@ -1,0 +1,11 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+PROCESS_NAME="timezone"
+
+### Timezone setup
+if [ -n "$TIMEZONE" ]; then
+  set_timezone "${TIMEZONE}"
+fi
+
+liftoff

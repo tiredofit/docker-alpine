@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bash
+
+ENABLE_CRON=${ENABLE_CRON:-"TRUE"}
+ENABLE_LOGROTATE=${ENABLE_LOGROTATE:-"TRUE"}

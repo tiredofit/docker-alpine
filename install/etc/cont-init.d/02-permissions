@@ -1,0 +1,135 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+# shellcheck disable=SC2034
+PROCESS_NAME="permissions"
+
+
+output_off
+if var_true "$DEBUG_PERMISSIONS" ; then
+  set -x
+  CONTAINER_LOG_LEVEL="DEBUG"
+fi
+
+### Enable or Disable permissions
+if var_true "$ENABLE_PERMISSIONS" = "TRUE" ; then
+  print_notice "Enabling permissions features"
+  # handle the following:
+  # 1. change uid in /etc/passwd with the ones defined in Docker's environment settings
+  # 2. change gid in /etc/group and /etc/passwd with the ones defined in Docker's environment settings
+  # 3. add users defined in Docker's environment settings to groups in /etc/group
+
+  # start to handle USER_
+  mapfile -t varenvusername <<< "$(env | grep USER_ | awk -F= '{print tolower($1)}' | awk -F_ '{print $2}')"
+  mapfile -t varenvuid <<< "$(env | grep USER_ | awk -F= '{print tolower($2)}')"
+  strusers=${varenvusername[*]// /\\\|}
+
+  if [[ -n $strusers ]]; then
+    mapfile -t varpassuser <<< "$(grep ^"$strusers" | awk -F: '{print $1}' < /etc/passwd)"
+    mapfile -t varpassuserid <<< "$(grep ^"$strusers" | awk -F: '{print $3}' < /etc/passwd)"
+  fi
+
+
+  print_debug "Users (varenvusername) from Docker env are: ${varenvusername[*]}"
+  print_debug "UIDs (varenvuid) from Docker env are: ${varenvuid[*]}"
+  print_debug "The string (strusers) used to grep the users is: $strusers"
+  print_debug "Users (varpassuser) from /etc/passwd are: ${varpassuser[*]}"
+  print_debug "UIDs (varpassuserid) from /etc/passwd are: ${varpassuserid[*]}"
+
+  counter=0
+
+  for i in ${!varenvusername[*]}
+  do
+    for j in ${!varpassuser[*]}
+    do
+      if [ "${varenvusername[$i]}" == "${varpassuser[$j]}" ]; then
+        if [ "$DEBUG_PERMISSIONS" = "TRUE" ] || [ "$DEBUG_PERMISSIONS" = "true" ] || [ "$CONTAINER_LOG_LEVEL" = "DEBUG" ]; then
+          print_debug "current loop is $i==$j and ${varenvusername[$i]} == ${varpassuser[$j]}"
+          print_debug "use sed to replace ${varpassuserid[$j]} with ${varenvuid[$i]} in /etc/passwd"
+        fi
+
+        sed -i 's/'"${varpassuser[$j]}:x:${varpassuserid[$j]}:"'/'"${varpassuser[$j]}:x:${varenvuid[$i]}:"'/' /etc/passwd
+
+        print_notice "uid of user ${varpassuser[$j]} has been changed to ${varenvuid[$i]}."
+        (( counter++ ))
+      fi
+    done
+  done
+
+  if [ "$counter" -gt "0" ] ; then
+  print_notice "Total $counter UIDs modified"
+  fi
+
+  counter=0
+
+  # start to handle GROUP_
+  mapfile -t varenvgroupname <<< "$(env | grep ^GROUP_ | grep -v GROUP_ADD_  | awk -F= '{print tolower($1)}' | awk -F_ '{print $2}')"
+  mapfile -t varenvgid <<< "$(env | grep ^GROUP_ | grep -v GROUP_ADD_ | awk -F= '{print tolower($2)}')"
+  strgroups=${varenvgroupname[*]// /\\\|}
+
+  if [[ -n $strgroups ]]; then
+    vargroupname=$(grep ^"$strgroups" | awk -F: '{print $1}' < /etc/group)
+    vargroupid=$(grep ^"$strgroups" | awk -F: '{print $3}' < /etc/group)
+  fi
+
+  print_debug "Group names (varenvgroupname) from Docker environment settings are: ${varenvgroupname[*]}"
+  print_debug "GIDs (grvarenvgid) from Docker environment settings are: ${varenvgid[*]}"
+  print_debug "The string (strgroup) used to grep the groups is: $strgroups"
+  print_debug "Group names (vargroupname) from /etc/group are: ${vargroupname[*]}"
+  print_debug "GIDs (vargroupid) from /etc/group are: ${vargroupid[*]}"
+
+
+  for i in ${!varenvgroupname[*]}
+  do
+    for j in ${!vargroupname[*]}
+    do
+      if [ "${varenvgroupname[$i]}" == "${vargroupname[$j]}" ]; then
+        print_debug "current loop is: $i==$j and ${varenvgroupname[$i]} == ${vargroupname[$j]}"
+        print_debug "use sed to replace ${vargroupid[$j]} with ${varenvgid[$i]} in /etc/group"
+
+        oldstr=$(grep ^"${vargroupname[$j]}" < /etc/group)
+        strarr=$(grep ^"${vargroupname[$j]}" | awk '{n=split($0, tmparr, ":"); for (i=0; i++ < n;) print tmparr[i]}' < /etc/group)
+        strarr[2]=${varenvgid[$i]}  # the third one is gid
+        deststr=$(echo "${strarr[*]}" | awk -v OFS=":" '{$1=$1; print}')
+        sed -i 's/'"$oldstr"'/'"$deststr"'/' /etc/group
+
+        oldstr=$(grep ^"${vargroupname[$j]}" < /etc/passwd )
+        mapfile -t strarr <<< "$(grep ^"${vargroupname[$j]}" | awk '{n=split($0, tmparr, ":"); for (i=0; i++ < n;) print tmparr[i]}' < /etc/passwd )"
+        strarr[3]=${varenvgid[$i]}  # the fourth one is gid
+        deststr=$(echo "${strarr[*]}" | awk -v OFS=":" '{$1=$1; print}')
+        sed -i 's|'"$oldstr"'|'"$deststr"'|' /etc/passwd
+
+        print_notice "gid of group ${vargroupname[$j]} has been changed to ${varenvgid[$i]}."
+
+        (( counter++ ))
+      fi
+    done
+  done
+
+  if [ "$counter" -gt "0" ] ; then
+    print_notice "total $counter GIDs modified"
+  fi
+
+  counter=0
+
+  # start to handle adding multiple users to a group
+  mapfile -t varenvuser2add <<< "$(env | grep ^GROUP_ADD_ | awk -F= '{print $1}' | awk -F_ '{print tolower($3)}')"
+  mapfile -t varenvdestgroup <<< "$(env | grep ^GROUP_ADD_ | awk -F= '{print tolower($2)}')"
+
+  print_debug "Users (varenvuser2add) to add to groups are: ${varenvuser2add[*]}"
+  print_debug "Groups (varenvdestgroup) to add users are: ${varenvdestgroup[*]}"
+
+  for i in ${!varenvuser2add[*]}
+  do
+    varthegroupstr=$(grep ^"${varenvdestgroup[i]}" < /etc/group)
+    if [[ "$varthegroupstr" == *: ]]; then
+      # append without comma ","
+      sed -i 's/$/"${varenvuser2add[$i]}"/' /etc/group
+    else
+      sed -i 's/'"$varthegroupstr"'/'"$varthegroupstr,${varenvuser2add[$i]}"'/' /etc/group
+    fi
+  done
+fi
+
+output_on
+liftoff

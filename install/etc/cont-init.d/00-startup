@@ -1,0 +1,15 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+PROCESS_NAME="container-init"
+
+### Routine to check if container has been restarted or not
+if [ -d "/tmp/state" ] ; then
+   print_notice "Detected Container that has been restarted - Cleaning '/tmp/state' files"
+   rm -rf /tmp/state/*
+   rm -rf /etc/services.d/*
+else
+   print_debug "Cold Container startup detected - Proceeding to initialize services normally"
+fi
+
+liftoff

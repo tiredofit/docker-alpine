@@ -1,0 +1,46 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+prepare_service single
+PROCESS_NAME="zabbix"
+
+output_off
+### Debug Mode
+if var_true "$DEBUG_MODE" ; then
+  ZABBIX_DEBUGLEVEL=4
+fi
+
+### Check to see if Enabled/Disabled
+if var_true "$ENABLE_ZABBIX" ;  then
+  sed -i -e "s|<ZABBIX_LOGFILE>|$ZABBIX_LOGFILE|g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_LOGFILESIZE>/$ZABBIX_LOGFILESIZE/g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_DEBUGLEVEL>/$ZABBIX_DEBUGLEVEL/g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_REMOTECOMMANDS_ALLOW>/$ZABBIX_REMOTECOMMANDS_ALLOW/g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_REMOTECOMMANDS_LOG>/$ZABBIX_REMOTECOMMANDS_LOG/g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s|<ZABBIX_SERVER>|$ZABBIX_SERVER|g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_LISTEN_PORT>/$ZABBIX_LISTEN_PORT/g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_LISTEN_IP>/$ZABBIX_LISTEN_IP/g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_START_AGENTS>/$ZABBIX_START_AGENTS/g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_SERVER_ACTIVE>/$ZABBIX_SERVER_ACTIVE/g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_HOSTNAME>/$ZABBIX_HOSTNAME/g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_REFRESH_ACTIVE_CHECKS>/$ZABBIX_REFRESH_ACTIVE_CHECKS/g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_BUFFER_SEND>/$ZABBIX_BUFFER_SEND/g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_BUFFER_SIZE>/$ZABBIX_BUFFER_SIZE/g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_MAXLINES_SECOND>/$ZABBIX_MAXLINES_SECOND/g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_ALLOW_ROOT>/$ZABBIX_ALLOW_ROOT/g" /etc/zabbix/zabbix_agentd.conf
+  sed -i -e "s/<ZABBIX_USER>/$ZABBIX_USER/g" /etc/zabbix/zabbix_agentd.conf
+
+  if [ -n "${ZABBIX_REMOTECOMMANDS_DENY}" ]; then
+    echo "DenyKey=system.run[${ZABBIX_REMOTECOMMANDS_DENY}]" >> /etc/zabbix/zabbix_agentd.conf
+  fi
+
+  mkdir -p "${ZABBIX_LOGFILE%/*}"
+  chown -R "${ZABBIX_USER}" "${ZABBIX_LOGFILE%/*}"
+  chown -R "${ZABBIX_USER}" /etc/zabbix/
+else
+  print_notice "Disabling Zabbix Monitoring Functionality"
+  service_stop "$(basename "$0")"
+fi
+
+output_on
+liftoff

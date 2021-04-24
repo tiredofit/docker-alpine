@@ -1,0 +1,48 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+prepare_service single
+# shellcheck disable=SC2034
+PROCESS_NAME="smtp"
+
+output_off
+### Debug mode - enable mailHog
+if var_true "$DEBUG_SMTP" ; then
+    print_notice "SMTP debugging mode activated"
+    SMTP_HOST="localhost"
+    SMTP_PORT=1025
+else
+    service_stop "$(basename "$0")"
+fi
+
+rm -f /usr/sbin/sendmail
+ln -s /usr/bin/msmtp /usr/sbin/sendmail
+
+if var_true "$ENABLE_SMTP" ; then
+  rm -f /usr/sbin/sendmail
+  ln -s /usr/bin/msmtp /usr/sbin/sendmail
+
+  echo "### Automatically generated on container start. See documentation on how to set!" > /etc/msmtprc
+  {
+    echo "account default "
+    echo "host ${SMTP_HOST}"
+    echo "port ${SMTP_PORT}"
+    echo "domain ${SMTP_DOMAIN}"
+    echo "maildomain ${SMTP_MAILDOMAIN}"
+    if [ -n "$SMTP_AUTHENTICATION" ]; then echo "auth ${SMTP_AUTHENTICATION}"; fi
+    if [ -n "$SMTP_USER" ]; then echo "user ${SMTP_USER}"; fi
+    if [ -n "$SMTP_PASS" ]; then echo "password ${SMTP_PASS}"; fi
+    echo "tls ${SMTP_TLS}"
+    echo "tls_starttls ${SMTP_STARTTLS}"
+    echo "tls_certcheck ${SMTP_TLSCERTCHECK}"
+### Gmail Specific SMTP Config
+    if var_true "$ENABLE_SMTP_GMAIL" ; then echo "auto_from on"; fi
+  } >> /etc/msmtprc
+
+    print_notice "Sendmail replaced and enabled to route mail to: '${SMTP_HOST}'"
+else
+    print_notice "Disabling SMTP Features"
+fi
+
+output_on
+liftoff
