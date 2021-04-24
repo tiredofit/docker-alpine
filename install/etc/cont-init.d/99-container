@@ -1,0 +1,84 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+PROCESS_NAME="container"
+
+if var_false "$SKIP_SANITY_CHECK" ; then
+  output_off
+  ### Final sanity check to make sure all scripts have executed and initialized properly, otherwise stop
+  files_init=$(find /etc/cont-init.d/ -maxdepth 1 -type f | wc -l)
+  files_init=$(( "$files_init" - 1 ))
+  declare -a files_init_name
+  declare -a length_of_files_init_name
+  for f in /etc/cont-init.d/*; do
+    files_init_name[length_of_files_init_name + 1]=filename
+    files_init_name[${#files_init_name[@]}+1]=$(echo "$f" | sed "s#filename##g" | sed "s#/etc/cont-init.d/##g" | sed "s#99-container##g" );
+  done
+
+  init_complete=$(find /tmp/state/*-init -maxdepth 1 -type f | wc -l)
+  declare -a init_complete_name
+  declare -a length_of_init_complete_name
+  for f in /tmp/state/*-init; do
+    init_complete_name[length_of_init_complete_name + 1]=filename
+    init_complete_name[${#init_complete_name[@]}+1]=$(echo "$f" | sed "s#filename##g" | sed "s#/tmp/state/##g" | sed "s#-init##g");
+  done
+
+  uninitialized_scripts=()
+  for i in "${files_init_name[@]}"; do
+      skip=
+      for j in "${init_complete_name[@]}"; do
+          [[ $i == "$j" ]] && { skip=1; break; }
+      done
+      [[ -n $skip ]] || uninitialized_scripts+=("$i")
+  done
+  declare uninitialized_scripts
+
+  if [ $files_init != "$init_complete" ]; then
+    if [ "$init_complete" -gt "$files_init" ] ; then
+      :
+    else
+      echo "**********************************************************************************************************************"
+      echo "**********************************************************************************************************************"
+      echo "****                                                                                                              ****"
+      echo "****       ERROR - Some initialization scripts haven't completed - All services are now halted                    ****"
+      echo "****             - The following scripts in '/etc/cont-init.d' did not pass their completion check                ****"
+      echo "****                                                                                                              ****"
+      echo "**********************************************************************************************************************"
+      echo "**********************************************************************************************************************"
+      echo ""
+      echo "${uninitialized_scripts[@]}" | tr ' ' '\n' | uniq -u
+      echo ""
+      echo "**********************************************************************************************************************"
+      echo "**********************************************************************************************************************"
+      echo "****                                                                                                              ****"
+      echo "****       This could have happened for a variety of reasons. Please make sure you have followed the README       ****"
+      echo "****       relating to this image and have proper configuration such as environment variables and volumes set     ****"
+      echo "****                                                                                                              ****"
+      echo "****       If you feel that you have encountered a bug, please submit an issue on the revision control system     ****"
+      echo "****       and provide full debug logs by setting the environment variable 'DEBUG_MODE=TRUE'                      ****"
+      echo "****                                                                                                              ****"
+      echo "**********************************************************************************************************************"
+      echo "**********************************************************************************************************************"
+      exit 1
+    fi
+  fi
+  output_on
+fi
+
+for services in /etc/services.available/*/
+do
+    service=${services%*/}
+    if [ -f "/tmp/state/${service##*/}-init" ]; then
+        if grep -q "DONOTSTART" "/tmp/state/${service##*/}-init"; then
+           print_debug "Skipping '${service##*/}' service for startup routines"
+        else
+           print_debug "Getting ready to start '${service##*/}' service"
+           ln -sf "${service}" /etc/services.d
+        fi
+    else
+        print_debug "No Initialization Script Found - Getting ready to start '${service##*/}' service"
+        ln -sf "${service}" /etc/services.d
+    fi
+done
+
+liftoff

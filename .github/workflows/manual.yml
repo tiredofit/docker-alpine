@@ -1,13 +1,9 @@
-### Top Level Base Image (Alpine, Debian etc)
-### Dave Conroy <dave at tiredofit dot ca>
-
-name: 'Build Images'
+# Manual Workflow tiredofit/docker-alpine
+name: 'Manual build'
 
 on:
-  push:
-    paths:
-      - '**'
-      - '!README.md'
+  workflow_dispatch:
+
 jobs:
   alpine33:
     env:
