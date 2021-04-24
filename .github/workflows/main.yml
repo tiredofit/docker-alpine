@@ -5,6 +5,8 @@
 name: 'Build Images'
 
 on:
+  schedule:
+    - cron: 1 0 * * 6
   push:
     paths:
       - '**'
@@ -18,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${GITHUB_REF#refs/heads/}
+          ref: "3.3"
       - name: Prepare
         id: prep
         run: |
@@ -127,7 +129,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${GITHUB_REF#refs/heads/}
+          ref: "3.4"
       - name: Prepare
         id: prep
         run: |
@@ -236,7 +238,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${GITHUB_REF#refs/heads/}
+          ref: "3.5"
       - name: Prepare
         id: prep
         run: |
@@ -345,7 +347,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${GITHUB_REF#refs/heads/}
+          ref: "3.6"
       - name: Prepare
         id: prep
         run: |
@@ -454,7 +456,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${GITHUB_REF#refs/heads/}
+          ref: "3.7"
       - name: Prepare
         id: prep
         run: |
@@ -563,7 +565,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${GITHUB_REF#refs/heads/}
+          ref: "3.8"
       - name: Prepare
         id: prep
         run: |
@@ -672,7 +674,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${GITHUB_REF#refs/heads/}
+          ref: "3.9"
       - name: Prepare
         id: prep
         run: |
@@ -781,7 +783,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${GITHUB_REF#refs/heads/}
+          ref: "3.10"
       - name: Prepare
         id: prep
         run: |
@@ -890,7 +892,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${GITHUB_REF#refs/heads/}
+          ref: "3.11"
       - name: Prepare
         id: prep
         run: |
@@ -999,7 +1001,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${GITHUB_REF#refs/heads/}
+          ref: "3.12"
       - name: Prepare
         id: prep
         run: |
@@ -1108,7 +1110,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${GITHUB_REF#refs/heads/}
+          ref: "3.13"
       - name: Prepare
         id: prep
         run: |
@@ -1217,7 +1219,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${GITHUB_REF#refs/heads/}
+          ref: "edge"
       - name: Prepare
         id: prep
         run: |
