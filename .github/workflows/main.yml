@@ -18,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: "${RELEASE}"
+          ref: ${GITHUB_REF#refs/heads/}
       - name: Prepare
         id: prep
         run: |
@@ -29,7 +29,7 @@ jobs:
             case ${BRANCH} in
               main | master | *-master )
                   if [ -n "${{ secrets.LATEST }}" ] ; then
-                    if [ "${RELEASE}" = "${{ secrets.LATEST }}" ]; then
+                    if [ ${GITHUB_REF#refs/heads/} = "${{ secrets.LATEST }}" ]; then
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest,${DOCKER_IMAGE}:latest"
                     else
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE-latest}"
@@ -127,7 +127,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: "${RELEASE}"
+          ref: ${GITHUB_REF#refs/heads/}
       - name: Prepare
         id: prep
         run: |
@@ -138,7 +138,7 @@ jobs:
             case ${BRANCH} in
               main | master | *-master )
                   if [ -n "${{ secrets.LATEST }}" ] ; then
-                    if [ "${RELEASE}" = "${{ secrets.LATEST }}" ]; then
+                    if [ ${GITHUB_REF#refs/heads/} = "${{ secrets.LATEST }}" ]; then
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest,${DOCKER_IMAGE}:latest"
                     else
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE-latest}"
@@ -236,7 +236,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: "${RELEASE}"
+          ref: ${GITHUB_REF#refs/heads/}
       - name: Prepare
         id: prep
         run: |
@@ -247,7 +247,7 @@ jobs:
             case ${BRANCH} in
               main | master | *-master )
                   if [ -n "${{ secrets.LATEST }}" ] ; then
-                    if [ "${RELEASE}" = "${{ secrets.LATEST }}" ]; then
+                    if [ ${GITHUB_REF#refs/heads/} = "${{ secrets.LATEST }}" ]; then
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest,${DOCKER_IMAGE}:latest"
                     else
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE-latest}"
@@ -345,7 +345,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: "${RELEASE}"
+          ref: ${GITHUB_REF#refs/heads/}
       - name: Prepare
         id: prep
         run: |
@@ -356,7 +356,7 @@ jobs:
             case ${BRANCH} in
               main | master | *-master )
                   if [ -n "${{ secrets.LATEST }}" ] ; then
-                    if [ "${RELEASE}" = "${{ secrets.LATEST }}" ]; then
+                    if [ ${GITHUB_REF#refs/heads/} = "${{ secrets.LATEST }}" ]; then
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest,${DOCKER_IMAGE}:latest"
                     else
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE-latest}"
@@ -454,7 +454,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: "${RELEASE}"
+          ref: ${GITHUB_REF#refs/heads/}
       - name: Prepare
         id: prep
         run: |
@@ -465,7 +465,7 @@ jobs:
             case ${BRANCH} in
               main | master | *-master )
                   if [ -n "${{ secrets.LATEST }}" ] ; then
-                    if [ "${RELEASE}" = "${{ secrets.LATEST }}" ]; then
+                    if [ ${GITHUB_REF#refs/heads/} = "${{ secrets.LATEST }}" ]; then
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest,${DOCKER_IMAGE}:latest"
                     else
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE-latest}"
@@ -563,7 +563,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: "${RELEASE}"
+          ref: ${GITHUB_REF#refs/heads/}
       - name: Prepare
         id: prep
         run: |
@@ -574,7 +574,7 @@ jobs:
             case ${BRANCH} in
               main | master | *-master )
                   if [ -n "${{ secrets.LATEST }}" ] ; then
-                    if [ "${RELEASE}" = "${{ secrets.LATEST }}" ]; then
+                    if [ ${GITHUB_REF#refs/heads/} = "${{ secrets.LATEST }}" ]; then
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest,${DOCKER_IMAGE}:latest"
                     else
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE-latest}"
@@ -672,7 +672,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: "${RELEASE}"
+          ref: ${GITHUB_REF#refs/heads/}
       - name: Prepare
         id: prep
         run: |
@@ -683,7 +683,7 @@ jobs:
             case ${BRANCH} in
               main | master | *-master )
                   if [ -n "${{ secrets.LATEST }}" ] ; then
-                    if [ "${RELEASE}" = "${{ secrets.LATEST }}" ]; then
+                    if [ ${GITHUB_REF#refs/heads/} = "${{ secrets.LATEST }}" ]; then
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest,${DOCKER_IMAGE}:latest"
                     else
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE-latest}"
@@ -781,7 +781,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: "${RELEASE}"
+          ref: ${GITHUB_REF#refs/heads/}
       - name: Prepare
         id: prep
         run: |
@@ -792,7 +792,7 @@ jobs:
             case ${BRANCH} in
               main | master | *-master )
                   if [ -n "${{ secrets.LATEST }}" ] ; then
-                    if [ "${RELEASE}" = "${{ secrets.LATEST }}" ]; then
+                    if [ ${GITHUB_REF#refs/heads/} = "${{ secrets.LATEST }}" ]; then
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest,${DOCKER_IMAGE}:latest"
                     else
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE-latest}"
@@ -890,7 +890,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: "${RELEASE}"
+          ref: ${GITHUB_REF#refs/heads/}
       - name: Prepare
         id: prep
         run: |
@@ -901,7 +901,7 @@ jobs:
             case ${BRANCH} in
               main | master | *-master )
                   if [ -n "${{ secrets.LATEST }}" ] ; then
-                    if [ "${RELEASE}" = "${{ secrets.LATEST }}" ]; then
+                    if [ ${GITHUB_REF#refs/heads/} = "${{ secrets.LATEST }}" ]; then
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest,${DOCKER_IMAGE}:latest"
                     else
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE-latest}"
@@ -999,7 +999,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: "${RELEASE}"
+          ref: ${GITHUB_REF#refs/heads/}
       - name: Prepare
         id: prep
         run: |
@@ -1010,7 +1010,7 @@ jobs:
             case ${BRANCH} in
               main | master | *-master )
                   if [ -n "${{ secrets.LATEST }}" ] ; then
-                    if [ "${RELEASE}" = "${{ secrets.LATEST }}" ]; then
+                    if [ ${GITHUB_REF#refs/heads/} = "${{ secrets.LATEST }}" ]; then
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest,${DOCKER_IMAGE}:latest"
                     else
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE-latest}"
@@ -1108,7 +1108,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: "${RELEASE}"
+          ref: ${GITHUB_REF#refs/heads/}
       - name: Prepare
         id: prep
         run: |
@@ -1119,7 +1119,7 @@ jobs:
             case ${BRANCH} in
               main | master | *-master )
                   if [ -n "${{ secrets.LATEST }}" ] ; then
-                    if [ "${RELEASE}" = "${{ secrets.LATEST }}" ]; then
+                    if [ ${GITHUB_REF#refs/heads/} = "${{ secrets.LATEST }}" ]; then
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest,${DOCKER_IMAGE}:latest"
                     else
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE-latest}"
@@ -1217,7 +1217,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: "${RELEASE}"
+          ref: ${GITHUB_REF#refs/heads/}
       - name: Prepare
         id: prep
         run: |
@@ -1228,7 +1228,7 @@ jobs:
             case ${BRANCH} in
               main | master | *-master )
                   if [ -n "${{ secrets.LATEST }}" ] ; then
-                    if [ "${RELEASE}" = "${{ secrets.LATEST }}" ]; then
+                    if [ ${GITHUB_REF#refs/heads/} = "${{ secrets.LATEST }}" ]; then
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE}-latest,${DOCKER_IMAGE}:latest"
                     else
                       BRANCHTAG="${DOCKER_IMAGE}:${RELEASE},${DOCKER_IMAGE}:${RELEASE-latest}"
