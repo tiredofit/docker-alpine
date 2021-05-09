@@ -12,8 +12,8 @@ if var_true "$DEBUG_PERMISSIONS" ; then
 fi
 
 ### Enable or Disable permissions
-if var_true "$ENABLE_PERMISSIONS" = "TRUE" ; then
-  print_notice "Enabling permissions features"
+if var_true "$ENABLE_PERMISSIONS" ; then
+  print_debug "Enabling permissions features"
   # handle the following:
   # 1. change uid in /etc/passwd with the ones defined in Docker's environment settings
   # 2. change gid in /etc/group and /etc/passwd with the ones defined in Docker's environment settings

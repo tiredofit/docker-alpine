@@ -1,3 +1,11 @@
+## 6.0.0 2021-05-09 <dave at tiredofit dot ca>
+
+  ### Changed
+      - Switched back to single branch for building all versions taking advantage of GitHub actions
+      - ENABLE_PERMISSIONS by default=TRUE
+   ### Removed
+      - MailHog SMTP Tester
+
 ## 5.2.1 2021-03-11 <dave at tiredofit dot ca>
 
    ### Added
@@ -193,7 +201,7 @@
 
 ## 4.0.1 2020-01-01 <dave at tiredofit dot ca>
 
-   ### Added   
+   ### Added
       - New text output for Notices
 
    ### Changed
@@ -203,11 +211,11 @@
 
    ### Added
       - Now relying on Container Level functions file
-      - Easier methods for displaying console output 
-      - Colorized Prompts 
+      - Easier methods for displaying console output
+      - Colorized Prompts
       - Cleaner Startup Routines
       - Sanity Check to not start any processes until all startup scripts completed
-    
+
     ### Changed
       - When DEBUG_MODE set stop taking over SMTP functionality. Require DEBUG_SMTP=TRUE instead
 
@@ -219,15 +227,15 @@
 
 ## 3.9.2 2019-08-23 <edisonlee at selfdesign dot org>
 
-* Cleanup lines subversion. 
+* Cleanup lines subversion.
 
 ## 3.9.1 2019-08-23 <edisonlee at selfdesign dot org>
 
-* Cleanup variable. 
+* Cleanup variable.
 
 ## 3.9 2019-07-15 <dave at tiredofit dot ca>
 
-* Add Busybox Extras 
+* Add Busybox Extras
 
 ## 3.8.2 2019-04-06 <dave at tiredofit dot ca>
 

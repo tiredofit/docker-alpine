@@ -1,11 +1,16 @@
-# hub.docker.com/r/tiredofit/alpine
+# github.com/tiredofit/docker-alpine
 
-[![Build Status](https://img.shields.io/docker/build/tiredofit/alpine.svg)](https://hub.docker.com/r/tiredofit/alpine)
-[![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/alpine.svg)](https://hub.docker.com/r/tiredofit/alpine)
-[![Docker Stars](https://img.shields.io/docker/stars/tiredofit/alpine.svg)](https://hub.docker.com/r/tiredofit/alpine)
-[![Docker Layers](https://images.microbadger.com/badges/image/tiredofit/alpine.svg)](https://microbadger.com/images/tiredofit/alpine)
+[![GitHub release](https://img.shields.io/github/v/tag/tiredofit/docker-alpine?style=flat-square)](https://github.com/tiredofit/docker-alpine/releases/latest)
+[![Build Status](https://img.shields.io/github/workflow/status/tiredofit/docker-alpine/build?style=flat-square)](https://github.com/tiredofit/docker-alpine/actions?query=workflow%3Abuild)
+[![Docker Stars](https://img.shields.io/docker/stars/tiredofit/alpine.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/tiredofit/alpine/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/tiredofit/alpine.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/tiredofit/alpine/)
+[![Become a sponsor](https://img.shields.io/badge/sponsor-tiredofit-181717.svg?logo=github&style=flat-square)](https://github.com/sponsors/tiredofit)
+[![Paypal Donate](https://img.shields.io/badge/donate-paypal-00457c.svg?logo=paypal&style=flat-square)](https://www.paypal.me/tiredofit)
 
-## Introduction
+* * *
+
+
+## About
 
 Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container image.
 
@@ -16,20 +21,23 @@ Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container im
 * MSMTP enabled to send mail from container to external SMTP server.
 * Ability to update User ID and Group ID permissions for development purposes dynamically.
 
-## Authors
+## Maintainer
 
-- [Dave Conroy](dave at tiredofit dot ca)
+- [Dave Conroy](https://github/tiredofit)
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Authors](#authors)
+- [About](#about)
+- [Maintainer](#maintainer)
 - [Table of Contents](#table-of-contents)
-- [Prerequisites](#prerequisites)
+- [Prerequisites and Assumptions](#prerequisites-and-assumptions)
 - [Installation](#installation)
-  - [Quick Start](#quick-start)
+  - [Build from Source](#build-from-source)
+  - [Prebuilt Images](#prebuilt-images)
+    - [Multi Archictecture](#multi-archictecture)
 - [Configuration](#configuration)
-  - [Data-Volumes](#data-volumes)
+  - [Quick Start](#quick-start)
+  - [Persistent Storage](#persistent-storage)
   - [Environment Variables](#environment-variables)
     - [Container Options](#container-options)
     - [SMTP Options](#smtp-options)
@@ -38,36 +46,50 @@ Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container im
   - [Networking](#networking)
 - [Maintenance](#maintenance)
   - [Shell Access](#shell-access)
+- [Support](#support)
+  - [Usage](#usage)
+  - [Bugfixes](#bugfixes)
+  - [Feature Requests](#feature-requests)
+  - [Updates](#updates)
+- [License](#license)
 - [References](#references)
 
-## Prerequisites
+## Prerequisites and Assumptions
 
 No prerequisites required
 
 ## Installation
 
-Automated builds of the image are available on [Docker Hub](https://hub.docker.com/t/tiredofit/alpine) and
-is the recommended method of installation.
+### Build from Source
+Clone this repository and build the image with `docker build <arguments> (imagename) .`
 
-``bash
+### Prebuilt Images
+Builds of the image are available on [Docker Hub](https://hub.docker.com/r/tiredofit/alpine) and is the recommended method of installation.
+
+```bash
 docker pull tiredofit/alpine:(imagetag)
-``
+```
 
-The following image tags are available:
+The following image tags are available along with their tagged release based on what's written in the [Changelog](CHANGELOG.md):
 
-* `3.3` - Alpine 3.3
-* `3.4` - Alpine 3.4
-* `3.5` - Alpine 3.5
-* `3.6` - Alpine 3.6
-* `3.7` - Alpine 3.7
-* `3.8` - Alpine 3.8
-* `3.9` - Alpine 3.9
-* `3.10` - Alpine 3.10
-* `3.11` - Alpine 3.11
-* `3.12` - Alpine 3.12
-* `3.13` - Alpine 3.13
-* `edge` - Alpine edge
-* `latest` - Alpine 3.13
+| Alpine version | Tag     |
+| -------------- | ------- |
+| `edge`         | `:edge` |
+| `3.13`         | `:3.13` |
+| `3.12`         | `:3.12` |
+| `3.11`         | `:3.11` |
+| `3.10`         | `:3.10` |
+| `3.9`          | `:3.9`  |
+| `3.8`          | `:3.8`  |
+| `3.7`          | `:3.7`  |
+| `3.6`          | `:3.6`  |
+| `3.5`          | `:3.5`  |
+
+#### Multi Archictecture
+Images are built primarily for `amd64` architecture, and may also include builds for `arm/v6`, `arm/v7`, `arm64` and others. These variants are all unsupported. Consider [sponsoring](https://github.com/sponsors/tiredofit) my work so that I can work with various hardware. To see if this image supports multiple architecures, type `docker manifest (image):(tag)`
+
+
+## Configuration
 
 ### Quick Start
 
@@ -75,10 +97,7 @@ Utilize this image as a base for further builds. By default, it does not start t
 Bash. Please visit the [s6 overlay repository](https://github.com/just-containers/s6-overlay) for
 instructions on how to enable the S6 init system when using this base or look at some of my other images
 which use this as a base.
-
-## Configuration
-
-### Data-Volumes
+### Persistent Storage
 
 The following directories are used for configuration and can be mapped for persistent storage.
 
@@ -90,14 +109,12 @@ The following directories are used for configuration and can be mapped for persi
 ### Environment Variables
 
 Below is the complete list of available options that can be used to customize your installation.
-
 #### Container Options
 | Parameter             | Description                                                            | Default          |
 | --------------------- | ---------------------------------------------------------------------- | ---------------- |
 | `COLORIZE_OUTPUT`     | Enable/Disable colorized console output                                | `TRUE`           |
 | `CONTAINER_LOG_LEVEL` | Control level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG` | Default `NOTICE` |
 | `DEBUG_MODE`          | Enable debug mode                                                      | `FALSE`          |
-| `DEBUG_SMTP`          | Setup mail catch all on port 1025 (SMTP) and 8025 (HTTP)               | `FALSE`          |
 | `ENABLE_CRON`         | Enable Cron                                                            | `TRUE`           |
 | `ENABLE_LOGROTATE`    | Enable Logrotate (if Cron enabled)                                     | `TRUE`           |
 | `ENABLE_SMTP`         | Enable SMTP services                                                   | `TRUE`           |
@@ -111,7 +128,7 @@ See the [MSMTP Configuration Options](http://msmtp.sourceforge.net/doc/msmtp.htm
 #### SMTP Options
 | Parameter             | Description                                       | Default         |
 | --------------------- | ------------------------------------------------- | --------------- |
-| `ENABLE_SMTP_GMAIL`   | Add setting to support sending through Gmail SMTP | `FALSE`         |
+| `SMTP_AUTO_FROM`      | Add setting to support sending through Gmail SMTP | `TRUE`         |
 | `SMTP_HOST`           | Hostname of SMTP Server                           | `postfix-relay` |
 | `SMTP_PORT`           | Port of SMTP Server                               | `25`            |
 | `SMTP_DOMAIN`         | HELO Domain                                       | `docker`        |
@@ -123,7 +140,7 @@ See the [MSMTP Configuration Options](http://msmtp.sourceforge.net/doc/msmtp.htm
 | `SMTP_STARTTLS`       | Start TLS from within session                     | `off`           |
 | `SMTP_TLSCERTCHECK`   | Check remote certificate                          | `off`           |
 
-See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/5.0/manual/appendix/config/zabbix_agentd)
+See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/5.2/manual/appendix/config/zabbix_agentd)
 for information about the following Zabbix values.
 
 #### Zabbix Options
@@ -167,19 +184,15 @@ The following ports are exposed.
 
 | Port    | Description                                  |
 | ------- | -------------------------------------------- |
-| `1025`  | `DEBUG_MODE` & `DEBUG_SMTP` SMTP Catcher     |
-| `8025`  | `DEBUG_MODE` & `DEBUG_SMTP` SMTP HTTP Viewer |
 | `10050` | Zabbix Agent                                 |
 
-# Debug Mode
+#@ Debug Mode
 
 When using this as a base image, create statements in your startup scripts to check for existence of `DEBUG_MODE=TRUE`
 and set various parameters in your applications to output more detail, enable debugging modes, and so on.
 In this base image it does the following:
 
 * Sets zabbix-agent to output logs in verbosity
-* Enables MailHog mailcatcher, which replaces `/usr/sbin/sendmail` with it's own catchall executable. It also opens
-port `1025` for SMTP trapping, and you can view the messages it's trapped at port `8025`
 
 ## Maintenance
 
@@ -188,9 +201,27 @@ port `1025` for SMTP trapping, and you can view the messages it's trapped at por
 For debugging and maintenance purposes you may want access the containers shell.
 
 ``bash
-docker exec -it (whatever your container name is e.g. alpine) bash
+docker exec -it (whatever your container name is) bash
 ``
+## Support
 
+These images were built to serve a specific need in a production environment and gradually have had more functionality added based on requests from the community.
+### Usage
+- The [Discussions board](../../discussions) is a great place for working with the community on tips and tricks of using this image.
+- Consider [sponsoring me](https://github.com/sponsors/tiredofit) personalized support.
+### Bugfixes
+- Please, submit a [Bug Report](issues/new) if something isn't working as expected. I'll do my best to issue a fix in short order.
+
+### Feature Requests
+- Feel free to submit a feature request, however there is no guarantee that it will be added, or at what timeline.
+- Consider [sponsoring me](https://github.com/sponsors/tiredofit) regarding development of features.
+
+### Updates
+- Best effort to track upstream changes, More priority if I am actively using the image in a production environment.
+- Consider [sponsoring me](https://github.com/sponsors/tiredofit) for up to date releases.
+
+## License
+MIT. See [LICENSE](LICENSE) for more details.
 ## References
 
 * <https://www.alpinelinux.org>
