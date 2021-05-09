@@ -10,5 +10,5 @@ liftoff
 output_on
 
 ### Start Zabbix
-print_info "Starting Zabbix Agent"
+print_info "Starting Zabbix Agent ${ZABBIX_VERSION}"
 silent exec s6-setuidgid zabbix zabbix_agentd -f
