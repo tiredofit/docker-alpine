@@ -1,3 +1,9 @@
+## 6.0.1 2021-05-10 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Pin S6 as S6 Overlay gets deleted after certain packages get removed
+
+
 ## 6.0.0 2021-05-09 <dave at tiredofit dot ca>
 
   ### Changed

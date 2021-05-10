@@ -35,6 +35,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -c 1-3)"
                 msmtp \
                 nano \
                 pcre \
+                s6 \
                 sudo \
                 tzdata \
                 vim \
@@ -109,7 +110,6 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -c 1-3)"
         *) echo >&2 "Error: unsupported architecture ($apkArch)"; exit 1 ;; \
     esac; \
     curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-${s6Arch}.tar.gz | tar xfz - -C /
-
 
 ### Networking configuration
 EXPOSE 10050/TCP
