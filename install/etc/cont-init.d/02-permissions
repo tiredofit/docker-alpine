@@ -68,8 +68,8 @@ if var_true "$ENABLE_PERMISSIONS" ; then
   strgroups=${varenvgroupname[*]// /\\\|}
 
   if [[ -n $strgroups ]]; then
-    vargroupname=$(grep ^"$strgroups" | awk -F: '{print $1}' < /etc/group)
-    vargroupid=$(grep ^"$strgroups" | awk -F: '{print $3}' < /etc/group)
+    vargroupname=$(grep ^"$strgroups"  < /etc/group | awk -F: '{print $1}')
+    vargroupid=$(grep ^"$strgroups" < /etc/group | awk -F: '{print $3}')
   fi
 
   print_debug "Group names (varenvgroupname) from Docker environment settings are: ${varenvgroupname[*]}"
@@ -88,13 +88,13 @@ if var_true "$ENABLE_PERMISSIONS" ; then
         print_debug "use sed to replace ${vargroupid[$j]} with ${varenvgid[$i]} in /etc/group"
 
         oldstr=$(grep ^"${vargroupname[$j]}" < /etc/group)
-        strarr=$(grep ^"${vargroupname[$j]}" | awk '{n=split($0, tmparr, ":"); for (i=0; i++ < n;) print tmparr[i]}' < /etc/group)
+        mapfile -t strarr <<< "$(grep ^"${vargroupname[$j]}"  < /etc/group | awk '{n=split($0, tmparr, ":"); for (i=0; i++ < n;) print tmparr[i]}')"
         strarr[2]=${varenvgid[$i]}  # the third one is gid
         deststr=$(echo "${strarr[*]}" | awk -v OFS=":" '{$1=$1; print}')
         sed -i 's/'"$oldstr"'/'"$deststr"'/' /etc/group
 
         oldstr=$(grep ^"${vargroupname[$j]}" < /etc/passwd )
-        mapfile -t strarr <<< "$(grep ^"${vargroupname[$j]}" | awk '{n=split($0, tmparr, ":"); for (i=0; i++ < n;) print tmparr[i]}' < /etc/passwd )"
+        mapfile -t strarr <<< "$(grep ^"${vargroupname[$j]}"  < /etc/passwd | awk '{n=split($0, tmparr, ":"); for (i=0; i++ < n;) print tmparr[i]}')"
         strarr[3]=${varenvgid[$i]}  # the fourth one is gid
         deststr=$(echo "${strarr[*]}" | awk -v OFS=":" '{$1=$1; print}')
         sed -i 's|'"$oldstr"'|'"$deststr"'|' /etc/passwd
