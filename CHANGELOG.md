@@ -1,3 +1,9 @@
+## 6.1.0 2021-05-27 <perarg@github>
+
+   ### Fixed
+      - Permissions adjustment script was broken on group assignment
+
+
 ## 6.0.2 2021-05-18 <dave at tiredofit dot ca>
 
    ### Added
