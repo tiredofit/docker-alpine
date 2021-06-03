@@ -1,0 +1,15 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+prepare_service single
+PROCESS_NAME="cron"
+
+output_off
+### Check to see if Enabled/Disabled
+if var_false "$ENABLE_CRON" ; then
+	print_notice "Disabling Cron"
+	service_stop "$(basename "$0")"
+fi
+
+output_on
+liftoff

@@ -1,0 +1,30 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+PROCESS_NAME="cron"
+prepare_service defaults single
+
+output_off
+check_container_initialized
+check_service_initialized init
+
+if [ ! -f /tmp/state/"$(basename "$0")" ]; then
+    if var_true "$ENABLE_LOGROTATE" ; then
+	    sleep 60
+	    print_debug "Enabling log rotation"
+	    echo '59 23 * * * logrotate -f /etc/logrotate.d/* >/dev/null 2>&1' >>/assets/cron/crontab.txt
+	fi
+fi
+
+if [ -d /assets/cron-custom ]; then
+    print_info "Found custom crontab - merging"
+    cat /assets/cron-custom/* >>/assets/cron/crontab.txt
+fi
+
+liftoff
+
+print_info "Starting cron"
+touch /assets/cron/crontab.txt
+/usr/bin/crontab /assets/cron/crontab.txt
+output_on
+silent exec /usr/sbin/crond -f -l 8

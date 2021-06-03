@@ -1,0 +1,10 @@
+#!/usr/bin/with-contenv bash
+
+### Set defaults
+CONTAINER_ENABLE_DOCKER_SECRETS=${CONTAINER_ENABLE_DOCKER_SECRETS:-"TRUE"}
+CONTAINER_LOG_LEVEL=${CONTAINER_LOG_LEVEL:-"NOTICE"}
+DEBUG_MODE=${DEBUG_MODE:-"FALSE"}
+PROCESS_NAME=${PROCESS_NAME:-"container"}
+# shellcheck disable=SC2034
+SCRIPTPATH="$(cd "$(dirname "$0")" >/dev/null 2>&1 || exit ; pwd -P)"
+SKIP_SANITY_CHECK=${SKIP_SANITY_CHECK:-"FALSE"}

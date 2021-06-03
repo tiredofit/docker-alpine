@@ -1,0 +1,14 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+PROCESS_NAME="zabbix"
+
+output_off
+check_container_initialized
+check_service_initialized init
+liftoff
+output_on
+
+### Start Zabbix
+print_info "Starting Zabbix Agent ${ZABBIX_VERSION}"
+silent exec s6-setuidgid zabbix zabbix_agentd -f
