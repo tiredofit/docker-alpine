@@ -112,23 +112,42 @@ check_service_initialized() {
 
 custom_files() {
     ## Copy files from one lcoation to somewhere else on the file system
-    ## EG Copy all files in /assets/custom (Default ENV CONTAINER_CUSTOM_FOLDER) to /www/html  'custom_files /www/html'
+    ## eg. Copy all files in /assets/custom (Default ENV CONTAINER_CUSTOM_PATH) to /www/html  'custom_files /www/html'
+    ## Add another parameter if you want to move any source folder to a destination ie `custom_files /assets/customfolder2/ /destination`
     if [ -n "${2}" ] ; then
-        custom_files_source="${1}"
-        custom_files_destination="${2}"
+        ccustom_files_source="${1}"
+        ccustom_files_destination="${2}"
     else
-        custom_files_source="${CONTAINER_CUSTOM_FOLDER}"
-        custom_files_destination="${1}"
+        ccustom_files_source="${CONTAINER_CUSTOM_PATH}"
+        ccustom_files_destination="${1}"
     fi
 
-    if [ -d "${custom_files_source}" ] && dir_notempty ; then
-        print "Custom Files: Copying files from '${custom_files_source}' to '${custom_files_destination}'"
-        if [ -d "${1}" ] ; then
-            mkdir -p "${1}"
+    if [ -d "${ccustom_files_source}" ] && dir_notempty ; then
+        print "Custom Files: Copying files from '${ccustom_files_source}' to '${ccustom_files_destination}'"
+        if [ -d "${ccustom_files-destination}" ] ; then
+            mkdir -p "${ccustom_files-destination}"
         fi
-        cp -a "${CONTAINER_CUSTOM_FOLDER}" "${1}"
+        cp -a "${ccustom_files_source}"/* "${ccustom_files_destination}"/
+    fi
+}
+
+custom_scripts() {
+    ## Execute Custom scripts out of this directory
+    ## eg. Copy all files in /assets/custom (Default ENV CONTAINER_CUSTOM_SCRIPTS_PATH) to /www/html  'custom_files /www/html'
+    ## Add another parameter if you want to move any source folder to a destination ie `custom_files /assets/customfolder2/ /destination`
+    if [ -n "${1}" ] ; then
+        ccustom_scripts_source="${1}"
+    else
+        ccustom_scripts_source="${CONTAINER_CUSTOM_SCRIPTS_PATH}"
     fi
 
+    if [ -d "${ccustom_scripts_source}" ] && dir_notempty ; then
+        for ccustom_script in ${ccustom_scripts_source}/*.sh ; do
+            if [ -x "$f" ] && [ ! -d "$f" ] ; then
+                print_debug "Custom Scripts: '${ccustom_script}'"
+            fi
+        done
+    fi
 }
 
 
