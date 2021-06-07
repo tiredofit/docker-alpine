@@ -110,8 +110,30 @@ check_service_initialized() {
     output_on
 }
 
+custom_files() {
+    ## Copy files from one lcoation to somewhere else on the file system
+    ## EG Copy all files in /assets/custom (Default ENV CONTAINER_CUSTOM_FOLDER) to /www/html  'custom_files /www/html'
+    if [ -n "${2}" ] ; then
+        custom_files_source="${1}"
+        custom_files_destination="${2}"
+    else
+        custom_files_source="${CONTAINER_CUSTOM_FOLDER}"
+        custom_files_destination="${1}"
+    fi
+
+    if [ -d "${custom_files_source}" ] && dir_notempty ; then
+        print "Custom Files: Copying files from '${custom_files_source}' to '${custom_files_destination}'"
+        if [ -d "${1}" ] ; then
+            mkdir -p "${1}"
+        fi
+        cp -a "${CONTAINER_CUSTOM_FOLDER}" "${1}"
+    fi
+
+}
+
+
 db_ready() {
-### Usage db_ready <dbtype>
+    ## Usage db_ready <dbtype>
     output_off
     print_debug "Checking to see if Database Type $1 is ready"
     case "$1" in
@@ -184,6 +206,14 @@ db_ready() {
     output_on
 }
 
+dir_empty(){
+    [ ! -n "$(ls -A $1)" ]
+}
+
+dir_notempty(){
+    [ -n "$(ls -A $1)" ]
+}
+
 ## Docker Secrets Support
 ## usage: file_env VAR [DEFAULT]
 ##    ie: file_env 'XYZ_DB_PASSWORD' 'example'
@@ -199,7 +229,7 @@ file_env() {
       elif [ "${!var:-}" ]; then
         val="${!var}"
       fi
-      
+
       if [ -z "${val}" ]; then
         print_error "error: neither $var nor $fileVar are set but are required"
         exit 1
@@ -216,7 +246,7 @@ file_env() {
 ##         Leaving option blank will load all files from the /assets/defaults folder
 get_defaults() {
     if [ -n "$1" ] ; then
-        case "$1" in 
+        case "$1" in
             "ALL" | "all" )
                 for d in /assets/defaults/* ; do
                     if [ "$d" != "/assets/defaults/00-container" ] ; then
@@ -280,7 +310,7 @@ get_defaults() {
 ## Leaving option blank will load all files from the /assets/functions folder
 get_functions() {
     if [ -n "$1" ] ; then
-        case "$1" in 
+        case "$1" in
             "ALL" | "all" )
                 for f in /assets/functions/* ; do
                     if [ "$f" != "/assets/functions/00-container" ] ; then
@@ -572,7 +602,7 @@ service_start() {
 service_stop() {
     if [ "${1}" != "$(basename "$0")" ] ; then
         echo "DONOTSTART added by $(basename \""$0"\")" >> /tmp/state/"${1}"-init
-    fi            
+    fi
     DONOTSTART=TRUE
 }
 
@@ -590,7 +620,7 @@ set_timezone () {
 }
 
 ## Convert TRUE or FALSE statements to either yes or no
-## Usage: 'truefalse_yesno varname' 
+## Usage: 'truefalse_yesno varname'
 ## Don't prefix it with a $
 ## Optionally add "uppercase" / "lowercase" as second value on how you wish it to be replaced
 truefalse_yesno() {
@@ -609,7 +639,7 @@ truefalse_yesno() {
                         export "$1=yes"
                     ;;
                 esac
-            else 
+            else
                 export "$1=yes"
             fi
     elif [ "$value" = "FALSE" ] || [ "$value" = "false" ] || [ "$value" = "NO" ] || [ "$value" = "no" ] ; then
@@ -624,7 +654,7 @@ truefalse_yesno() {
                         export "$1=no"
                     ;;
                 esac
-            else 
+            else
                 export "$1=no"
             fi
     fi
@@ -632,19 +662,19 @@ truefalse_yesno() {
 
 ## Timesaver for if statements
 ## Usage: if var_false $VARNAME ; then ... fi
-var_false() { 
-    [ "${1}" = "FALSE" ] || [ "${1}" = "false" ] || [ "${1}" = "NO" ] || [ "${1}" = "no" ] 
+var_false() {
+    [ "${1}" = "FALSE" ] || [ "${1}" = "false" ] || [ "${1}" = "NO" ] || [ "${1}" = "no" ]
 }
 
-var_notfalse() { 
-    [ "${1}" != "FALSE" ] 
+var_notfalse() {
+    [ "${1}" != "FALSE" ]
 }
 
-var_nottrue() { 
-    [ "${1}" != "TRUE" ] 
+var_nottrue() {
+    [ "${1}" != "TRUE" ]
 }
 
-var_true() { 
+var_true() {
     [ "${1}" = "TRUE" ] || [ "${1}" = "true" ] || [ "${1}" = "YES" ] || [ "${1}" = "yes" ]
 }
 
@@ -689,7 +719,7 @@ wait_for_socket() {
 
 
 ## Convert YES or NO statements to either TRUE or FALSE
-## Usage: 'yesno_truefalse varname' 
+## Usage: 'yesno_truefalse varname'
 ## Don't prefix it with a $
 ## Optionally add "uppercase" / "lowercase" as second value on how you wish it to be replaced
 yesno_truefalse() {
@@ -708,7 +738,7 @@ yesno_truefalse() {
                         export "$1=true"
                     ;;
                 esac
-            else 
+            else
                 export "$1=TRUE"
             fi
     elif [ "$value" = "FALSE" ] || [ "$value" = "false" ] || [ "$value" = "NO" ] || [ "$value" = "no" ] ; then
@@ -723,7 +753,7 @@ yesno_truefalse() {
                         export "$1=false"
                     ;;
                 esac
-            else 
+            else
                 export "$1=FALSE"
             fi
     fi
@@ -749,6 +779,6 @@ case "$DEBUG_MODE" in
                     print_notice "Enabling Debug mode for $(basename "$PWD") scripts"
                     set -x
                 fi
-                
+
             ;;
 esac

@@ -110,17 +110,18 @@ The following directories are used for configuration and can be mapped for persi
 
 Below is the complete list of available options that can be used to customize your installation.
 #### Container Options
-| Parameter             | Description                                                            | Default          |
-| --------------------- | ---------------------------------------------------------------------- | ---------------- |
-| `COLORIZE_OUTPUT`     | Enable/Disable colorized console output                                | `TRUE`           |
-| `CONTAINER_LOG_LEVEL` | Control level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG` | Default `NOTICE` |
-| `DEBUG_MODE`          | Enable debug mode                                                      | `FALSE`          |
-| `ENABLE_CRON`         | Enable Cron                                                            | `TRUE`           |
-| `ENABLE_LOGROTATE`    | Enable Logrotate (if Cron enabled)                                     | `TRUE`           |
-| `ENABLE_SMTP`         | Enable SMTP services                                                   | `TRUE`           |
-| `ENABLE_ZABBIX`       | Enable Zabbix Agent                                                    | `TRUE`           |
-| `SKIP_SANITY_CHECK`   | Disable container startup routine check                                | `FALSE`          |
-| `TIMEZONE`            | Set Timezone                                                           | `Etc/GMT`        |
+| Parameter                    | Description                                                            | Default          |
+| ---------------------------- | ---------------------------------------------------------------------- | ---------------- |
+| `COLORIZE_OUTPUT`            | Enable/Disable colorized console output                                | `TRUE`           |
+| `CONTAINER_CUSTOM_DIRECTORY` | Used for adding custom files into the image upon startup               | `/assets/custom` |
+| `CONTAINER_LOG_LEVEL`        | Control level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG` | Default `NOTICE` |
+| `DEBUG_MODE`                 | Enable debug mode                                                      | `FALSE`          |
+| `ENABLE_CRON`                | Enable Cron                                                            | `TRUE`           |
+| `ENABLE_LOGROTATE`           | Enable Logrotate (if Cron enabled)                                     | `TRUE`           |
+| `ENABLE_SMTP`                | Enable SMTP services                                                   | `TRUE`           |
+| `ENABLE_ZABBIX`              | Enable Zabbix Agent                                                    | `TRUE`           |
+| `SKIP_SANITY_CHECK`          | Disable container startup routine check                                | `FALSE`          |
+| `TIMEZONE`                   | Set Timezone                                                           | `Etc/GMT`        |
 
 If you wish to have this sends mail, set `ENABLE_SMTP=TRUE` and configure the following environment variables.
 See the [MSMTP Configuration Options](https://marlam.de/msmtp/msmtp.html) for further information on options to configure MSMTP.
@@ -128,7 +129,7 @@ See the [MSMTP Configuration Options](https://marlam.de/msmtp/msmtp.html) for fu
 #### SMTP Options
 | Parameter             | Description                                       | Default         |
 | --------------------- | ------------------------------------------------- | --------------- |
-| `SMTP_AUTO_FROM`      | Add setting to support sending through Gmail SMTP | `TRUE`         |
+| `SMTP_AUTO_FROM`      | Add setting to support sending through Gmail SMTP | `TRUE`          |
 | `SMTP_HOST`           | Hostname of SMTP Server                           | `postfix-relay` |
 | `SMTP_PORT`           | Port of SMTP Server                               | `25`            |
 | `SMTP_DOMAIN`         | HELO Domain                                       | `docker`        |
@@ -182,9 +183,9 @@ Hint, also change the Group ID to your local development users UID & GID and avo
 
 The following ports are exposed.
 
-| Port    | Description                                  |
-| ------- | -------------------------------------------- |
-| `10050` | Zabbix Agent                                 |
+| Port    | Description  |
+| ------- | ------------ |
+| `10050` | Zabbix Agent |
 
 #@ Debug Mode
 
