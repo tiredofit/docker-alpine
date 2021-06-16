@@ -1,3 +1,10 @@
+## 6.1.1 2021-06-16 <dave at tiredofit dot ca>
+
+   ### Added
+      - Introduce Alpine 3.14 variants
+      - Zabbix Agent 5.4.1
+
+
 ## 6.1.0 2021-05-27 <perarg@github>
 
    ### Fixed

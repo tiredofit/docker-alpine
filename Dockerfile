@@ -1,11 +1,11 @@
-FROM alpine:3.13
+FROM alpine:3.14
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ARG ZABBIX_VERSION
 ARG S6_OVERLAY_VERSION
 
 ### Set defaults
-ENV ZABBIX_VERSION=${ZABBIX_VERSION:-"5.4.0"} \
+ENV ZABBIX_VERSION=${ZABBIX_VERSION:-"5.4.1"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"v2.2.0.3"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
