@@ -15,7 +15,7 @@ ENV ZABBIX_VERSION=${ZABBIX_VERSION:-"5.4.1"} \
     ZABBIX_HOSTNAME=alpine
 
 RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -c 1-3)" in \
-        3.3|3.4|3.5|3.6) : ;; \
+        3.5|3.6) : ;; \
         *) busybox_extras="busybox-extras" ;; \
     esac ; \
     \
