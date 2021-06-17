@@ -23,6 +23,8 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -c 1-3)"
     apk update && \
     apk upgrade && \
     ### Add core utils
+    apk del libressl && \
+    apk fix && \
     apk add -t .base-rundeps \
                 bash \
                 ${busybox_extras} \

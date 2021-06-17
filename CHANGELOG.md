@@ -1,3 +1,9 @@
+## 6.1.2 2021-06-17 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Drop Libressl and reintroduce Openssl
+
+
 ## 6.1.1 2021-06-16 <dave at tiredofit dot ca>
 
    ### Added
