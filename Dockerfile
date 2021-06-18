@@ -33,6 +33,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -c 1-3)"
                 iputils \
                 less \
                 $(apk search libssl1* -q) \
+                libressl \
                 logrotate \
                 msmtp \
                 nano \
@@ -48,7 +49,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -c 1-3)"
                 autoconf \
                 automake \
                 coreutils \
-                openssl-dev \
+                libressl \
                 pcre-dev \
                 && \
     \

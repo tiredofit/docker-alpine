@@ -1,3 +1,9 @@
+## 6.1.3 2021-06-18 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Revert Changes introduces by 6.1.2 - Use LibreSSL
+
+
 ## 6.1.2 2021-06-17 <dave at tiredofit dot ca>
 
    ### Changed
