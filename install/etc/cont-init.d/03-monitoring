@@ -1,0 +1,152 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+prepare_service single
+PROCESS_NAME="monitoring"
+output_off
+
+## Legacy
+if var_false "${ENABLE_ZABBIX}"; then CONTAINER_ENABLE_MONITORING=FALSE ; fi
+if var_true "${ENABLE_ZABBIX}"; then
+  CONTAINER_ENABLE_MONITORING=TRUE
+  CONTAINER_MONITORING_BACKEND=zabbix
+fi
+##
+
+if var_true "${CONTAINER_ENABLE_MONITORING}" ; then
+  case "${CONTAINER_MONITORING_BACKEND}" in
+    "zabbix" | "ZABBIX" )
+      print_debug "Using Zabbix Backend"
+      if var_true "${DEBUG_MODE}" ; then
+        ZABBIX_DEBUGLEVEL=4
+      fi
+
+      if var_true "${ZABBIX_USER_SUDO}" ; then
+        grant_sudo zabbix
+      fi
+
+      case "${ZABBIX_AGENT_TYPE}" in
+        "1" | "classic" | "c" | "legacy" | "old" )
+
+          if [ "${ZABBIX_SETUP_TYPE}" = "AUTO" ] || [ "${ZABBIX_SETUP_TYPE}" = "auto" ] ; then
+            print_debug "Configuring Zabbix classic Agent"
+            cat <<EOF > "${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}"
+# Custom Generated Zabbix Agent configuration for version 1. If you want to use your own config set 'ZABBIX_SETUP_TYPE=MANUAL'
+# Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
+
+AllowKey=system.run[${ZABBIX_REMOTECOMMANDS_ALLOW}]
+AllowRoot=${ZABBIX_ALLOW_ROOT}
+BufferSend=${ZABBIX_BUFFER_SEND}
+BufferSize=${ZABBIX_BUFFER_SIZE}
+DebugLevel=${ZABBIX_DEBUGLEVEL}
+Hostname=${ZABBIX_HOSTNAME}
+ListenIP=${ZABBIX_LISTEN_IP}
+ListenPort=${ZABBIX_LISTEN_PORT}
+LogFile=${ZABBIX_LOG_PATH}/${ZABBIX_LOG_FILE}
+LogFileSize=${ZABBIX_LOG_FILE_SIZE}
+LogRemoteCommands=${ZABBIX_REMOTECOMMANDS_LOG}
+MaxLinesPerSecond=${ZABBIX_MAXLINES_SECOND}
+RefreshActiveChecks=${ZABBIX_REFRESH_ACTIVE_CHECKS}
+Server=${ZABBIX_SERVER}
+ServerActive=${ZABBIX_SERVER_ACTIVE}
+StartAgents=${ZABBIX_START_AGENTS}
+User=${ZABBIX_USER}
+
+Include=${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf
+EOF
+
+              if [ -n "${ZABBIX_REMOTECOMMANDS_DENY}" ]; then
+                echo "DenyKey=system.run[${ZABBIX_REMOTECOMMANDS_DENY}]" >> ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
+              fi
+
+              mkdir -p ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d
+              echo "UserParameter=agent.os,grep \"PRETTY_NAME\" /etc/os-release | cut -d \'\"\' -f2" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/container_os.conf
+              os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
+
+              case ${os} in
+                "alpine" )
+                  echo "UserParameter=packages.upgradable,sudo apk update >/dev/null && apk version | sed '/Installed/d' | wc -l" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/updated_packages.conf
+                ;;
+                "debian" )
+                  echo "UserParameter=packages.upgradable,sudo apt-get update >/dev/null && sudo aptitude search '~U' | wc -l" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/updated_packages.conf
+                ;;
+              esac
+
+          else
+            print_debug "Skipping Configuring Zabbix classic Agent"
+          fi
+
+        ;;
+        "2" | "m" | "n" | "modern" | "new" )
+          case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
+            3.11|3.12|3.13|3.14|edge)
+              :
+            ;;
+            *)
+              print_error "Sorry, Modern version not available for this images version (Alpine 3.11 + only)"
+              exit 1
+            ;;
+          esac
+          if [ "${ZABBIX_SETUP_TYPE}" = "AUTO" ] || [ "${ZABBIX_SETUP_TYPE}" = "auto" ] ; then
+            print_debug "Configuring Zabbix modern Agent"
+            cat <<EOF > "${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}"
+# Custom Generated Zabbix Agent configuration for version 2 If you want to use your own config set 'ZABBIX_SETUP_TYPE=MANUAL'
+# Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
+
+AllowKey=system.run[${ZABBIX_REMOTECOMMANDS_ALLOW}]
+BufferSend=${ZABBIX_BUFFER_SEND}
+BufferSize=${ZABBIX_BUFFER_SIZE}
+ControlSocket=${ZABBIX_SOCKET}
+DebugLevel=${ZABBIX_DEBUGLEVEL}
+Hostname=${ZABBIX_HOSTNAME}
+ListenPort=${ZABBIX_LISTEN_PORT}
+LogFile=${ZABBIX_LOG_PATH}/${ZABBIX_LOG_FILE}
+LogFileSize=${ZABBIX_LOG_FILE_SIZE}
+RefreshActiveChecks=${ZABBIX_REFRESH_ACTIVE_CHECKS}
+Server=${ZABBIX_SERVER}
+ServerActive=${ZABBIX_SERVER_ACTIVE}
+StatusPort=${ZABBIX_STATUS_PORT}
+
+Include=${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf
+EOF
+
+              if [ -n "${ZABBIX_REMOTECOMMANDS_DENY}" ]; then
+                echo "DenyKey=system.run[${ZABBIX_REMOTECOMMANDS_DENY}]" >> ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
+              fi
+
+              mkdir -p ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d
+              echo "UserParameter=agent.os,grep \"PRETTY_NAME\" /etc/os-release | cut -d \'\"\' -f2" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/container_os.conf
+              os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
+
+              case ${os} in
+                "alpine" )
+                  echo "UserParameter=packages.upgradable,sudo apk update >/dev/null && apk version | sed '/Installed/d' | wc -l" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/updated_packages.conf
+                ;;
+                "debian" )
+                  echo "UserParameter=packages.upgradable,sudo apt-get update >/dev/null && sudo aptitude search '~U' | wc -l" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/updated_packages.conf
+                ;;
+              esac
+
+          else
+            print_debug "Skipping Configuring Zabbix modern Agent"
+          fi
+        ;;
+      esac
+
+      mkdir -p "${ZABBIX_LOG_PATH}"
+      chown -R "${ZABBIX_USER}" "${ZABBIX_LOG_PATH}"
+      chown -R "${ZABBIX_USER}" ${ZABBIX_CONFIG_PATH}/
+      print_notice "Container configured for monitoring with '${CONTAINER_MONITORING_BACKEND} ${ZABBIX_AGENT_TYPE}'"
+    ;;
+    * )
+      print_error "Unknown Monitoring Backend"
+      exit 1
+    ;;
+  esac
+else
+  print_notice "Disabling Monitoring Functionality"
+  service_stop "$(basename "$0")"
+fi
+
+output_on
+liftoff

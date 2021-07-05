@@ -1,0 +1,17 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+PROCESS_NAME="logging"
+prepare_service defaults single
+
+output_off
+check_container_initialized
+check_service_initialized init
+liftoff
+
+case "${CONTAINER_LOGSHIPPING_BACKEND}" in
+    "fluent-bit" | "fluentbit" )
+		print_start "Starting fluent-bit ${FLUENTBIT_VERSION}"
+		silent exec fluent-bit -c /etc/fluent-bit/fluent-bit.conf
+    ;;
+esac

@@ -1,0 +1,116 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+prepare_service single
+PROCESS_NAME="logging"
+
+output_off
+
+if var_true "${CONTAINER_ENABLE_LOGROTATE}" ; then
+    print_debug "Enabling log rotation"
+    cat <<EOF > "${CONTAINER_SCHEDULING_LOCATION}"/logrotate
+# Hardcoded in image in /etc/cont-init.d/04-logging
+# Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
+
+59 23 * * * logrotate -f /etc/logrotate.d/* >/dev/null 2>&1'
+EOF
+fi
+
+if var_false "${CONTAINER_ENABLE_LOGSHIPPING}" ;  then
+  print_notice "Disabling Log Shipping Functionality"
+  service_stop "$(basename "$0")"
+else
+
+  case "${CONTAINER_LOGSHIPPING_BACKEND}" in
+    "fluent-bit" | "fluentbit" )
+        os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
+            case ${os} in
+              "alpine" )
+                archit="$(apk --print-arch)"
+                case "$archit" in
+                  x86_64)
+                    :
+                  ;;
+                 *)
+                    print_error "Sorry this functionality is not available on ${archit} architecture"
+                    service_stop "$(basename "$0")"
+                    liftoff
+                    exit
+                  ;;
+                esac
+              ;;
+              "debian" )
+                archit=$(dpkg --print-architecture) && \
+                  case "$archit" in \
+                    amd64)
+                      :
+                    ;;
+		                *)
+                    print_error "Sorry this functionality is not available on ${archit} architecture"
+                    service_stop "$(basename "$0")"
+                    liftoff
+                    exit
+                  ;;
+                esac
+              ;;
+        esac
+
+        if [ "${FLUENTBIT_SETUP_TYPE}" = "AUTO" ] || [ "${FLUENTBIT_SETUP_TYPE}" = "auto" ] ; then
+          print_debug "Configuring Fluent-bit agent"
+          truefalse_onoff FLUENTBIT_ENABLE_HTTP_SERVER
+          truefalse_onoff FLUENTBIT_ENABLE_STORAGE_METRICS
+          truefalse_onoff FLUENTBIT_STORAGE_CHECKSUM
+          mkdir -p "${FLUENTBIT_STORAGE_PATH}"
+          mkdir -p "${FLUENTBIT_LOG_PATH}"
+          mkdir -p /etc/fluent-bit/conf.d
+          cat <<EOF > /etc/fluent-bit/conf.d/do_not_delete.conf
+# Don't delete this configuration file otherwise execution of fluent-bit will fail. It will not affect operation of your system or impact resources
+[INPUT]
+    Name   dummy
+    Tag    ignore
+
+[OUTPUT]
+    Name   NULL
+    Match  ignore
+EOF
+          cat <<EOF > /etc/fluent-bit/fluent-bit.conf
+## Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
+
+@INCLUDE conf.d/*.conf
+[SERVICE]
+    flush        ${FLUENTBIT_FLUSH_SECONDS}
+    grace        ${FLUENTBIT_GRACE_SECONDS}
+    daemon       Off
+    log_level    ${FLUENTBIT_LOG_LEVEL}
+    log_file     ${FLUENTBIT_LOG_PATH}/${FLUENTBIT_LOG_FILE}
+    parsers_file ${FLUENTBIT_CONFIG_PARSERS}
+    plugins_file ${FLUENTBIT_CONFIG_PLUGINS}
+    http_server  ${FLUENTBIT_ENABLE_HTTP_SERVER}
+    http_listen  ${FLUENTBIT_HTTP_LISTEN_IP}
+    http_port    ${FLUENTBIT_HTTP_LISTEN_PORT}
+    storage.metrics ${FLUENTBIT_ENABLE_STORAGE_METRICS}
+    storage.path ${FLUENTBIT_STORAGE_PATH}
+    storage.sync ${FLUENTBIT_STORAGE_SYNC}
+    storage.checksum ${FLUENTBIT_STORAGE_CHECKSUM}
+    storage.backlog.mem_limit ${FLUENTBIT_STORAGE_BACKLOG_LIMIT}
+EOF
+        else
+          print "Not auto configuring Fluent-Bit. Drop configuration files in /etc/fluent-bit/conf.d"
+          cat <<EOF > /etc/fluent-bit/fluent-bit.conf
+## This configuration file allows you to put your own configuration in /etc/fluent-bit/conf.d - Don't delete or it will fail :)
+## Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
+@INCLUDE conf.d/*.conf
+EOF
+        fi
+        print_notice "Container configured to ship logs via '${CONTAINER_LOGSHIPPING_BACKEND}'"
+    ;;
+    *)
+      print_error "Unknown Log Shipping Backend"
+      exit 1
+    ;;
+  esac
+
+fi
+
+output_on
+liftoff

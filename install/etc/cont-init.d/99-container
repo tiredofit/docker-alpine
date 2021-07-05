@@ -1,9 +1,10 @@
 #!/usr/bin/with-contenv bash
 
+source /assets/defaults/00-container
 source /assets/functions/00-container
 PROCESS_NAME="container"
 
-if var_false "$SKIP_SANITY_CHECK" ; then
+if var_false "${CONTAINER_SKIP_SANITY_CHECK}" ; then
   output_off
   ### Final sanity check to make sure all scripts have executed and initialized properly, otherwise stop
   files_init=$(find /etc/cont-init.d/ -maxdepth 1 -type f | wc -l)

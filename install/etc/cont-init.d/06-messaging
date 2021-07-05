@@ -1,0 +1,54 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+prepare_service single
+# shellcheck disable=SC2034
+PROCESS_NAME="messaging"
+
+output_off
+
+## Legacy
+if var_false "${ENABLE_SMTP}"; then CONTAINER_ENABLE_MESSAGING=TRUE ; fi
+if var_true "${ENABLE_SMTP}"; then
+  CONTAINER_ENABLE_MESSAGING=TRUE
+  CONTAINER_MONITORING_BACKEND=msmtp
+fi
+##
+
+if var_true "${CONTAINER_ENABLE_MESSAGING}" ; then
+  case "${CONTAINER_MESSAGING_BACKEND}" in
+    "msmtp" )
+      rm -f /usr/sbin/sendmail
+      ln -s /usr/bin/msmtp /usr/sbin/sendmail
+
+      echo "### Automatically generated on container start. See documentation on how to set!" > /etc/msmtprc
+        {
+          echo "account default "
+          echo "host ${SMTP_HOST}"
+          echo "port ${SMTP_PORT}"
+          echo "domain ${SMTP_DOMAIN}"
+          if [ -n "$SMTP_FROM" ]; then echo "from ${SMTP_FROM}"; fi
+          echo "maildomain ${SMTP_MAILDOMAIN}"
+          if [ -n "$SMTP_AUTHENTICATION" ]; then echo "auth ${SMTP_AUTHENTICATION}"; fi
+          if [ -n "$SMTP_USER" ]; then echo "user ${SMTP_USER}"; fi
+          if [ -n "$SMTP_PASS" ]; then echo "password ${SMTP_PASS}"; fi
+          echo "tls ${SMTP_TLS}"
+          echo "tls_starttls ${SMTP_STARTTLS}"
+          echo "tls_certcheck ${SMTP_TLSCERTCHECK}"
+          ### Gmail Specific SMTP Config
+          if var_true "${ENABLE_SMTP_GMAIL}" || var_true "${SMTP_AUTO_FROM}"; then echo "auto_from on"; fi
+        } >> /etc/msmtprc
+
+        print_notice "Container configured to route mail via SMTP to '${SMTP_HOST}'"
+    ;;
+    *)
+      print_error "Unknown messaging backend"
+      exit 1
+    ;;
+  esac
+else
+    print_notice "Disabling Container messaging features"
+fi
+
+output_on
+liftoff

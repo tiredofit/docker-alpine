@@ -90,6 +90,8 @@ jobs:
             if [[ $GITHUB_REF == refs/heads/* ]]; then
               sed -i "/FROM .*/a LABEL tiredofit.base.git_branch=\"${GITHUB_REF#refs/heads/}\"" Dockerfile
             fi
+
+            echo "COPY CHANGELOG.md /${{ secrets.DOCKER_USERNAME }}/CHANGELOG_${GITHUB_REPOSITORY}.md" >> Dockerfile
           fi
 
       - name: Switch
@@ -176,6 +178,7 @@ jobs:
             sed -i "/FROM .*/a LABEL tiredofit.base.image_build_date=\"$(date +'%Y-%m-%d %H:%M:%S')\"" Dockerfile
             if [ -f "CHANGELOG.md" ] ; then
               sed -i "/FROM .*/a LABEL tiredofit.base.git_changelog_version=\"$(head -n1 ./CHANGELOG.md | awk '{print $2}')\"" Dockerfile
+              echo "COPY CHANGELOG.md /${{ secrets.DOCKER_USERNAME }}/CHANGELOG_${GITHUB_REPOSITORY}.md" >> Dockerfile
             fi
 
             if [[ $GITHUB_REF == refs/tags/* ]]; then
@@ -271,6 +274,7 @@ jobs:
             sed -i "/FROM .*/a LABEL tiredofit.base.image_build_date=\"$(date +'%Y-%m-%d %H:%M:%S')\"" Dockerfile
             if [ -f "CHANGELOG.md" ] ; then
               sed -i "/FROM .*/a LABEL tiredofit.base.git_changelog_version=\"$(head -n1 ./CHANGELOG.md | awk '{print $2}')\"" Dockerfile
+              echo "COPY CHANGELOG.md /${{ secrets.DOCKER_USERNAME }}/CHANGELOG_${GITHUB_REPOSITORY}.md" >> Dockerfile
             fi
 
             if [[ $GITHUB_REF == refs/tags/* ]]; then
@@ -366,6 +370,7 @@ jobs:
             sed -i "/FROM .*/a LABEL tiredofit.base.image_build_date=\"$(date +'%Y-%m-%d %H:%M:%S')\"" Dockerfile
             if [ -f "CHANGELOG.md" ] ; then
               sed -i "/FROM .*/a LABEL tiredofit.base.git_changelog_version=\"$(head -n1 ./CHANGELOG.md | awk '{print $2}')\"" Dockerfile
+              echo "COPY CHANGELOG.md /${{ secrets.DOCKER_USERNAME }}/CHANGELOG_${GITHUB_REPOSITORY}.md" >> Dockerfile
             fi
 
             if [[ $GITHUB_REF == refs/tags/* ]]; then
@@ -461,6 +466,7 @@ jobs:
             sed -i "/FROM .*/a LABEL tiredofit.base.image_build_date=\"$(date +'%Y-%m-%d %H:%M:%S')\"" Dockerfile
             if [ -f "CHANGELOG.md" ] ; then
               sed -i "/FROM .*/a LABEL tiredofit.base.git_changelog_version=\"$(head -n1 ./CHANGELOG.md | awk '{print $2}')\"" Dockerfile
+              echo "COPY CHANGELOG.md /${{ secrets.DOCKER_USERNAME }}/CHANGELOG_${GITHUB_REPOSITORY}.md" >> Dockerfile
             fi
 
             if [[ $GITHUB_REF == refs/tags/* ]]; then
@@ -556,6 +562,7 @@ jobs:
             sed -i "/FROM .*/a LABEL tiredofit.base.image_build_date=\"$(date +'%Y-%m-%d %H:%M:%S')\"" Dockerfile
             if [ -f "CHANGELOG.md" ] ; then
               sed -i "/FROM .*/a LABEL tiredofit.base.git_changelog_version=\"$(head -n1 ./CHANGELOG.md | awk '{print $2}')\"" Dockerfile
+              echo "COPY CHANGELOG.md /${{ secrets.DOCKER_USERNAME }}/CHANGELOG_${GITHUB_REPOSITORY}.md" >> Dockerfile
             fi
 
             if [[ $GITHUB_REF == refs/tags/* ]]; then
@@ -651,6 +658,7 @@ jobs:
             sed -i "/FROM .*/a LABEL tiredofit.base.image_build_date=\"$(date +'%Y-%m-%d %H:%M:%S')\"" Dockerfile
             if [ -f "CHANGELOG.md" ] ; then
               sed -i "/FROM .*/a LABEL tiredofit.base.git_changelog_version=\"$(head -n1 ./CHANGELOG.md | awk '{print $2}')\"" Dockerfile
+              echo "COPY CHANGELOG.md /${{ secrets.DOCKER_USERNAME }}/CHANGELOG_${GITHUB_REPOSITORY}.md" >> Dockerfile
             fi
 
             if [[ $GITHUB_REF == refs/tags/* ]]; then
@@ -746,6 +754,7 @@ jobs:
             sed -i "/FROM .*/a LABEL tiredofit.base.image_build_date=\"$(date +'%Y-%m-%d %H:%M:%S')\"" Dockerfile
             if [ -f "CHANGELOG.md" ] ; then
               sed -i "/FROM .*/a LABEL tiredofit.base.git_changelog_version=\"$(head -n1 ./CHANGELOG.md | awk '{print $2}')\"" Dockerfile
+              echo "COPY CHANGELOG.md /${{ secrets.DOCKER_USERNAME }}/CHANGELOG_${GITHUB_REPOSITORY}.md" >> Dockerfile
             fi
 
             if [[ $GITHUB_REF == refs/tags/* ]]; then
@@ -841,6 +850,7 @@ jobs:
             sed -i "/FROM .*/a LABEL tiredofit.base.image_build_date=\"$(date +'%Y-%m-%d %H:%M:%S')\"" Dockerfile
             if [ -f "CHANGELOG.md" ] ; then
               sed -i "/FROM .*/a LABEL tiredofit.base.git_changelog_version=\"$(head -n1 ./CHANGELOG.md | awk '{print $2}')\"" Dockerfile
+              echo "COPY CHANGELOG.md /${{ secrets.DOCKER_USERNAME }}/CHANGELOG_${GITHUB_REPOSITORY}.md" >> Dockerfile
             fi
 
             if [[ $GITHUB_REF == refs/tags/* ]]; then
@@ -936,6 +946,7 @@ jobs:
             sed -i "/FROM .*/a LABEL tiredofit.base.image_build_date=\"$(date +'%Y-%m-%d %H:%M:%S')\"" Dockerfile
             if [ -f "CHANGELOG.md" ] ; then
               sed -i "/FROM .*/a LABEL tiredofit.base.git_changelog_version=\"$(head -n1 ./CHANGELOG.md | awk '{print $2}')\"" Dockerfile
+              echo "COPY CHANGELOG.md /${{ secrets.DOCKER_USERNAME }}/CHANGELOG_${GITHUB_REPOSITORY}.md" >> Dockerfile
             fi
 
             if [[ $GITHUB_REF == refs/tags/* ]]; then
@@ -1031,6 +1042,7 @@ jobs:
             sed -i "/FROM .*/a LABEL tiredofit.base.image_build_date=\"$(date +'%Y-%m-%d %H:%M:%S')\"" Dockerfile
             if [ -f "CHANGELOG.md" ] ; then
               sed -i "/FROM .*/a LABEL tiredofit.base.git_changelog_version=\"$(head -n1 ./CHANGELOG.md | awk '{print $2}')\"" Dockerfile
+              echo "COPY CHANGELOG.md /${{ secrets.DOCKER_USERNAME }}/CHANGELOG_${GITHUB_REPOSITORY}.md" >> Dockerfile
             fi
 
             if [[ $GITHUB_REF == refs/tags/* ]]; then

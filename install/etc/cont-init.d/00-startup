@@ -12,4 +12,8 @@ else
    print_debug "Cold Container startup detected - Proceeding to initialize services normally"
 fi
 
+print_debug "Adding shortcuts to .bashrc"
+echo 'down() { s6-svc -d /var/run/s6/services/$1 ;} '>> /root/.bashrc
+echo 'up() { s6-svc -u /var/run/s6/services/$1 ;} ' >> /root/.bashrc
+
 liftoff

@@ -110,6 +110,34 @@ check_service_initialized() {
     output_on
 }
 
+create_logrotate() {
+## Usage <Logrotate Config Name> <path> (optional user) (optional group)
+## e.g. create_logrotate cron /var/log/cron/cron.log root root
+    if [ -n "$1" ] && [ -n "$2" ]; then
+        print_debug "Creating Logrotate Entry for $2"
+        if [ -n "$1" ] && [ -n "$2" ]; then
+            lruser="    su $3 $4"
+        fi
+        if [ ! -d "/etc/logrotate.d" ] ; then
+            mkdir -p /etc/logrotate.d
+        fi
+        cat <<EOF > /etc/logrotate.d/"$1"
+$2 {
+    daily
+    ifempty
+    rotate 7
+    missingok
+    compress
+    dateext
+    copytruncate
+    ${lruser}
+}
+EOF
+        chown root:root /etc/logrotate.d/${1}
+        chmod 0644 /etc/logrotate.d/${1}
+    fi
+}
+
 custom_files() {
     ## Copy files from one lcoation to somewhere else on the file system
     ## eg. Copy all files in /assets/custom (Default ENV CONTAINER_CUSTOM_PATH) to /www/html  'custom_files /www/html'
@@ -133,8 +161,6 @@ custom_files() {
 
 custom_scripts() {
     ## Execute Custom scripts out of this directory
-    ## eg. Copy all files in /assets/custom (Default ENV CONTAINER_CUSTOM_SCRIPTS_PATH) to /www/html  'custom_files /www/html'
-    ## Add another parameter if you want to move any source folder to a destination ie `custom_files /assets/customfolder2/ /destination`
     if [ -n "${1}" ] ; then
         ccustom_scripts_source="${1}"
     else
@@ -143,82 +169,141 @@ custom_scripts() {
 
     if [ -d "${ccustom_scripts_source}" ] && dir_notempty ; then
         for ccustom_script in ${ccustom_scripts_source}/*.sh ; do
-            if [ -x "$f" ] && [ ! -d "$f" ] ; then
-                print_debug "Custom Scripts: '${ccustom_script}'"
+            if [ -x "$ccustom_script" ] && [ ! -d "$ccustom_script" ] ; then
+                print_debug "Custom Script executing: '${ccustom_script}'"
+                exec ${ccustom_script}
             fi
         done
     fi
 }
-
 
 db_ready() {
     ## Usage db_ready <dbtype>
     output_off
     print_debug "Checking to see if Database Type $1 is ready"
     case "$1" in
-        "couch" )
-            DB_PORT=${DB_PORT:-5984}
-            COUNTER=0
+        "couch" | "couchdb" )
+            if [ -n "${DB_PORT}" ] ; then couch_port=${DB_PORT} ; fi ;
+            if [ -n "${COUCHDB_PORT}" ] ; then couch_port=${COUCHDB_PORT} ; fi ;
+            couch_port=${couch_port:-5984}
+            if [ -n "${DB_HOST}" ] ; then couch_host=${DB_HOST} ; fi ;
+            if [ -n "${COUCHDB_HOST}" ] ; then couch_host=${COUCHDB_HOST} ; fi ;
+            counter=0
             # shellcheck disable=SC2086
-            while ! (nc -z "${DB_HOST}" ${DB_PORT}) ; do
+            while ! (nc -z "${couch_host}" ${couch_port}) ; do
                 sleep 5
-                (( COUNTER+=5 ))
-                print_warn "CouchDB Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
+                (( counter+=5 ))
+                print_warn "CouchDB Host '${couch_host}' is not accessible, retrying.. ($counter seconds so far)"
             done
         ;;
-        "influx" )
-            DB_PORT=${DB_PORT:-8088}
-            COUNTER=0
-            while ! (nc -z "${DB_HOST}" "${DB_PORT}") ; do
+        "influx" | "influxdb" )
+            if [ -n "${DB_PORT}" ] ; then influx_port=${DB_PORT} ; fi ;
+            if [ -n "${INFLUXDB_PORT}" ] ; then influx_port=${INFLUXDB_PORT} ; fi ;
+            influx_port=${influx_port:-8088}
+            if [ -n "${DB_HOST}" ] ; then influx_host=${DB_HOST} ; fi ;
+            if [ -n "${INFLUXDB_HOST}" ] ; then influx_host=${INFLUXDB_HOST} ; fi ;
+            counter=0
+            while ! (nc -z "${influx_host}" "${influx_port}") ; do
                 sleep 5
-                (( COUNTER+=5 ))
-                print_warn "InfluxDB Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
+                (( counter+=5 ))
+                print_warn "InfluxDB Host '${influx_host}' is not accessible, retrying.. ($counter seconds so far)"
             done
         ;;
         "mongo" | "mongodb" )
-            DB_PORT=${DB_PORT:-27017}
-            COUNTER=0
-            while ! (nc -z "${DB_HOST}" "${DB_PORT}") ; do
+            if [ -n "${DB_PORT}" ] ; then mongo_port=${DB_PORT} ; fi ;
+            if [ -n "${MONGO_PORT}" ] ; then mongo_port=${MONGO_PORT} ; fi ;
+            mongo_port=${mongo_port:-27017}
+            if [ -n "${DB_HOST}" ] ; then mongo_host=${DB_HOST} ; fi ;
+            if [ -n "${MONGO_HOST}" ] ; then mongo_host=${MONGO_HOST} ; fi ;
+            counter=0
+            while ! (nc -z "${mongo_host}" "${mongo_port}") ; do
                 sleep 5
-                (( COUNTER+=5 ))
-                print_warn "Mongo Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
+                (( counter+=5 ))
+                print_warn "Mongo Host '${mongo_host}' is not accessible, retrying.. ($counter seconds so far)"
             done
         ;;
         "mysql" | "mariadb" | "MARIADB" | "MYSQL" )
-            DB_PORT=${DB_PORT:-3306}
-            COUNTER=0
-            while ! (mysql -u"${DB_USER}" -P"${DB_PORT}" -h"${DB_HOST}" -p"${DB_PASS}" -e "SELECT COUNT(*) FROM information_schema.FILES;" 2>&1 | grep -E "COUNT|Enter" > /dev/null 2>&1) ; do
+            if [ -n "${DB_PORT}" ] ; then maria_port=${DB_PORT} ; fi ;
+            if [ -n "${MYSQL_PORT}" ] ; then maria_port=${MYSQL_PORT} ; fi ;
+            if [ -n "${MARIA_PORT}" ] ; then maria_port=${MARIA_PORT} ; fi ;
+            maria_port=${maria_port:-3306}
+            if [ -n "${DB_HOST}" ] ; then maria_host=${DB_HOST} ; fi ;
+            if [ -n "${MYSQL_HOST}" ] ; then maria_host=${MYSQL_HOST} ; fi ;
+            if [ -n "${MARIA_HOST}" ] ; then maria_host=${MARIA_HOST} ; fi ;
+            if [ -n "${DB_USER}" ] ; then maria_user=${DB_USER} ; fi ;
+            if [ -n "${MYSQL_USER}" ] ; then maria_user=${MYSQL_USER} ; fi ;
+            if [ -n "${MARIA_USER}" ] ; then maria_user=${MARIA_USER} ; fi ;
+            if [ -n "${DB_PASS}" ] ; then maria_pass=${DB_PASS} ; fi ;
+            if [ -n "${MYSQL_PASS}" ] ; then maria_pass=${MYSQL_PASS} ; fi ;
+            if [ -n "${MARIA_PASS}" ] ; then maria_pass=${MARIA_PASS} ; fi ;
+            if [ -n "${DB_NAME}" ] ; then maria_name=${DB_NAME} ; fi ;
+            if [ -n "${MYSQL_NAME}" ] ; then maria_name=${MYSQL_NAME} ; fi ;
+            if [ -n "${MARIA_NAME}" ] ; then maria_name=${MARIA_NAME} ; fi ;
+            counter=0
+            while ! (mysql -u"${maria_user}" -P"${maria_port}" -h"${maria_host}" -p"${maria_pass}" -e "SELECT COUNT(*) FROM information_schema.FILES;" 2>&1 | grep -E "COUNT|Enter" > /dev/null 2>&1) ; do
               sleep 5
-              (( COUNTER+=5 ))
-              print_warn "MySQL/MariaDB Server '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
+              (( counter+=5 ))
+              print_warn "MySQL/MariaDB Server '${maria_host}' is not accessible, retrying.. ($counter seconds so far)"
             done
         ;;
-        "pgsql" | "psql" | "postgres" | "postgresql " )
-            DB_PORT=${DB_PORT:-5432}
-            COUNTER=0
-            export PGPASSWORD=${DB_PASS}
-            until pg_isready --dbname="${DB_NAME}" --host="${DB_HOST}" --port="${DB_PORT}" --username="${DB_USER}" -q
+        "pgsql" | "psql" | "postgres" | "postgresql" )
+            if [ -n "${DB_PORT}" ] ; then postgres_port=${DB_PORT} ; fi ;
+            if [ -n "${POSTGRES_PORT}" ] ; then postgres_port=${MYSQL_PORT} ; fi ;
+            postgres_port=${postgres_port:-5432}
+            if [ -n "${DB_HOST}" ] ; then postgres_host=${DB_HOST} ; fi ;
+            if [ -n "${POSTGRES_HOST}" ] ; then postgres_host=${POSTGRES_HOST} ; fi ;
+            if [ -n "${DB_USER}" ] ; then postgres_user=${DB_USER} ; fi ;
+            if [ -n "${POSTGRES_USER}" ] ; then postgres_user=${POSTGRES_USER} ; fi ;
+            if [ -n "${DB_PASS}" ] ; then postgres_pass=${DB_PASS} ; fi ;
+            if [ -n "${PGPASSWORD}" ] ; then postgres_pass=${PGPASSWORD} ; fi ;
+            if [ -n "${DB_NAME}" ] ; then postgres_name=${DB_NAME} ; fi ;
+            if [ -n "${POSTGRES_NAME}" ] ; then postgres_name=${POSTGRES_NAME} ; fi ;
+            counter=0
+            export PGPASSWORD=${postgres_pass}
+            until pg_isready --dbname="${postgres_name}" --host="${postgres_host}" --port="${postgres_port}" --username="${postgres_user}" -q
             do
                 sleep 5
-                (( COUNTER+=5 ))
-                print_warn "Postgres Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
+                (( counter+=5 ))
+                print_warn "Postgres Host '${postgres_host}' is not accessible, retrying.. ($counter seconds so far)"
+            done
+        ;;
+        "rabbit" | "rabbitmq" )
+            if [ -n "${DB_PORT}" ] ; then rabbit_port=${DB_PORT} ; fi ;
+            if [ -n "${RABBIT_PORT}" ] ; then rabbit_port=${RABBIT_PORT} ; fi ;
+            rabbit_port=${rabbit_port:-5672}
+            if [ -n "${DB_HOST}" ] ; then rabbit_host=${DB_HOST} ; fi ;
+            if [ -n "${RABBIT_HOST}" ] ; then rabbit_host=${RABBIT_HOST} ; fi ;
+            counter=0
+            while ! (nc -z "${rabbit_host}" "${rabbit_port}") ; do
+                sleep 5
+                (( counter+=5 ))
+                print_warn "RabbitMQ Host '${rabbit_host}' is not accessible, retrying.. ($counter seconds so far)"
             done
         ;;
         "redis" )
-            COUNTER=0
-            DB_PORT=${DB_PORT:-6379}
-            while ! (nc -z "${DB_HOST}" "${DB_PORT}") ; do
+            if [ -n "${DB_PORT}" ] ; then redis_port=${DB_PORT} ; fi ;
+            if [ -n "${REDIS_PORT}" ] ; then redis_port=${REDIS_PORT} ; fi ;
+            redis_port=${redis_port:-6379}
+            if [ -n "${DB_HOST}" ] ; then redis_host=${DB_HOST} ; fi ;
+            if [ -n "${REDIS_HOST}" ] ; then redis_host=${REDIS_HOST} ; fi ;
+            counter=0
+            while ! (nc -z "${redis_host}" "${redis_port}") ; do
                 sleep 5
-                (( COUNTER+=5 ))
-                print_warn "Redis Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
+                (( counter+=5 ))
+                print_warn "Redis Host '${redis_host}' is not accessible, retrying.. ($counter seconds so far)"
             done
         ;;
         "rethink" )
-            COUNTER=0
-            while ! (nc -z "${DB_HOST}" "${DB_PORT}") ; do
+            if [ -n "${DB_PORT}" ] ; then rethink_port=${DB_PORT} ; fi ;
+            if [ -n "${RETHINK_PORT}" ] ; then rethink_port=${RETHINK_PORT} ; fi ;
+            rethink_port=${rethink_port:-28015}
+            if [ -n "${DB_HOST}" ] ; then rethink_host=${DB_HOST} ; fi ;
+            if [ -n "${RETHINK_HOST}" ] ; then rethink_host=${RETHINK_HOST} ; fi ;
+            counter=0
+            while ! (nc -z "${rethink_host}" "${rethink_port}") ; do
                 sleep 5
-                (( COUNTER+=5 ))
-                print_warn "RethinkDB Host '${DB_HOST}' is not accessible, retrying.. ($COUNTER seconds so far)"
+                (( counter+=5 ))
+                print_warn "RethinkDB Host '${DB_HOST}' is not accessible, retrying.. ($counter seconds so far)"
             done
         ;;
     esac
@@ -230,7 +315,7 @@ dir_empty(){
 }
 
 dir_notempty(){
-    [ -n "$(ls -A $1)" ]
+    [ -n "$(ls -A "$1")" ]
 }
 
 ## Docker Secrets Support
@@ -257,6 +342,7 @@ file_env() {
       unset "$fileVar"
   fi
 }
+
 ## Get Defaults
 ## Usage: get_defaults <option>
 ##      Option: all - Load all default files from /assets/defaults folder
@@ -268,11 +354,9 @@ get_defaults() {
         case "$1" in
             "ALL" | "all" )
                 for d in /assets/defaults/* ; do
-                    if [ "$d" != "/assets/defaults/00-container" ] ; then
-                        print_debug "Container: Getting defaults for $d"
-                        # shellcheck source=/assets/defaults/
-                        source "$d"
-                    fi
+                    print_debug "Container: Getting defaults for $d"
+                    # shellcheck source=/assets/defaults/
+                    source "$d"
                 done
             ;;
             "APP" | "app" | "SINGLE" | "single" )
@@ -281,6 +365,7 @@ get_defaults() {
                         if [ -f "/assets/defaults/$(basename "$0")" ] ; then
                             print_debug "Container: Getting defaults for $(basename "$0")"
                             # shellcheck source=/assets/defaults/
+                            source /assets/defaults/00-container
                             source /assets/defaults/"$(basename "$0")"
                         else
                             print_debug "Container: No defaults available for $(basename "$0")"
@@ -290,6 +375,7 @@ get_defaults() {
                         if [ -f "/assets/defaults/$(basename "$PWD")" ] ; then
                             print_debug "Container: Getting defaults for $(basename "$PWD")"
                             # shellcheck source=/assets/defaults/
+                            source /assets/defaults/00-container
                             source /assets/defaults/"$(basename "$PWD")"
                         else
                             print_debug "Container: No defaults available for $(basename "$PWD")"
@@ -303,6 +389,7 @@ get_defaults() {
                         if [ -f "/assets/defaults/${d}" ] ; then
                             print_debug "Container: Getting defaults for $d"
                             # shellcheck source=/assets/defaults/
+                            source /assets/defaults/00-container
                             source /assets/defaults/"${d}"
                         else
                             print_debug "Container: No defaults available for $d"
@@ -312,11 +399,10 @@ get_defaults() {
         esac
     else
         for d in /assets/defaults/* ; do
-            if [ "$d" != "/assets/defaults/00-container" ] ; then
-                print_debug "Container: Getting Defaults for $d"
-                # shellcheck source=/assets/defaults/
-                source "$d"
-            fi
+            print_debug "Container: Getting Defaults for $d"
+            # shellcheck source=/assets/defaults/
+            source /assets/defaults/00-container
+            source "$d"
         done
     fi
 }
@@ -385,6 +471,28 @@ get_functions() {
     fi
 }
 
+grant_sudo() {
+## Grant sudo priveleges to a user
+## grant_sudo (username) (command) | If no command set will be ALL
+    if [ -n "$1" ] ; then
+        if [ -n "$2" ] ; then
+            sudo_command="$2"
+        else
+            sudo_command="ALL"
+        fi
+        print_debug "Adding Sudo privileges to '$1' for '${sudo_command}' command"
+        echo "%$1 ALL=(ALL) NOPASSWD:${sudo_command}" >> /etc/sudoers
+    fi
+}
+
+log_prefix() {
+    output_off
+    if [ "${CONTAINER_ENABLE_LOG_PREFIX}" = "TRUE" ] || [ "${CONTAINER_ENABLE_LOG_PREFIX}" = "true" ] ; then
+        echo "$(date +"${CONTAINER_LOG_PREFIX_DATE_FMT}")${CONTAINER_LOG_PREFIX_SEPERATOR}$(date +"${CONTAINER_PROCESS_HELPER_TIME_FMT}") "
+    fi
+    output_on
+}
+
 ## For writing script initalization state to ensure proper application execution
 liftoff() {
     output_off
@@ -394,13 +502,13 @@ liftoff() {
     fi
     case "$(dirname "$0")" in
         "/var/run/s6/etc/cont-init.d")
-            echo "${liftoff_prefix} $(basename "$0")-init initialized on $(date)" >> /tmp/state/"$(basename "$0")"-init
+            echo "${liftoff_prefix} $(basename "$0")-init initialized on $(log_prefix)" >> /tmp/state/"$(basename "$0")"-init
         ;;
         *)
             if [ ! -f /tmp/state/"$(basename "$PWD")" ]; then
-                echo "$(basename "$PWD") initialized on $(date)" >> /tmp/state/"$(basename "$PWD")"
+                echo "$(basename "$PWD") initialized on $(log_prefix)" >> /tmp/state/"$(basename "$PWD")"
             else
-                echo "$(basename "$PWD") reinitialized on $(date)" >> /tmp/state/"$(basename "$PWD")"
+                echo "$(basename "$PWD") reinitialized on $(log_prefix)" >> /tmp/state/"$(basename "$PWD")"
             fi
         ;;
     esac
@@ -466,16 +574,16 @@ print_debug() {
     case "$CONTAINER_LOG_LEVEL" in
             "DEBUG" )
                 if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] ; then
-                    if [ "$COLORIZE_OUTPUT" = "FALSE" ] || [ "$COLORIZE_OUTPUT" = "false" ] ; then
-                        echo -e "[DEBUG] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+                        echo -e "$(log_prefix)[DEBUG] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                     else
-                        echo -e "${bdm}[DEBUG]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                        echo -e "$(log_prefix)${bdm}[DEBUG]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                     fi
                 else
-                    if [ "$COLORIZE_OUTPUT" = "FALSE" ] || [ "$COLORIZE_OUTPUT" = "false" ] ; then
-                        echo -e "[DEBUG] ** [${PROCESS_NAME}] $1"
+                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+                        echo -e "$(log_prefix)[DEBUG] ** [${PROCESS_NAME}] $1"
                     else
-                        echo -e "${bdm}[DEBUG]${boff} ** [${PROCESS_NAME}] $1"
+                        echo -e "$(log_prefix)${bdm}[DEBUG]${boff} ** [${PROCESS_NAME}] $1"
                     fi
                 fi
             ;;
@@ -488,16 +596,16 @@ print_error() {
     case "$CONTAINER_LOG_LEVEL" in
             "DEBUG" | "NOTICE" | "WARN" | "ERROR")
                 if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] ; then
-                    if [ "$COLORIZE_OUTPUT" = "FALSE" ] || [ "$COLORIZE_OUTPUT" = "false" ] ; then
-                        echo -e "[ERROR] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+                        echo -e "$(log_prefix)[ERROR] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                     else
-                        echo -e "${blr}[ERROR]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                        echo -e "$(log_prefix)${blr}[ERROR]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                     fi
                 else
-                    if [ "$COLORIZE_OUTPUT" = "FALSE" ] || [ "$COLORIZE_OUTPUT" = "false" ] ; then
-                        echo -e "[ERROR] ** [${PROCESS_NAME}] $1"
+                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+                        echo -e "$(log_prefix)[ERROR] ** [${PROCESS_NAME}] $1"
                     else
-                        echo -e "${blr}[ERROR]${boff} ** [${PROCESS_NAME}] $1"
+                        echo -e "$(log_prefix)${blr}[ERROR]${boff} ** [${PROCESS_NAME}] $1"
                     fi
                 fi
             ;;
@@ -508,16 +616,16 @@ print_error() {
 print_info() {
     output_off
     if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] ; then
-        if [ "$COLORIZE_OUTPUT" = "FALSE" ] || [ "$COLORIZE_OUTPUT" = "false" ] ; then
-            echo -e "[INFO] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+        if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+            echo -e "$(log_prefix)[INFO] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
         else
-            echo -e "${bdg}[INFO]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+            echo -e "$(log_prefix)${bdg}[INFO]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
         fi
     else
-        if [ "$COLORIZE_OUTPUT" = "FALSE" ] || [ "$COLORIZE_OUTPUT" = "false" ] ; then
-            echo -e "[INFO] ** [${PROCESS_NAME}] $1"
+        if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+            echo -e "$(log_prefix)[INFO] ** [${PROCESS_NAME}] $1"
         else
-            echo -e "${bdg}[INFO]${boff} ** [${PROCESS_NAME}] $1"
+            echo -e "$(log_prefix)${bdg}[INFO]${boff} ** [${PROCESS_NAME}] $1"
         fi
     fi
     output_on
@@ -525,23 +633,61 @@ print_info() {
 
 print_notice() {
     output_off
+
     case "$CONTAINER_LOG_LEVEL" in
             "DEBUG" | "NOTICE" )
                 if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] ; then
-                    if [ "$COLORIZE_OUTPUT" = "FALSE" ] || [ "$COLORIZE_OUTPUT" = "false" ] ; then
-                        echo -e "[NOTICE] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+                        echo -e "$(log_prefix)[NOTICE] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                     else
-                        echo -e "${bdgy}[NOTICE]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                        echo -e "$(log_prefix)${bdgy}[NOTICE]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                     fi
                 else
-                    if [ "$COLORIZE_OUTPUT" = "FALSE" ] || [ "$COLORIZE_OUTPUT" = "false" ] ; then
-                        echo -e "[NOTICE] ** [${PROCESS_NAME}] $1"
+                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+                        echo -e "$(log_prefix)[NOTICE] ** [${PROCESS_NAME}] $1"
                     else
-                        echo -e "${bdgy}[NOTICE]${boff} ** [${PROCESS_NAME}] $1"
+                        echo -e "$(log_prefix)${bdgy}[NOTICE]${boff} ** [${PROCESS_NAME}] $1"
                     fi
                 fi
             ;;
     esac
+    output_on
+}
+
+print_start() {
+    output_off
+    if [ "${CONTAINER_ENABLE_PROCESS_COUNTER}" = "TRUE" ] || [ "${CONTAINER_ENABLE_PROCESS_COUNTER}" = "true" ]; then
+        if [ -f /tmp/state/$(basename "$PWD") ]; then
+            proc_start_count="$(cat /tmp/state/$(basename "$PWD") | wc -l)"
+            proc_start_wrapper="[${proc_start_count}] "
+        fi
+    fi
+
+    if [ "${CONTAINER_ENABLE_PROCESS_HELPER}" = "TRUE" ] || [ "${CONTAINER_ENABLE_PROCESS_HELPER}" = "true" ]; then
+        proc_help_arg="$(date +"${CONTAINER_PROCESS_HELPER_DATE_FMT}") $(date +"${CONTAINER_PROCESS_HELPER_TIME_FMT}") $(basename "$(pwd)") ${proc_start_count} $(cat /etc/hostname)"
+        if [ -d "${CONTAINER_PROCESS_HELPER_PATH}" ]; then
+            if [ -f "${CONTAINER_PROCESS_HELPER_PATH}"/$(basename "$0").sh ]; then
+                exec "${CONTAINER_PROCESS_HELPER_PATH}"/$(basename "$0").sh "${proc_help_arg}"
+            elif [ -f "${CONTAINER_PROCESS_HELPER_PATH}"/"${CONTAINER_PROCESS_HELPER_SCRIPT}".sh ] ; then
+                exec "${CONTAINER_PROCESS_HELPER_PATH}"/"${CONTAINER_PROCESS_HELPER_SCRIPT}".sh "${proc_help_arg}"
+            fi
+        fi
+    fi
+
+    if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] ; then
+        if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+            echo -e "$(log_prefix)[STARTING] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
+        else
+            echo -e "$(log_prefix)${bdg}[STARTING]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
+        fi
+    else
+        if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+            echo -e "$(log_prefix)[STARTING] ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
+        else
+            echo -e "$(log_prefix)${bdg}[STARTING]${boff} ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
+        fi
+    fi
+
     output_on
 }
 
@@ -550,16 +696,16 @@ print_warn() {
     case "$CONTAINER_LOG_LEVEL" in
             "DEBUG" | "NOTICE" | "WARN" )
                 if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] ; then
-                    if [ "$COLORIZE_OUTPUT" = "FALSE" ] || [ "$COLORIZE_OUTPUT" = "false" ] ; then
-                        echo -e "[WARN] ** [${PROCESS_NAME}] $1"
+                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+                        echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1"
                     else
-                        echo -e "${bdb}[WARN]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
+                        echo -e "$(log_prefix)${bdb}[WARN]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                     fi
                 else
-                    if [ "$COLORIZE_OUTPUT" = "FALSE" ] || [ "$COLORIZE_OUTPUT" = "false" ] ; then
-                        echo -e "[WARN] ** [${PROCESS_NAME}] $1"
+                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+                        echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1"
                     else
-                        echo -e "${bdb}[WARN]${boff} ** [${PROCESS_NAME}] $1"
+                        echo -e "$(log_prefix)${bdb}[WARN]${boff} ** [${PROCESS_NAME}] $1"
                     fi
                 fi
     esac
@@ -576,29 +722,151 @@ silent() {
 }
 
 ## Make sure DB is defined
+## Old: sanity_db to check DB_USER, DB_PASS, DB_NAME, DB_HOST
+## New: sanity_db (dbtype) which will test above or their own unique prefixes to be used with images that have multiuple DB connections
 sanity_db() {
     output_off
-    print_debug "Looking for existence of DB_HOST, DB_NAME, DB_USER, DB_PASS environment variables"
-    if [ -z "${DB_HOST}" ]; then
-        print_error "No Database Host Entered! - Set '\$DB_HOST'"
-        exit 1
-    fi
+    if [ -n "$1" ] ; then
+        case "$1" in
+            "couch" | "couchdb" )
+                print_debug "Checking Couch DB Parameters"
+                if [ -n "${DB_HOST}" ] ; then couch_host=${DB_HOST} ; fi ;
+                if [ -n "${COUCH_HOST}" ] ; then couch_host=${COUCH_HOST} ; fi ;
+                if [ -z "${couch_host}" ] ; then
+                    print_error "No Couch Database Host Entered! - Set '\$DB_HOST' or '\$COUCH_HOST'"
+                    exit 1
+                fi
+            ;;
+            "influx" | "influxdb")
+                print_debug "Checking Influx DB Parameters"
+                if [ -n "${DB_HOST}" ] ; then influx_host=${DB_HOST} ; fi ;
+                if [ -n "${INFLUX_HOST}" ] ; then influx_host=${INFLUX_HOST} ; fi ;
+                if [ -z "${influx_host}" ] ; then
+                    print_error "No Influx Database Host Entered! - Set '\$DB_HOST' or '\$INFLUX_HOST'"
+                    exit 1
+                fi
+            ;;
+            "mongo" | "mongodb" )
+                print_debug "Checking Mongo DB Parameters"
+                if [ -n "${DB_HOST}" ] ; then mongo_host=${DB_HOST} ; fi ;
+                if [ -n "${MONGO_HOST}" ] ; then mongo_host=${MONGO_HOST} ; fi ;
+                if [ -z "${mongo_host}" ] ; then
+                    print_error "No Mongo Database Host Entered! - Set '\$DB_HOST' or '\$MONGO_HOST'"
+                    exit 1
+                fi
+            ;;
+            "mysql" | "mariadb" | "MARIADB" | "MYSQL" )
+                print_debug "Checking MariaDB DB Parameters"
+                if [ -n "${DB_HOST}" ] ; then maria_host=${DB_HOST} ; fi ;
+                if [ -n "${MYSQL_HOST}" ] ; then maria_host=${MYSQL_HOST} ; fi ;
+                if [ -n "${MARIA_HOST}" ] ; then maria_host=${MARIA_HOST} ; fi ;
+                if [ -n "${DB_USER}" ] ; then maria_user=${DB_USER} ; fi ;
+                if [ -n "${MYSQL_USER}" ] ; then maria_user=${MYSQL_USER} ; fi ;
+                if [ -n "${MARIA_USER}" ] ; then maria_user=${MARIA_USER} ; fi ;
+                if [ -n "${DB_PASS}" ] ; then maria_pass=${DB_PASS} ; fi ;
+                if [ -n "${MYSQL_PASS}" ] ; then maria_pass=${MYSQL_PASS} ; fi ;
+                if [ -n "${MARIA_PASS}" ] ; then maria_pass=${MARIA_PASS} ; fi ;
+                if [ -n "${DB_NAME}" ] ; then maria_name=${DB_NAME} ; fi ;
+                if [ -n "${MYSQL_NAME}" ] ; then maria_name=${MYSQL_NAME} ; fi ;
+                if [ -n "${MARIA_NAME}" ] ; then maria_name=${MARIA_NAME} ; fi ;
+                if [ -z "${maria_host}" ] ; then
+                    print_error "No MariaDB Database Host Entered! - Set '\$DB_HOST' or '\$MARIA_HOST'"
+                    exit 1
+                fi
+                if [ -z "${maria_name}" ] ; then
+                    print_error "No MariaDB Database Name Entered! - Set '\$DB_NAME' or '\$MARIA_NAME'"
+                    exit 1
+                fi
+                if [ -z "${maria_user}" ] ; then
+                    print_error "No MariaDB Database USER Entered! - Set '\$DB_USER' or '\$MARIA_USER'"
+                    exit 1
+                fi
+                if [ -z "${maria_pass}" ] ; then
+                    print_error "No MariaDB Database Pass Entered! - Set '\$DB_PASS' or '\$MARIA_PASS'"
+                    exit 1
+                fi
+            ;;
+            "pgsql" | "psql" | "postgres" | "postgresql" )
+                print_debug "Checking Postgres DB Parameters"
+                if [ -n "${DB_HOST}" ] ; then postgres_host=${DB_HOST} ; fi ;
+                if [ -n "${POSTGRES_HOST}" ] ; then postgres_host=${POSTGRES_HOST} ; fi ;
+                if [ -n "${DB_USER}" ] ; then postgres_user=${DB_USER} ; fi ;
+                if [ -n "${POSTGRES_USER}" ] ; then postgres_user=${POSTGRES_USER} ; fi ;
+                if [ -n "${DB_PASS}" ] ; then postgres_pass=${DB_PASS} ; fi ;
+                if [ -n "${PGPASSWORD}" ] ; then postgres_pass=${PGPASSWORD} ; fi ;
+                if [ -n "${DB_NAME}" ] ; then postgres_name=${DB_NAME} ; fi ;
+                if [ -n "${POSTGRES_NAME}" ] ; then postgres_name=${POSTGRES_NAME} ; fi ;
+                if [ -z "${postgres_host}" ] ; then
+                    print_error "No PostgreSQL Database Host Entered! - Set '\$DB_HOST' or '\$POSTGRES_HOST'"
+                    exit 1
+                fi
+                if [ -z "${postgres_name}" ] ; then
+                    print_error "No PostgreSQL Database Name Entered! - Set '\$DB_NAME' or '\$POSTGRES_NAME'"
+                    exit 1
+                fi
+                if [ -z "${postgres_user}" ] ; then
+                    print_error "No PostgreSQL Database USER Entered! - Set '\$DB_USER' or '\$POSTGRES_USER'"
+                    exit 1
+                fi
+                if [ -z "${postgres_pass}" ] ; then
+                    print_error "No PostgreSQL Database Pass Entered! - Set '\$DB_PASS' or '\$POSTGRES_PASS'"
+                    exit 1
+                fi
+            ;;
+            "rabbit" | "rabbitmq" )
+                if [ -n "${DB_HOST}" ] ; then rabbit_host=${DB_HOST} ; fi ;
+                if [ -n "${RABBIT_HOST}" ] ; then rabbit_host=${RABBIT_HOST} ; fi ;
+                if [ -n "${RABBITMQ_HOST}" ] ; then rabbit_host=${RABBITMQ_HOST} ; fi ;
+                if [ -z "${rethink_host}" ] ; then
+                    print_error "No RabbitMQ Database Host Entered! - Set '\$DB_HOST' or '\$RABBIT_HOST'"
+                    exit 1
+                fi
+            ;;
+            "redis" )
+                print_debug "Checking Redis DB Parameters"
+                if [ -n "${DB_HOST}" ] ; then redis_host=${DB_HOST} ; fi ;
+                if [ -n "${REDIS_HOST}" ] ; then redis_host=${REDIS_HOST} ; fi ;
+                if [ -z "${redis_host}" ] ; then
+                    print_error "No Redis Database Host Entered! - Set '\$DB_HOST' or '\$REDIS_HOST'"
+                    exit 1
+                fi
+            ;;
+            "rethink" )
+                print_debug "Checking RethinkDB DB Parameters"
+                if [ -n "${DB_HOST}" ] ; then rethink_host=${DB_HOST} ; fi ;
+                if [ -n "${RETHINK_HOST}" ] ; then rethink_host=${RETHINK_HOST} ; fi ;
+                if [ -z "${rethink_host}" ] ; then
+                    print_error "No Rethink Database Host Entered! - Set '\$DB_HOST' or '\$RETHINK_HOST'"
+                    exit 1
+                fi
+            ;;
+        esac
+        output_on
+    else
+        ## Legacy This will eventually be removed and replaced with this warning
+        #print_debug "Skipping DB Checking because it is missing DB_TYPE argument"
+        print_debug "Using Legacy db_ready command - please upgrade"
+        if [ -z "${DB_HOST}" ]; then
+            print_error "No Database Host Entered! - Set '\$DB_HOST'"
+            exit 1
+        fi
 
-    if [ -z "${DB_NAME}" ]; then
-        print_error "No Database Name Entered! - Set '\$DB_NAME'"
-        exit 1
-    fi
+        if [ -z "${DB_NAME}" ]; then
+            print_error "No Database Name Entered! - Set '\$DB_NAME'"
+            exit 1
+        fi
 
-    if [ -z "${DB_USER}" ]; then
-        print_error "No Database User Entered! - Set '\$DB_USER'"
-        exit 1
-    fi
+        if [ -z "${DB_USER}" ]; then
+            print_error "No Database User Entered! - Set '\$DB_USER'"
+            exit 1
+        fi
 
-    if [ -z "${DB_PASS}" ]; then
-        print_error "No Database Password Entered! - Set '\$DB_PASS'"
-        exit 1
+        if [ -z "${DB_PASS}" ]; then
+            print_error "No Database Password Entered! - Set '\$DB_PASS'"
+            exit 1
+        fi
+        output_on
     fi
-    output_on
 }
 
 ## Check is Variable is Defined
@@ -679,6 +947,47 @@ truefalse_yesno() {
     fi
 }
 
+## Convert TRUE or FALSE statements to either yes or no
+## Usage: 'truefalse_yesno varname'
+## Don't prefix it with a $
+## Optionally add "uppercase" / "lowercase" as second value on how you wish it to be replaced
+truefalse_onoff() {
+    value=$(set | grep "${1}"= | cut -d '=' -f2)
+    var=$(set | grep "${1}"= | sed "s/=.*//g")
+
+    if [ "$value" = "TRUE" ] || [ "$value" = "true" ] || [ "$value" = "YES" ] || [ "$value" = "yes" ] ; then
+            print_debug "Converting Variable Name ${var} value to 'On'"
+            unset "$1"
+            if [ -n "$2" ] ; then
+                case "$2" in
+                    "UPPERCASE" | "uppercase" | "UPPER" | "upper" | "UC" | "uc" )
+                        export "$1=ON"
+                    ;;
+                    "LOWERCASE" | "lowercase" | "LOWER" | "lower" | "LC" | "lc" )
+                        export "$1=on"
+                    ;;
+                esac
+            else
+                export "$1=ON"
+            fi
+    elif [ "$value" = "FALSE" ] || [ "$value" = "false" ] || [ "$value" = "NO" ] || [ "$value" = "no" ] ; then
+            print_debug "Converting Variable Name ${var} value to 'Off'"
+            unset "$1"
+            if [ -n "$2" ] ; then
+                case "$2" in
+                    "UPPERCASE" | "uppercase" | "UPPER" | "upper" | "UC" | "uc" )
+                        export "$1=OFF"
+                    ;;
+                    "LOWERCASE" | "lowercase" | "LOWER" | "lower" | "LC" | "lc" )
+                        export "$1=off"
+                    ;;
+                esac
+            else
+                export "$1=off"
+            fi
+    fi
+}
+
 ## Timesaver for if statements
 ## Usage: if var_false $VARNAME ; then ... fi
 var_false() {
@@ -719,11 +1028,11 @@ wait_for_file() {
 ## Usage: wait_for_port hostname port
 wait_for_port() {
     print_debug "Looking for existence of listening port on $1:$2"
-    COUNTER=0
+    counter=0
     while ! (nc -z "${1}" "${2}") ; do
             sleep 5
-            (( COUNTER+=5 ))
-            print_warn "Host '${1}' is not listening on port '${2}', retrying.. ($COUNTER seconds so far)"
+            (( counter+=5 ))
+            print_warn "Host '${1}' is not listening on port '${2}', retrying.. ($counter seconds so far)"
     done
 }
 

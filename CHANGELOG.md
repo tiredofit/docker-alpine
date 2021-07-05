@@ -1,3 +1,22 @@
+## 7.0.0 2021-07-05 <dave at tiredofit dot ca>
+
+Major changes to this base image, reworking technical debt, creating consistency, and building hooks and expansion capabilities for future purposes.
+
+   ### Added
+      - Log Shipping support, presently supporting Fluent Bit (x86_64 only)
+      - Zabbix Agent 5.4.2
+      - Zabbix Agent 2 (modern/go) included, 1 (classic/c) still remains
+      - Dyanmically add crontab entries via CRON_* environment variables
+      - Prefix container logs with Timestamp
+      - Process watchdog support should a process execute multiple times (hooks)
+      - Development functions for ease of use
+
+   ### Changed
+      - Service Names, and order of execution
+      - db_ready and sanity_db functions take additional arguments
+      - Environment Variable names have changed, attempts have been made to ensure legacy variable names will still function but will be removed at a later date
+      - Rewrote permissions changing routines from scratch
+
 ## 6.1.3 2021-06-18 <dave at tiredofit dot ca>
 
    ### Changed

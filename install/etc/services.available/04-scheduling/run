@@ -1,0 +1,38 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+PROCESS_NAME="scheduling"
+prepare_service
+
+output_off
+check_container_initialized
+check_service_initialized init
+liftoff
+output_on
+
+case "${CONTAINER_SCHEDULING_BACKEND}" in
+    "cron" )
+      if [ "${SCHEDULING_LOG_TYPE}" = "FILE" ] || [ "${SCHEDULING_LOG_TYPE}" = "file" ]; then
+        cron_log_file="-L ${SCHEDULING_LOG_LOCATION}/cron.log"
+      fi
+
+      print_debug "Parsing all files from ${CONTAINER_SCHEDULING_LOCATION}"
+      temp_crontab=$(date +%s)
+      echo 'MAILTO=""' > $temp_crontab
+      if dir_empty ${CONTAINER_SCHEDULING_LOCATION}; then echo "# Intentionally empty" > ${CONTAINER_SCHEDULING_LOCATION}/empty ; fi;
+      sed "/#/d" ${CONTAINER_SCHEDULING_LOCATION}/* | awk 'NF' >> /tmp/state/cron/${temp_crontab}
+      silent crontab -r
+      crontab /tmp/state/cron/${temp_crontab}
+
+      print_start "Starting cron"
+      os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
+      case ${os} in
+        "alpine" )
+          silent /usr/sbin/crond -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
+        ;;
+        "debian" )
+          silent /usr/sbin/cron -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
+        ;;
+        esac
+    ;;
+esac

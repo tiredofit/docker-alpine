@@ -1,0 +1,35 @@
+#!/usr/bin/with-contenv bash
+
+source /assets/functions/00-container
+PROCESS_NAME="monitoring"
+output_off
+prepare_service defaults single
+check_container_initialized
+check_service_initialized init
+liftoff
+output_on
+
+case "${CONTAINER_MONITORING_BACKEND}" in
+    "zabbix" )
+        print_debug "Trying to execute Container Monitoring Backend Zabbix"
+            case "${ZABBIX_AGENT_TYPE}" in
+                "1" | "c" | "classic" | "legacy" | "old" )
+                    print_debug "Starting classic Zabbix Agent"
+                    zabbix_command="zabbix_agentd"
+                    zabbix_agent_type="classic"
+                ;;
+                "2" | "m" | "n" | "modern" | "new" )
+                    print_debug "Starting modern Zabbix agent"
+                    zabbix_command="zabbix_agent2"
+                    zabbix_agent_type="modern"
+                ;;
+                * )
+                    print_debug "No known Zabbix agent type selected"
+                ;;
+            esac
+
+    print_start "Starting Zabbix Agent (${zabbix_agent_type}) ${ZABBIX_VERSION}"
+    silent s6-setuidgid "${ZABBIX_USER}" ${zabbix_command}  -c ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE} -f
+    ;;
+esac
+
