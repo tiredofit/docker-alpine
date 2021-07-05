@@ -270,7 +270,7 @@ Hint, also change the Group ID to your local development users UID & GID and avo
 | -------------------------------- | --------------------------------------------------------------------------- |
 | `CONTAINER_USER_<USERNAME>`      | The user's UID in /etc/passwd will be modified with new UID                 |
 | `CONTAINER_GROUP_<GROUPNAME>`    | The group's GID in /etc/group and /etc/passwd will be modified with new GID |
-| `CONTAINER_GROUP_ADD_<USERNAME>` | The username will be added in /etc/group after the group name defined       |
+| `CONTAINER_GROUP_ADD_<GROUPNAME>` | The username will be added in /etc/group after the group name defined       |
 
 #### Process Watchdog
 
@@ -397,6 +397,3 @@ These images were built to serve a specific need in a production environment and
 
 ## License
 MIT. See [LICENSE](LICENSE) for more details.
-## References
-
-* <https://www.alpinelinux.org>
