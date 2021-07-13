@@ -354,7 +354,6 @@ fakeprocess (args)                    # whatever your process you want to start 
 
 | Parameter                         | Description                                                                    | Default     |
 | --------------------------------- | ------------------------------------------------------------------------------ | ----------- |
-| `DEBUG_MODE`                      | Enable debug mode and show all script output                                   | `FALSE`     |
 | `CONTAINER_ENABLE_DOCKER_SECRETS` | Check Docker Secrets when checking for environment variables                   | `TRUE`      |
 | `CONTAINER_SKIP_SANITY_CHECK`     | Skip the checking to see if all scripts in /etc/cont-init.d executed correctly | `FALSE`     |
 | `DEBUG_MODE`                      | Show all script output (set -x)                                                | `FALSE`     |
