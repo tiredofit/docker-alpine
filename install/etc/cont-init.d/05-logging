@@ -8,11 +8,12 @@ output_off
 
 if var_true "${CONTAINER_ENABLE_LOGROTATE}" ; then
     print_debug "Enabling log rotation"
-    cat <<EOF > "${CONTAINER_SCHEDULING_LOCATION}"/logrotate
-# Hardcoded in image in /etc/cont-init.d/04-logging
+    mkdir -p ${CONTAINER_SCHEDULING_LOCATION}
+    cat <<EOF > ${CONTAINER_SCHEDULING_LOCATION}/logrotate
+# Hardcoded in image in /etc/cont-init.d/$(basename $0)
 # Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
 
-59 23 * * * logrotate -f /etc/logrotate.d/* >/dev/null 2>&1'
+59 23 * * * logrotate -f /etc/logrotate.d/* >/dev/null 2>&1
 EOF
 fi
 

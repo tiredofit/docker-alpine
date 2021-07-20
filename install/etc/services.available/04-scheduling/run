@@ -31,7 +31,7 @@ case "${CONTAINER_SCHEDULING_BACKEND}" in
           silent /usr/sbin/crond -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
         ;;
         "debian" )
-          silent /usr/sbin/cron -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
+          silent /usr/sbin/crond -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
         ;;
         esac
     ;;
