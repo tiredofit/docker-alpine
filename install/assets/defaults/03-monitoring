@@ -27,7 +27,6 @@ ZABBIX_STATUS_PORT=${ZABBIX_STATUS_PORT:-"8050"}
 ZABBIX_USER=${ZABBIX_USER:-"zabbix"}
 ZABBIX_USER_SUDO=${ZABBIX_USER_SUDO:-"TRUE"}
 
-
 os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
     case ${os} in
     "alpine" )
