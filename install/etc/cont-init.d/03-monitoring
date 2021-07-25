@@ -42,7 +42,7 @@ DebugLevel=${ZABBIX_DEBUGLEVEL}
 Hostname=${ZABBIX_HOSTNAME}
 ListenIP=${ZABBIX_LISTEN_IP}
 ListenPort=${ZABBIX_LISTEN_PORT}
-LogFile=${ZABBIX_LOG_PATH}/${ZABBIX_LOG_FILE}
+LogFile=${ZABBIX_AGENT_LOG_PATH}/${ZABBIX_AGENT_LOG_FILE}
 LogFileSize=${ZABBIX_LOG_FILE_SIZE}
 LogRemoteCommands=${ZABBIX_REMOTECOMMANDS_LOG}
 MaxLinesPerSecond=${ZABBIX_MAXLINES_SECOND}
@@ -133,9 +133,10 @@ EOF
         ;;
       esac
 
-      mkdir -p "${ZABBIX_LOG_PATH}"
-      chown -R "${ZABBIX_USER}" "${ZABBIX_LOG_PATH}"
+      mkdir -p "${ZABBIX_AGENT_LOG_PATH}"
+      chown -R "${ZABBIX_USER}" "${ZABBIX_AGENT_LOG_PATH}"
       chown -R "${ZABBIX_USER}" ${ZABBIX_CONFIG_PATH}/
+      create_logrotate zabbix-agent ${ZABBIX_AGENT_LOG_PATH}/${ZABBIX_AGENT_LOG_FILE} ${ZABBIX_USER} root
       print_notice "Container configured for monitoring with '${CONTAINER_MONITORING_BACKEND} ${ZABBIX_AGENT_TYPE}'"
     ;;
     * )

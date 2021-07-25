@@ -1,3 +1,12 @@
+## 7.0.1 2021-07-25 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 5.4.3
+
+   ### Changed
+      - Change the location where Zabbix Agent logs
+
+
 ## 7.0.0 2021-07-05 <dave at tiredofit dot ca>
 
 Major changes to this base image, reworking technical debt, creating consistency, and building hooks and expansion capabilities for future purposes.

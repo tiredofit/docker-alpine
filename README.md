@@ -198,31 +198,32 @@ This image includes the capability of using agents inside the image to monitor m
 
 This image comes with Zabbix Agent 1 (Classic or C compiled) and Zabbix Agent 2 (Modern, or Go compiled). See which variables work for each version and make your agent choice. Drop files in `/etc/zabbix/zabbix_agentd.conf.d` to setup your metrics. The environment variables below only affect the system end of the configuration. If you wish to use your own system configuration without these variables, change `ZABBIX_SETUP_TYPE` to `MANUAL`
 
-| Parameter                      | Description                                                                       | Default                             | 1   | 2   |
-| ------------------------------ | --------------------------------------------------------------------------------- | ----------------------------------- | --- | --- |
-| `FLUENTBIT_SETUP_TYPE`         | Automatically generate configuration based on these variables `AUTO` or `MANUAL`  | `AUTO`                              |
-| `ZABBIX_AGENT_TYPE`            | Which version of Zabbix Agent to load `1` or `2`                                  | 1                                   | N/A | N/A |
-| `ZABBIX_LOG_FILE`              | Logfile location                                                                  | `/var/log/zabbix/zabbix_agentd.log` | x   | x   |
-| `ZABBIX_LOG_FILE_SIZE`         | Logfile size                                                                      | `1`                                 | x   | x   |
-| `ZABBIX_DEBUGLEVEL`            | Debug level                                                                       | `1`                                 | x   | x   |
-| `ZABBIX_REMOTECOMMANDS_ALLOW`  | Enable remote commands                                                            | `*`                                 | x   | x   |
-| `ZABBIX_REMOTECOMMANDS_DENY`   | Deny remote commands                                                              |                                     | x   | x   |
-| `ZABBIX_REMOTECOMMANDS_LOG`    | Enable remote commands Log (`0`/`1`)                                              | `1`                                 | x   |     |
-| `ZABBIX_SERVER`                | Allow connections from Zabbix server IP                                           | `0.0.0.0/0`                         | x   | x   |
-| `ZABBIX_STATUS_PORT`           | Agent will listen to this port for status requests (http://localhost:port/status) | 10050                               |     | x   |
-| `ZABBIX_LISTEN_PORT`           | Zabbix Agent listening port                                                       | `10050`                             | x   | x   |
-| `ZABBIX_LISTEN_IP`             | Zabbix Agent listening IP                                                         | `0.0.0.0`                           | x   | x   |
-| `ZABBIX_START_AGENTS`          | How many Zabbix Agents to start                                                   | `1`                                 | x   |     |
-| `ZABBIX_SERVER_ACTIVE`         | Server for active checks                                                          | `zabbix-proxy`                      | x   | x   |
-| `ZABBIX_HOSTNAME`              | Container hostname to report to server                                            | `docker`                            | x   | x   |
-| `ZABBIX_REFRESH_ACTIVE_CHECKS` | Seconds to refresh Active Checks                                                  | `120`                               | x   | x   |
-| `ZABBIX_BUFFER_SEND`           | Buffer Send                                                                       | `5`                                 | x   | x   |
-| `ZABBIX_BUFFER_SIZE`           | Buffer Size                                                                       | `100`                               | x   | x   |
-| `ZABBIX_MAXLINES_SECOND`       | Max Lines Per Second                                                              | `20`                                | x   |     |
-| `ZABBIX_SOCKET`                | Socket for communicating                                                          | `/tmp/zabbix.sock`                  |     | x   |
-| `ZABBIX_ALLOW_ROOT`            | Allow running as root                                                             | `1`                                 | x   |     |
-| `ZABBIX_USER`                  | User to start agent                                                               | `zabbix`                            | x   | x   |
-| `ZABBIX_USER_SUDO`             | Allow Zabbix user to utilize sudo commands                                        | `TRUE`                              | x   | x   |
+| Parameter                      | Description                                                                       | Default                  | 1   | 2   |
+| ------------------------------ | --------------------------------------------------------------------------------- | ------------------------ | --- | --- |
+| `FLUENTBIT_SETUP_TYPE`         | Automatically generate configuration based on these variables `AUTO` or `MANUAL`  | `AUTO`                   |
+| `ZABBIX_AGENT_TYPE`            | Which version of Zabbix Agent to load `1` or `2`                                  | 1                        | N/A | N/A |
+| `ZABBIX_AGENT_LOG_PATH`        | Log File Path                                                                     | `/var/log/zabbix/agent/` | x   | x   |
+| `ZABBIX_AGENT_LOG_FILE`        | Logfile name                                                                      | `zabbix_agentd.log`      | x   | x   |
+| `ZABBIX_LOG_FILE_SIZE`         | Logfile size                                                                      | `0`                      | x   | x   |
+| `ZABBIX_DEBUGLEVEL`            | Debug level                                                                       | `1`                      | x   | x   |
+| `ZABBIX_REMOTECOMMANDS_ALLOW`  | Enable remote commands                                                            | `*`                      | x   | x   |
+| `ZABBIX_REMOTECOMMANDS_DENY`   | Deny remote commands                                                              |                          | x   | x   |
+| `ZABBIX_REMOTECOMMANDS_LOG`    | Enable remote commands Log (`0`/`1`)                                              | `1`                      | x   |     |
+| `ZABBIX_SERVER`                | Allow connections from Zabbix server IP                                           | `0.0.0.0/0`              | x   | x   |
+| `ZABBIX_STATUS_PORT`           | Agent will listen to this port for status requests (http://localhost:port/status) | 10050                    |     | x   |
+| `ZABBIX_LISTEN_PORT`           | Zabbix Agent listening port                                                       | `10050`                  | x   | x   |
+| `ZABBIX_LISTEN_IP`             | Zabbix Agent listening IP                                                         | `0.0.0.0`                | x   | x   |
+| `ZABBIX_START_AGENTS`          | How many Zabbix Agents to start                                                   | `1`                      | x   |     |
+| `ZABBIX_SERVER_ACTIVE`         | Server for active checks                                                          | `zabbix-proxy`           | x   | x   |
+| `ZABBIX_HOSTNAME`              | Container hostname to report to server                                            | `docker`                 | x   | x   |
+| `ZABBIX_REFRESH_ACTIVE_CHECKS` | Seconds to refresh Active Checks                                                  | `120`                    | x   | x   |
+| `ZABBIX_BUFFER_SEND`           | Buffer Send                                                                       | `5`                      | x   | x   |
+| `ZABBIX_BUFFER_SIZE`           | Buffer Size                                                                       | `100`                    | x   | x   |
+| `ZABBIX_MAXLINES_SECOND`       | Max Lines Per Second                                                              | `20`                     | x   |     |
+| `ZABBIX_SOCKET`                | Socket for communicating                                                          | `/tmp/zabbix.sock`       |     | x   |
+| `ZABBIX_ALLOW_ROOT`            | Allow running as root                                                             | `1`                      | x   |     |
+| `ZABBIX_USER`                  | User to start agent                                                               | `zabbix`                 | x   | x   |
+| `ZABBIX_USER_SUDO`             | Allow Zabbix user to utilize sudo commands                                        | `TRUE`                   | x   | x   |
 
 #### Logging Options
 
@@ -266,10 +267,10 @@ environment variables will be displayed in output.
 
 Hint, also change the Group ID to your local development users UID & GID and avoid Docker permission issues when developing.
 
-| Parameter                        | Description                                                                 |
-| -------------------------------- | --------------------------------------------------------------------------- |
-| `CONTAINER_USER_<USERNAME>`      | The user's UID in /etc/passwd will be modified with new UID                 |
-| `CONTAINER_GROUP_<GROUPNAME>`    | The group's GID in /etc/group and /etc/passwd will be modified with new GID |
+| Parameter                         | Description                                                                 |
+| --------------------------------- | --------------------------------------------------------------------------- |
+| `CONTAINER_USER_<USERNAME>`       | The user's UID in /etc/passwd will be modified with new UID                 |
+| `CONTAINER_GROUP_<GROUPNAME>`     | The group's GID in /etc/group and /etc/passwd will be modified with new GID |
 | `CONTAINER_GROUP_ADD_<GROUPNAME>` | The username will be added in /etc/group after the group name defined       |
 
 #### Process Watchdog
