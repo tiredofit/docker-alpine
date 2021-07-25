@@ -200,7 +200,7 @@ This image comes with Zabbix Agent 1 (Classic or C compiled) and Zabbix Agent 2 
 
 | Parameter                      | Description                                                                       | Default                  | 1   | 2   |
 | ------------------------------ | --------------------------------------------------------------------------------- | ------------------------ | --- | --- |
-| `FLUENTBIT_SETUP_TYPE`         | Automatically generate configuration based on these variables `AUTO` or `MANUAL`  | `AUTO`                   |
+| `ZABBIX_SETUP_TYPE`         | Automatically generate configuration based on these variables `AUTO` or `MANUAL`  | `AUTO`                   |
 | `ZABBIX_AGENT_TYPE`            | Which version of Zabbix Agent to load `1` or `2`                                  | 1                        | N/A | N/A |
 | `ZABBIX_AGENT_LOG_PATH`        | Log File Path                                                                     | `/var/log/zabbix/agent/` | x   | x   |
 | `ZABBIX_AGENT_LOG_FILE`        | Logfile name                                                                      | `zabbix_agentd.log`      | x   | x   |
