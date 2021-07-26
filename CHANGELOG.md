@@ -1,3 +1,9 @@
+## 7.0.2 2021-07-26 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for Zabbix Agent 2 File Logging
+
+
 ## 7.0.1 2021-07-25 <dave at tiredofit dot ca>
 
    ### Added
