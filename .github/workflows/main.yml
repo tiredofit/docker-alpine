@@ -23,7 +23,6 @@ jobs:
         id: prep
         run: |
           DOCKER_IMAGE=${GITHUB_REPOSITORY/docker-/}
-          set -x
           if [[ $GITHUB_REF == refs/heads/* ]]; then
              if [[ $GITHUB_REF == refs/heads/*/* ]] ; then
                BRANCH="${DOCKER_IMAGE}:$(echo $GITHUB_REF | sed "s|refs/heads/||g" | sed "s|/|-|g")"
@@ -91,8 +90,6 @@ jobs:
             if [[ $GITHUB_REF == refs/heads/* ]]; then
               sed -i "/FROM .*/a LABEL tiredofit.base.git_branch=\"${GITHUB_REF#refs/heads/}\"" Dockerfile
             fi
-
-
           fi
 
       - name: Switch
@@ -121,7 +118,6 @@ jobs:
         id: prep
         run: |
           DOCKER_IMAGE=${GITHUB_REPOSITORY/docker-/}
-          set -x
           if [[ $GITHUB_REF == refs/heads/* ]]; then
              if [[ $GITHUB_REF == refs/heads/*/* ]] ; then
                BRANCH="${DOCKER_IMAGE}:$(echo $GITHUB_REF | sed "s|refs/heads/||g" | sed "s|/|-|g")"

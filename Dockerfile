@@ -208,5 +208,3 @@ ENTRYPOINT ["/init"]
 
 ### Add folders
 ADD install/ /
-
-COPY CHANGELOG.md /assets/.tiredofit/changelog/changelog-alpine.md
