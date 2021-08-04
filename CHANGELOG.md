@@ -1,3 +1,9 @@
+## 7.0.3 2021-08-04 <dave at tiredofit dot ca>
+
+   ### Added
+      - Bring monitoring cont-init.d script up to parity with debian side for ease of codebase
+
+
 ## 7.0.2 2021-07-26 <dave at tiredofit dot ca>
 
    ### Changed

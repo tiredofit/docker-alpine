@@ -78,15 +78,23 @@ EOF
 
         ;;
         "2" | "m" | "n" | "modern" | "new" )
-          case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
-            3.11|3.12|3.13|3.14|edge)
+          case ${os} in
+            "alpine" )
+              case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
+                3.11|3.12|3.13|3.14|edge)
+                  :
+                ;;
+                *)
+                  print_error "Sorry, Modern version not available for this images version (Alpine 3.11 + only)"
+                  exit 1
+                ;;
+              esac
+            ;;
+            * )
               :
             ;;
-            *)
-              print_error "Sorry, Modern version not available for this images version (Alpine 3.11 + only)"
-              exit 1
-            ;;
           esac
+
           if [ "${ZABBIX_SETUP_TYPE}" = "AUTO" ] || [ "${ZABBIX_SETUP_TYPE}" = "auto" ] ; then
             print_debug "Configuring Zabbix modern Agent"
             cat <<EOF > "${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}"
