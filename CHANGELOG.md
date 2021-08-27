@@ -1,3 +1,9 @@
+## 7.1.1 2021-08-27 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add TLS Verification for LOKI Output plugin (Logshipping/Fluent-bit)
+
+
 ## 7.1.0 2021-08-25 <dave at tiredofit dot ca>
 
    ### Added

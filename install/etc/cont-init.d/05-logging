@@ -233,6 +233,9 @@ EOF
                 loki_tenant_id="    tenant_id              ${FLUENTBIT_OUTPUT_LOKI_TENANT_ID}"
               fi
 
+              truefalse_onoff FLUENTBIT_OUTPUT_LOKI_TLS
+              truefalse_onoff FLUENTBIT_OUTPUT_LOKI_TLS_VERIFY
+
               cat <<EOF > /etc/fluent-bit/conf.d/out_loki.conf
 ## Auto generated LOKI Output plugin for Fluent Bit
 ## Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
@@ -242,6 +245,8 @@ EOF
     match                  *
     host                   ${FLUENTBIT_OUTPUT_LOKI_HOST}
     port                   ${FLUENTBIT_OUTPUT_LOKI_PORT}
+    tls                    ${FLUENTBIT_OUTPUT_LOKI_TLS}
+    tls.verify             ${FLUENTBIT_OUTPUT_LOKI_TLS_VERIFY}
     labels                 logshipper=${CONTAINER_NAME}
     Label_keys             \$hostname,\$container_name,\$product
 ${loki_user}

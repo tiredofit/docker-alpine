@@ -278,6 +278,8 @@ Drop files in `/etc/fluent-bit/conf.d` to setup your inputs and outputs. The env
 | `FLUENTBIT_OUTPUT_FORWARD_TLS`        | Enable TLS when forwading                                                        | `FALSE`                  |
 | `FLUENTBIT_OUTPUT_LOKI_HOST`          | Host for Loki Output                                                             | `loki`                   |
 | `FLUENTBIT_OUTPUT_LOKI_PORT`          | Port for Loki Output                                                             | `3100`                   |
+| `FLUENTBIT_OUTPUT_LOKI_TLS`           | Enable TLS For Loki Output                                                       | `FALSE`                  |
+| `FLUENTBIT_OUTPUT_LOKI_TLS_VERIFY`    | Enable TLS Certificate Verification For Loki Output                              | `FALSE`                  |
 | `FLUENTBIT_OUTPUT_LOKI_USER`          | (optional) Username to authenticate to Loki Server                               | ``                       |
 | `FLUENTBIT_OUTPUT_LOKI_PASS`          | (optional) Password to authenticate to Loki Server                               | ``                       |
 | `FLUENTBIT_OUTPUT_TENANT_ID`          | (optional) Tenant ID to pass to Loki Server                                      | ``                       |
