@@ -125,7 +125,7 @@ create_logrotate() {
 $2 {
     daily
     ifempty
-    rotate 7
+    rotate ${LOGROTATE_RETAIN_DAYS}
     missingok
     compress
     dateext

@@ -3,10 +3,12 @@ LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ARG ZABBIX_VERSION
 ARG FLUENTBIT_VERSION
+#ARG PROMTAIL_VERSION
 ARG S6_OVERLAY_VERSION
 
 ### Set defaults
-ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.7.9"} \
+ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.3"} \
+    #PROMTAIL_VERSION=${PROMTAIL_VERSION:-"v2.3.0"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"v2.2.0.3"} \
     ZABBIX_VERSION=${ZABBIX_VERSION:-"5.4.3"} \
     DEBUG_MODE=FALSE \
@@ -17,6 +19,7 @@ ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.7.9"} \
     CONTAINER_MESSAGING_BACKEND=msmtp \
     CONTAINER_ENABLE_MONITORING=TRUE \
     CONTAINER_MONITORING_BACKEND=zabbix \
+    CONTAINER_ENABLE_LOGSHIPPING=FALSE \
     ZABBIX_HOSTNAME=alpine
 
 ## Mono Repo workarounds
@@ -26,7 +29,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     esac ; \
     \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
-        3.11|3.12|3.13|3.14|edge) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ;; \
+        3.11|3.12|3.13|3.14|edge) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ;; \
         *) : ;; \
     esac ; \
     \
@@ -79,6 +82,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
                 pcre-dev \
                 zlib-dev \
                 ${additional_packages}\
+                ${upx} \
                 && \
     \
     apk add -t .fluentbit-build-deps \
@@ -130,9 +134,9 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     strip /usr/sbin/zabbix_agentd && \
     strip /usr/sbin/zabbix_sender && \
     if [ "$zabbix_agent2" = true ] ; then strip /usr/sbin/zabbix_agent2 ; fi ; \
-    if [ "$apkArch" = "x86_64" ] && [ "$no_upx" != "true "]; then upx /usr/sbin/zabbix_agentd ; fi ; \
-    if [ "$apkArch" = "x86_64" ] && [ "$no_upx" != "true "]; then upx /usr/sbin/zabbix_sender ; fi ; \
-    if [ "$apkArch" = "x86_64" ] && [ "$zabbix_agent2" = "true" ] && [ "$no_upx" != "true "]; then upx /usr/sbin/zabbix_agent2 ; fi ; \
+    if [ "$apkArch" = "x86_64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_agentd ; fi ; \
+    if [ "$apkArch" = "x86_64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_sender ; fi ; \
+    if [ "$apkArch" = "x86_64" ] && [ "$zabbix_agent2" = "true" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_agent2 ; fi ; \
     rm -rf /usr/src/zabbix && \
     \
 ### Fluentbit compilation
@@ -145,36 +149,66 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_INSTALL_LIBDIR=lib \
         -DCMAKE_BUILD_TYPE=None \
-        -DFLB_CORO_STACK_SIZE=24576\
-        -DFLB_JEMALLOC=Yes \
-        -DFLB_RELEASE=Yes \
-        -DFLB_SIGNV4=Yes \
+        -DFLB_AWS=No \
         -DFLB_BACKTRACE=No \
-        -DFLB_HTTP_SERVER=Yes \
+        -DFLB_CORO_STACK_SIZE=24576\
+        -DFLB_DEBUG=No \
         -DFLB_EXAMPLES=No \
+        -DFLB_FILTER_AWS=No \
+        -DFLB_FILTER_KUBERNETES=No \
+        -DFLB_HTTP_SERVER=Yes \
+        -DFLB_IN_COLLECTD=No \
+        -DFLB_IN_CPU=No \
+        -DFLB_IN_DOCKER=No \
+        -DFLB_IN_DOCKER_EVENTS=No \
+        -DFLB_IN_KMSG=No \
+        -DFLB_IN_MEM=No \
+        -DFLB_IN_MQTT=No \
+        -DFLB_IN_NETIF=No \
         -DFLB_IN_SERIAL=No \
         -DFLB_IN_SYSTEMD=No \
+        -DFLB_IN_TCP=No \
+        -DFLB_IN_THERMAL=No \
         -DFLB_IN_WINLOG=No \
         -DFLB_IN_WINSTAT=No \
-        -DFLB_FLB_IN_KMSG=No \
-        -DFLB_IN_SYSTEMD=No \
+        -DFLB_JEMALLOC=Yes \
+        -DFLB_LUAJIT=No \
         -DFLB_OUT_AZURE=No \
         -DFLB_OUT_AZURE_BLOB=No \
         -DFLB_OUT_BIGQUERY=No \
-        -DFLB_OUT_DATADOG=No \
+        -DFLB_OUT_CLOUDWATCH_LOGS=No \
         -DFLB_OUT_COUNTER=No \
+        -DFLB_OUT_DATADOG=No \
+        -DFLB_OUT_GELF=No \
         -DFLB_OUT_INFLUXDB=No \
-        -DFLB_OUT_NRLOGS=No \
-        -DFLB_OUT_LOGDNA=No \
         -DFLB_OUT_KAFKA=No \
         -DFLB_OUT_KAFKA_REST=No \
         -DFLB_OUT_KINESIS_FIREHOSE=No \
         -DFLB_OUT_KINESIS_STREAMS=No \
+        -DFLB_OUT_LOGDNA=No \
+        -DFLB_OUT_NATS=No \
+        -DFLB_OUT_NRLOGS=No \
         -DFLB_OUT_PGSQL=No \
+        -DFLB_OUT_S3=No \
         -DFLB_OUT_SLACK=No \
         -DFLB_OUT_SPLUNK=No \
+        -DFLB_OUT_STACKDRIVER=No \
+        -DFLB_OUT_TCP=No \
+        -DFLB_OUT_TD=No \
+        -DFLB_RELEASE=Yes \
+        -DFLB_SHARED_LIB=No \
+        -DFLB_SIGNV4=No \
+        -DFLB_SMALL=No \
         . && \
-    if [ "$apkArch" = "x86_64" ] ; then make -j"$(nproc)" ; make install ; mv /usr/etc/fluent-bit /etc/fluent-bit ; strip /usr/bin/fluent-bit ; if [ "$apkArch" = "x86_64" ] && [ "$no_upx" != "true "]; then upx /usr/bin/fluent-bit ; fi ; fi ; \
+    if [ "$fluentbit_make" = "true" ] ; then if [ "$apkArch" = "x86_64" ] ; then make -j"$(nproc)" ; make install ; mv /usr/etc/fluent-bit /etc/fluent-bit ; mkdir -p /etc/fluent-bit/parsers.d; mkdir -p /etc/fluent-bit/conf.d ; strip /usr/bin/fluent-bit ; if [ "$apkArch" = "x86_64" ] && [ "$no_upx" != "true" ]; then upx /usr/bin/fluent-bit ; fi ; fi ; fi ;\
+    \
+    ### Promtail (Disabled)
+    #git clone https://github.com/grafana/loki.git /usr/src/loki && \
+    #cd /usr/src/loki && \
+    #git checkout "${PROMTAIL_VERSION}" && \
+    #CGO_ENABLED=0 GOOS=linux GO111MODULE=on \
+    #go build -v -ldflags '-s -w' -o promtail ./clients/cmd/promtail && \
+    #mv promtail /usr/sbin && \
     \
     ### Clean up
     mkdir -p /etc/logrotate.d && \

@@ -1,3 +1,18 @@
+## 7.1.0 2021-08-25 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-Bit 1.8.3 - Only available for Alpine 3.11 and up
+      - Customize the amount of days logrotate retains archived logs
+      - New CONTAINER_NAME variable that is used for Monitoring and log shipping
+      - Auto configuration of output plugins for Fluent-Bit (NULL, LOKI, Forward/FluentD)
+      - Auto configuration of Log shipping for files already setup to use log rotation
+      - Multiple Parsers support for Log Shipping
+      - Add new log to ship via fluent-bit via environment variable
+
+   ### Changed
+      - Change SMTP_TLS, SMTP_STARTTLS, SMTP_TLSCERTCHECK from "on/off" values to `TRUE|FALSE`
+      - Fix for MSMTP backend not properly accounting for legacy variables (ENABLE_SMTP)
+
 ## 7.0.3 2021-08-04 <dave at tiredofit dot ca>
 
    ### Added

@@ -109,12 +109,13 @@ which use this as a base.
 
 The following directories are used for configuration and can be mapped for persistent storage.
 
-| Directory                           | Description                          |
-| ----------------------------------- | ------------------------------------ |
-| `/etc/fluent-bit/conf.d/`           | Zabbix Agent configuration directory |
-| `/etc/zabbix/zabbix_agentd.conf.d/` | Zabbix Agent configuration directory |
-| `/var/log`                          | Cron, Zabbix, other log files        |
-| `/assets/cron`                      | Drop custom crontabs here            |
+| Directory                           | Description                               |
+| ----------------------------------- | ----------------------------------------- |
+| `/etc/fluent-bit/conf.d/`           | Fluent-Bit custom configuration directory |
+| `/etc/fluent-bit/parsers.d/`        | Fluent-Bit custom parsers directory       |
+| `/etc/zabbix/zabbix_agentd.conf.d/` | Zabbix Agent configuration directory      |
+| `/var/log`                          | Cron, Zabbix, other log files             |
+| `/assets/cron`                      | Drop custom crontabs here                 |
 
 ### Environment Variables
 
@@ -131,6 +132,7 @@ Below is the complete list of available options that can be used to customize yo
 | `CONTAINER_LOG_TIMESAMP_TIME_FMT`   | Timestamp Time Format                                                  | `%H:%M:%S`               |
 | `CONTAINER_LOG_TIMESTAMP_DATE_FMT`  | Timestamp Date Format                                                  | `%Y-%m-%d`               |
 | `CONTAINER_LOG_TIMESTAMP_SEPERATOR` | Timestamp seperator                                                    | `-`                      |
+| `CONTAINER_NAME`                    | Used for setting entries in Monnitoring and Log Shipping               | (hostname)               |
 | `TIMEZONE`                          | Set Timezone                                                           | `Etc/GMT`                |
 
 
@@ -180,9 +182,9 @@ See the [MSMTP Configuration Options](https://marlam.de/msmtp/msmtp.html) for fu
 | `SMTP_AUTHENTICATION` | SMTP Authentication                               | `none`          |
 | `SMTP_USER`           | Enable SMTP services                              | `user`          |
 | `SMTP_PASS`           | Enable Zabbix Agent                               | `password`      |
-| `SMTP_TLS`            | Use TLS                                           | `off`           |
-| `SMTP_STARTTLS`       | Start TLS from within session                     | `off`           |
-| `SMTP_TLSCERTCHECK`   | Check remote certificate                          | `off`           |
+| `SMTP_TLS`            | Use TLS                                           | `FALSE`         |
+| `SMTP_STARTTLS`       | Start TLS from within session                     | `FALSE`         |
+| `SMTP_TLSCERTCHECK`   | Check remote certificate                          | `FALSE`         |
 
 See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/5.4/manual/appendix/config/zabbix_agentd)
 for information about the following Zabbix values.
@@ -200,7 +202,7 @@ This image comes with Zabbix Agent 1 (Classic or C compiled) and Zabbix Agent 2 
 
 | Parameter                      | Description                                                                       | Default                  | 1   | 2   |
 | ------------------------------ | --------------------------------------------------------------------------------- | ------------------------ | --- | --- |
-| `ZABBIX_SETUP_TYPE`         | Automatically generate configuration based on these variables `AUTO` or `MANUAL`  | `AUTO`                   |
+| `ZABBIX_SETUP_TYPE`            | Automatically generate configuration based on these variables `AUTO` or `MANUAL`  | `AUTO`                   | x   | x   |
 | `ZABBIX_AGENT_TYPE`            | Which version of Zabbix Agent to load `1` or `2`                                  | 1                        | N/A | N/A |
 | `ZABBIX_AGENT_LOG_PATH`        | Log File Path                                                                     | `/var/log/zabbix/agent/` | x   | x   |
 | `ZABBIX_AGENT_LOG_FILE`        | Logfile name                                                                      | `zabbix_agentd.log`      | x   | x   |
@@ -210,12 +212,12 @@ This image comes with Zabbix Agent 1 (Classic or C compiled) and Zabbix Agent 2 
 | `ZABBIX_REMOTECOMMANDS_DENY`   | Deny remote commands                                                              |                          | x   | x   |
 | `ZABBIX_REMOTECOMMANDS_LOG`    | Enable remote commands Log (`0`/`1`)                                              | `1`                      | x   |     |
 | `ZABBIX_SERVER`                | Allow connections from Zabbix server IP                                           | `0.0.0.0/0`              | x   | x   |
-| `ZABBIX_STATUS_PORT`           | Agent will listen to this port for status requests (http://localhost:port/status) | 10050                    |     | x   |
+| `ZABBIX_STATUS_PORT`           | Agent will listen to this port for status requests (http://localhost:port/status) | `10050`                  |     | x   |
 | `ZABBIX_LISTEN_PORT`           | Zabbix Agent listening port                                                       | `10050`                  | x   | x   |
 | `ZABBIX_LISTEN_IP`             | Zabbix Agent listening IP                                                         | `0.0.0.0`                | x   | x   |
 | `ZABBIX_START_AGENTS`          | How many Zabbix Agents to start                                                   | `1`                      | x   |     |
 | `ZABBIX_SERVER_ACTIVE`         | Server for active checks                                                          | `zabbix-proxy`           | x   | x   |
-| `ZABBIX_HOSTNAME`              | Container hostname to report to server                                            | `docker`                 | x   | x   |
+| `ZABBIX_HOSTNAME`              | Container hostname to report to server                                            | `$CONTAINER_NAME`        | x   | x   |
 | `ZABBIX_REFRESH_ACTIVE_CHECKS` | Seconds to refresh Active Checks                                                  | `120`                    | x   | x   |
 | `ZABBIX_BUFFER_SEND`           | Buffer Send                                                                       | `5`                      | x   | x   |
 | `ZABBIX_BUFFER_SIZE`           | Buffer Size                                                                       | `100`                    | x   | x   |
@@ -234,29 +236,58 @@ This is work in progress for a larger logging solution. Presently there is funct
 | `CONTAINER_ENABLE_LOGROTATE`    | Enable Logrotate (if scheduling enabled) | `TRUE`       |
 | `CONTAINER_ENABLE_LOGSHIPPING`  | Enable Log Shipping                      | `FALSE`      |
 | `CONTAINER_LOGSHIPPING_BACKEND` | Log shipping backend `fluent-bit`        | `fluent-bit` |
+| `LOGROTATE_RETAIN_DAYS`         | Rotate and retain logs for x days        | `7`          |
+
+##### Log Shipping Parsing
+
+You can set an environment variable to start shipping a log without any other configuration. Create a variable starting with `LOGSHIP_<name>` with the value of the location of the log files. You can also use this to null an existing configuration by setting the value of `FALSE`.
+
+Example: `LOGSHIP_NGINX=/var/log/nginx/*.log` will create and tag all log files from that directory as to be coming from `CONTAINER_NAME` and from `nginx`. Note, it does not allow for custom parsing, so will simply parse the log entry as is.
+
+If `LOGSHIPPING_AUTO_CONFIG_LOGROTATE` set to true, you can define what parser the configuration file should use. Make sure you have the appropriate `.conf` parsers in `/etc/fluent-bit/parsers.d/`
+Create a line in the `logrotate.d/<file>` that looks like `# logship: <parser>`. Multiple parsers can be added by seperating via commas. Alternatively, if you wanted to skip a certain logfile from being parsed by the log shipper, use the value "SKIP".
+
+| Parameter                           | Description                                                                          | Default |
+| ----------------------------------- | ------------------------------------------------------------------------------------ | ------- |
+| `LOGSHIPPING_AUTO_CONFIG_LOGROTATE` | Automatically configure log shipping for files that are listed in `/etc/logrotate.d` | `TRUE`  |
+
 
 ##### Fluent-Bit Options
 
-Drop files in `/etc/fluent-bit/conf.d` to setup your inputs and outputs. The environment variables below only affect the system end of the configuration. If you wish to use your own system configuration without these variables, change `FLUENTBIT_SETUP_TYPE` to `MANUAL`
+Drop files in `/etc/fluent-bit/conf.d` to setup your inputs and outputs. The environment variables below only affect the system end of the configuration. If you wish to use your own system configuration without these variables, change `FLUENTBIT_SETUP_TYPE` to `MANUAL`. Container will attempt to automatically create configuration to send to a destination, or can also be set to act as a receiver from other fluent-bit hosts and forward data to a remote log analysis service.
 
-| Parameter                          | Description                                                                      | Default                  |
-| ---------------------------------- | -------------------------------------------------------------------------------- | ------------------------ |
-| `FLUENTBIT_SETUP_TYPE`             | Automatically generate configuration based on these variables `AUTO` or `MANUAL` | `AUTO`                   |
-| `FLUENTBIT_GRACE_SECONDS`          | Wait time before exit in seconds                                                 | `1`                      |
-| `FLUENTBIT_FLUSH_SECONDS`          | Wait time to flush records in seconds                                            | `1`                      |
-| `FLUENTBIT_LOG_LEVEL`              | Log Level `info` `warn` `error` `debug` `trace`                                  | `info`                   |
-| `FLUENTBIT_CONFIG_PARSERS`         | Parsers config file name                                                         | `parsers.conf`           |
-| `FLUENTBIT_CONFIG_PLUGINS`         | Plugins config file name                                                         | `plugins.conf`           |
-| `FLUENTBIT_ENABLE_HTTP_SERVER`     | Embedded HTTP Server for metrics `TRUE` / `FALSE`                                | `TRUE`                   |
-| `FLUENTBIT_HTTP_LISTEN_IP`         | HTTP Listen IP                                                                   | `0.0.0.0`                |
-| `FLUENTBIT_HTTP_LISTEN_PORT`       | HTTP Listening Port                                                              | `2020`                   |
-| `FLUENTBIT_ENABLE_STORAGE_METRICS` | Public storage pipeline metrics in /api/v1/storage                               | `TRUE`                   |
-| `FLUENTBIT_STORAGE_PATH`           | Absolute file system path to store filesystem data buffers                       | `/tmp/fluentbit/storage` |
-| `FLUENTBIT_STORAGE_SYNC`           | Synchronization mode to store data in filesystem `normal` or `full`              | `normal`                 |
-| `FLUENTBIT_STORAGE_CHECKSUM`       | Create CRC32 checkcum for filesystem RW functions                                | `FALSE`                  |
-| `FLUENTBIT_STORAGE_BACKLOG_LIMIT`  | Maximum about of memory to use for backlogged/unsent records                     | `5M`                     |
-| `FLUENTBIT_LOG_PATH`               | Log Path                                                                         | `/var/log/fluentbit/`    |
-| `FLUENTBIT_LOG_FILE`               | Log File                                                                         | `fluentbit.log`          |
+| Parameter                             | Description                                                                      | Default                  |
+| ------------------------------------- | -------------------------------------------------------------------------------- | ------------------------ |
+| `FLUENTBIT_CONFIG_PARSERS`            | Parsers config file name                                                         | `parsers.conf`           |
+| `FLUENTBIT_CONFIG_PLUGINS`            | Plugins config file name                                                         | `plugins.conf`           |
+| `FLUENTBIT_ENABLE_HTTP_SERVER`        | Embedded HTTP Server for metrics `TRUE` / `FALSE`                                | `TRUE`                   |
+| `FLUENTBIT_ENABLE_STORAGE_METRICS`    | Public storage pipeline metrics in /api/v1/storage                               | `TRUE`                   |
+| `FLUENTBIT_FLUSH_SECONDS`             | Wait time to flush records in seconds                                            | `1`                      |
+| `FLUENTBIT_FORWARD_BUFFER_CHUNK_SIZE` | Buffer Chunk Size                                                                | `32KB`                   |
+| `FLUENTBIT_FORWARD_BUFFER_MAX_SIZE`   | Buffer Maximum Size                                                              | `64KB`                   |
+| `FLUENTBIT_FORWARD_PORT`              | What port when using `PROXY` (listen) mode or `FORWARD` (client) output          | `24224`                  |
+| `FLUENTBIT_GRACE_SECONDS`             | Wait time before exit in seconds                                                 | `1`                      |
+| `FLUENTBIT_HTTP_LISTEN_IP`            | HTTP Listen IP                                                                   | `0.0.0.0`                |
+| `FLUENTBIT_HTTP_LISTEN_PORT`          | HTTP Listening Port                                                              | `2020`                   |
+| `FLUENTBIT_LOG_FILE`                  | Log File                                                                         | `fluentbit.log`          |
+| `FLUENTBIT_LOG_LEVEL`                 | Log Level `info` `warn` `error` `debug` `trace`                                  | `info`                   |
+| `FLUENTBIT_LOG_PATH`                  | Log Path                                                                         | `/var/log/fluentbit/`    |
+| `FLUENTBIT_MODE`                      | Type of operation - Client `NORMAL` or Proxy `PROXY`                             | `NORMAL`                 |
+| `FLUENTBIT_OUTPUT_FORWARD_HOST`       | Where to forward Fluent-Bit data to                                              | `fluent-proxy`           |
+| `FLUENTBIT_OUTPUT_FORWARD_TLS_VERIFY` | Verify certificates when using TLS                                               | `FALSE`                  |
+| `FLUENTBIT_OUTPUT_FORWARD_TLS`        | Enable TLS when forwading                                                        | `FALSE`                  |
+| `FLUENTBIT_OUTPUT_LOKI_HOST`          | Host for Loki Output                                                             | `loki`                   |
+| `FLUENTBIT_OUTPUT_LOKI_PORT`          | Port for Loki Output                                                             | `3100`                   |
+| `FLUENTBIT_OUTPUT_LOKI_USER`          | (optional) Username to authenticate to Loki Server                               | ``                       |
+| `FLUENTBIT_OUTPUT_LOKI_PASS`          | (optional) Password to authenticate to Loki Server                               | ``                       |
+| `FLUENTBIT_OUTPUT_TENANT_ID`          | (optional) Tenant ID to pass to Loki Server                                      | ``                       |
+| `FLUENTBIT_OUTPUT`                    | Output plugin to use `LOKI` , `FORWARD`, `NULL`                                  | `FORWARD`                |
+| `FLUENTBIT_SETUP_TYPE`                | Automatically generate configuration based on these variables `AUTO` or `MANUAL` | `AUTO`                   |
+| `FLUENTBIT_STORAGE_BACKLOG_LIMIT`     | Maximum about of memory to use for backlogged/unsent records                     | `5M`                     |
+| `FLUENTBIT_STORAGE_CHECKSUM`          | Create CRC32 checkcum for filesystem RW functions                                | `FALSE`                  |
+| `FLUENTBIT_STORAGE_PATH`              | Absolute file system path to store filesystem data buffers                       | `/tmp/fluentbit/storage` |
+| `FLUENTBIT_STORAGE_SYNC`              | Synchronization mode to store data in filesystem `normal` or `full`              | `normal`                 |
+
 #### Permissions
 
 If you wish to change the internal id for users and groups you can set environment variables to do so.

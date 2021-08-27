@@ -10,6 +10,11 @@ check_service_initialized init
 liftoff
 output_on
 
+if var_true "${CONTAINER_ENABLE_LOGROTATE}" ; then
+    print_debug "Setting Logrotate retention days after all services have finished initializing"
+    sed -i "s|rotate .*|rotate ${LOGROTATE_RETAIN_DAYS}|g" /etc/logrotate.d/*
+fi
+
 case "${CONTAINER_SCHEDULING_BACKEND}" in
     "cron" )
       if [ "${SCHEDULING_LOG_TYPE}" = "FILE" ] || [ "${SCHEDULING_LOG_TYPE}" = "file" ]; then
