@@ -1,3 +1,9 @@
+## 7.1.2 2021-08-30 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change references from 'edge' to 3.15 when looking at os-release
+
+
 ## 7.1.1 2021-08-27 <dave at tiredofit dot ca>
 
    ### Added

@@ -30,7 +30,7 @@ else
                 case "$archit" in
                   x86_64)
                     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in
-                      3.11|3.12|3.13|3.14|edge )
+                      3.11|3.12|3.13|3.14|3.15 )
                           :
                       ;;
                       *)
@@ -245,8 +245,8 @@ EOF
     match                  *
     host                   ${FLUENTBIT_OUTPUT_LOKI_HOST}
     port                   ${FLUENTBIT_OUTPUT_LOKI_PORT}
-    tls                    ${FLUENTBIT_OUTPUT_LOKI_TLS}
-    tls.verify             ${FLUENTBIT_OUTPUT_LOKI_TLS_VERIFY}
+    tls                    ${FLUENTBIT_OUTPUT_LOKI_TLS,,}
+    tls.verify             ${FLUENTBIT_OUTPUT_LOKI_TLS_VERIFY,,}
     labels                 logshipper=${CONTAINER_NAME}
     Label_keys             \$hostname,\$container_name,\$product
 ${loki_user}
@@ -271,8 +271,8 @@ EOF
     Host          ${FLUENTBIT_OUTPUT_FORWARD_HOST}
     Port          ${FLUENTBIT_FORWARD_PORT}
     Self_Hostname ${CONTAINER_NAME}
-    tls           ${FLUENTBIT_OUTPUT_FORWARD_TLS}
-    tls.verify    ${FLUENTBIT_OUTPUT_FORWARD_TLS_VERIFY}
+    tls           ${FLUENTBIT_OUTPUT_FORWARD_TLS,,}
+    tls.verify    ${FLUENTBIT_OUTPUT_FORWARD_TLS_VERIFY,,}
 ${forward_secret}
 EOF
             ;;

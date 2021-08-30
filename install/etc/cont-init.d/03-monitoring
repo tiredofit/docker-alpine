@@ -81,7 +81,7 @@ EOF
           case ${os} in
             "alpine" )
               case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
-                3.11|3.12|3.13|3.14|edge)
+                3.11|3.12|3.13|3.14|3.15)
                   :
                 ;;
                 *)
