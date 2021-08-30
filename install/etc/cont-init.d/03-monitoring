@@ -27,7 +27,7 @@ if var_true "${CONTAINER_ENABLE_MONITORING}" ; then
 
       case "${ZABBIX_AGENT_TYPE}" in
         "1" | "classic" | "c" | "legacy" | "old" )
-
+          logship_version="classic"
           if [ "${ZABBIX_SETUP_TYPE}" = "AUTO" ] || [ "${ZABBIX_SETUP_TYPE}" = "auto" ] ; then
             print_debug "Configuring Zabbix classic Agent"
             cat <<EOF > "${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}"
@@ -82,7 +82,7 @@ EOF
             "alpine" )
               case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
                 3.11|3.12|3.13|3.14|3.15)
-                  :
+                  logship_version="modern"
                 ;;
                 *)
                   print_error "Sorry, Modern version not available for this images version (Alpine 3.11 + only)"
@@ -145,6 +145,7 @@ EOF
       chown -R "${ZABBIX_USER}" "${ZABBIX_AGENT_LOG_PATH}"
       chown -R "${ZABBIX_USER}" ${ZABBIX_CONFIG_PATH}/
       create_logrotate zabbix-agent ${ZABBIX_AGENT_LOG_PATH}/${ZABBIX_AGENT_LOG_FILE} ${ZABBIX_USER} root
+      echo "# logship: zabbix-agent-${logship_version}" >> /etc/logrotate.d/zabbix-agent
       print_notice "Container configured for monitoring with '${CONTAINER_MONITORING_BACKEND} ${ZABBIX_AGENT_TYPE}'"
     ;;
     * )

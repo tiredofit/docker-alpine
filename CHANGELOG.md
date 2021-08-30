@@ -1,3 +1,9 @@
+## 7.1.3 2021-08-30 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add Zabbix Agent (classic/modern) Log Shipping parsers for fluent-bit
+
+
 ## 7.1.2 2021-08-30 <dave at tiredofit dot ca>
 
    ### Changed
