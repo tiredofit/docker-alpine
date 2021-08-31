@@ -1,3 +1,9 @@
+## 7.1.7 2021-08-31 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix double slashes in logrotation paths if auto generated
+
+
 ## 7.1.6 2021-08-31 <dave at tiredofit dot ca>
 
    ### Changed
