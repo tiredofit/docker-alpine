@@ -1,3 +1,9 @@
+## 7.1.6 2021-08-31 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for Fluent-bit Zabbix Agent2 Parsing
+
+
 ## 7.1.5 2021-08-30 <dave at tiredofit dot ca>
 
    ### Added
