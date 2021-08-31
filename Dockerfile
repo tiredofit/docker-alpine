@@ -7,7 +7,7 @@ ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
 
 ### Set defaults
-ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.3"} \
+ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.5"} \
     #PROMTAIL_VERSION=${PROMTAIL_VERSION:-"v2.3.0"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"v2.2.0.3"} \
     ZABBIX_VERSION=${ZABBIX_VERSION:-"5.4.4"} \
@@ -28,7 +28,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     esac ; \
     \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
-        3.11|3.12|3.13|3.14|edge) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ;; \
+        3.11|3.12|3.13|3.14|3.15) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ;; \
         *) : ;; \
     esac ; \
     \
@@ -175,6 +175,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
         -DFLB_OUT_AZURE=No \
         -DFLB_OUT_AZURE_BLOB=No \
         -DFLB_OUT_BIGQUERY=No \
+        -DFLB_OUT_CALYPTIA=No \
         -DFLB_OUT_CLOUDWATCH_LOGS=No \
         -DFLB_OUT_COUNTER=No \
         -DFLB_OUT_DATADOG=No \
