@@ -1,3 +1,13 @@
+## 7.1.8 2021-09-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 1.8.6
+
+   ### Changed
+      - Set SMTP_AUTO_FROM default to FALSE
+      - Quiet down a grep statement when looking for logs to parse with fluent-bit
+
+
 ## 7.1.7 2021-08-31 <dave at tiredofit dot ca>
 
    ### Changed

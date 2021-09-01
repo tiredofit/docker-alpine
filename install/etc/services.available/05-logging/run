@@ -19,7 +19,7 @@ case "${CONTAINER_LOGSHIPPING_BACKEND}" in
             logrotate_paths=$(grep '{' "${logrotate_file}" | cut -d { -f 1 | xargs | tr " " "\n" )
             for logrotate_path in $logrotate_paths ; do
               if ! grep -Fq "$logrotate_path" /etc/fluent-bit/conf.d/in_tail_*.conf >/dev/null 2>&1 ; then
-                if grep -Fq "# logship:" "${logrotate_file}" 2>&1 ; then
+                if grep -Fq "# logship:" "${logrotate_file}" >/dev/null 2>&1 ; then
                   logrotate_parser=$(grep "# logship:" "${logrotate_file}" | cut -d : -f 2 | tr "," "\n" | xargs)
                   if [ "$(echo "${logrotate_parser}" | wc -w)" -gt 1 ] ; then
                     print_debug "[logship] Found Multiple parsers in logrotate configuration"

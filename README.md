@@ -174,7 +174,7 @@ If you wish to send mail, set `CONTAINER_ENABLE_MESSAGING=TRUE` and configure th
 See the [MSMTP Configuration Options](https://marlam.de/msmtp/msmtp.html) for further information on options to configure MSMTP.
 | Parameter             | Description                                       | Default         |
 | --------------------- | ------------------------------------------------- | --------------- |
-| `SMTP_AUTO_FROM`      | Add setting to support sending through Gmail SMTP | `TRUE`          |
+| `SMTP_AUTO_FROM`      | Add setting to support sending through Gmail SMTP | `FALSE`         |
 | `SMTP_HOST`           | Hostname of SMTP Server                           | `postfix-relay` |
 | `SMTP_PORT`           | Port of SMTP Server                               | `25`            |
 | `SMTP_DOMAIN`         | HELO Domain                                       | `docker`        |
