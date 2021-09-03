@@ -1,3 +1,9 @@
+## 7.1.10 2021-09-03 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Cleanup logrotate for fluentbit
+
+
 ## 7.1.9 2021-09-03 <dave at tiredofit dot ca>
 
    ### Changed

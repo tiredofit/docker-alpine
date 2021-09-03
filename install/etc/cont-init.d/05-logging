@@ -295,7 +295,7 @@ EOF
 @INCLUDE conf.d/*.conf
 EOF
         fi
-        create_logrotate fluentbitcron "${FLUENTBIT_LOG_PATH}"/"${FLUENTBIT_LOG_FILE}"
+        create_logrotate fluentbit "${FLUENTBIT_LOG_PATH}"/"${FLUENTBIT_LOG_FILE}"
         print_notice "Container configured to ship logs via '${CONTAINER_LOGSHIPPING_BACKEND}'"
     ;;
     *)
