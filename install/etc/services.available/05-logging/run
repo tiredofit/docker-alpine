@@ -16,7 +16,8 @@ case "${CONTAINER_LOGSHIPPING_BACKEND}" in
         mkdir -p /tmp/state/logship/
         if [ ! -f "/tmp/state/logship/logrotate" ]; then
           for logrotate_file in /etc/logrotate.d/* ; do
-            logrotate_paths=$(grep '{' "${logrotate_file}" | cut -d { -f 1 | xargs | tr " " "\n" )
+            set -f
+            logrotate_paths=$(grep '{' "${logrotate_file}" | cut -d { -f 1 | xargs | tr " " "\n" ; )
             for logrotate_path in $logrotate_paths ; do
               if ! grep -Fq "$logrotate_path" /etc/fluent-bit/conf.d/in_tail_*.conf >/dev/null 2>&1 ; then
                 if grep -Fq "# logship:" "${logrotate_file}" >/dev/null 2>&1 ; then
@@ -58,6 +59,7 @@ ${logrotate_parser}
 EOF
                 fi
               fi
+              set +f
             done
             if ! grep -q 'record_modifier' "/etc/fluent-bit/conf.d/in_tail_$(basename "${logrotate_file,,}").conf" ; then
               cat <<EOF >> "/etc/fluent-bit/conf.d/in_tail_$(basename "${logrotate_file,,}").conf"
@@ -74,6 +76,7 @@ EOF
             if var_true "${multiple_parsers}" ; then
               if ! grep -q 'Reserve_Data' "/etc/fluent-bit/conf.d/in_tail_$(basename "${logrotate_file,,}").conf" ; then
                 cat <<EOF >> "/etc/fluent-bit/conf.d/in_tail_$(basename "${logrotate_file,,}").conf"
+
 [FILTER]
     Name            parser
     Match           $(basename "${logrotate_file,,}")

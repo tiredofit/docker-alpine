@@ -1,3 +1,9 @@
+## 7.1.9 2021-09-03 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Properly read wildcards as wildcards for configuration for fluent bit logortate
+
+
 ## 7.1.8 2021-09-01 <dave at tiredofit dot ca>
 
    ### Added
