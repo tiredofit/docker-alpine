@@ -1,3 +1,10 @@
+## 7.1.11 2021-09-04 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fixes for create_logrotate function outputting unneccessary su's
+      - Fix for Zabbix Agent logrotate/fluent-bit config
+
+
 ## 7.1.10 2021-09-03 <dave at tiredofit dot ca>
 
    ### Changed

@@ -111,17 +111,22 @@ check_service_initialized() {
 }
 
 create_logrotate() {
-## Usage <Logrotate Config Name> <path> (optional user) (optional group)
+## Usage <Logrotate Config Name> <path> (optional user) (optional group) (optional logship parser)
 ## e.g. create_logrotate cron /var/log/cron/cron.log root root
     if [ -n "$1" ] && [ -n "$2" ]; then
         print_debug "Creating Logrotate Entry for $2"
-        if [ -n "$1" ] && [ -n "$2" ]; then
+        if [ -n "$3" ] && [ -n "$4" ]; then
             lruser="    su $3 $4"
+        fi
+        if [ -n "$5" ] ; then
+            lrlsparser="# logship: $5"
         fi
         if [ ! -d "/etc/logrotate.d" ] ; then
             mkdir -p /etc/logrotate.d
         fi
+
         cat <<EOF > /etc/logrotate.d/"$1"
+${lrparser}
 $2 {
     daily
     ifempty
@@ -130,7 +135,7 @@ $2 {
     compress
     dateext
     copytruncate
-    ${lruser}
+${lruser}
 }
 EOF
         chown root:root /etc/logrotate.d/${1}

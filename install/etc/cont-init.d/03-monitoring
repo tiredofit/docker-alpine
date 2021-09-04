@@ -91,7 +91,7 @@ EOF
               esac
             ;;
             * )
-              :
+              logship_version="modern"
             ;;
           esac
 
