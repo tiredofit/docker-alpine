@@ -1,3 +1,9 @@
+## 7.1.12 2021-09-04 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change syntax for create_logrotate
+
+
 ## 7.1.11 2021-09-04 <dave at tiredofit dot ca>
 
    ### Changed
