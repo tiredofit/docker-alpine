@@ -1,3 +1,9 @@
+## 7.1.13 2021-09-05 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for multiple parsers being added to all configuration files in fluent-bit
+
+
 ## 7.1.12 2021-09-04 <dave at tiredofit dot ca>
 
    ### Changed
