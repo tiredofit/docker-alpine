@@ -1,4 +1,4 @@
-FROM alpine:3.14
+FROM docker.io/alpine:3.14
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ARG ZABBIX_VERSION

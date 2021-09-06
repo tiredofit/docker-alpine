@@ -169,6 +169,7 @@ If you wish to send mail, set `CONTAINER_ENABLE_MESSAGING=TRUE` and configure th
 | ----------------------------- | ------------------------------------------ | ------- |
 | `CONTAINER_ENABLE_MESSAGING`  | Enable Messaging services like SMTP        | `TRUE`  |
 | `CONTAINER_MESSAGING_BACKEND` | Messaging Backend - presently only `msmtp` | `msmtp` |
+
 ##### MSMTP Options
 
 See the [MSMTP Configuration Options](https://marlam.de/msmtp/msmtp.html) for further information on options to configure MSMTP.

@@ -1,4 +1,4 @@
-### Top Level Base Image (Alpine
+### Top Level Base Image (Alpine)
 ### Dave Conroy <Dave Conroy <github.com/tiredofit>>
 
 name: 'build'
@@ -95,7 +95,7 @@ jobs:
       - name: Switch
         id: Switch
         run: |
-          sed -i "s|FROM alpine:.*|FROM alpine:${RELEASE}|g" Dockerfile
+          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
 
       - name: Build
         uses: docker/build-push-action@v2
@@ -190,7 +190,7 @@ jobs:
       - name: Switch
         id: Switch
         run: |
-          sed -i "s|FROM alpine:.*|FROM alpine:${RELEASE}|g" Dockerfile
+          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
 
       - name: Build
         uses: docker/build-push-action@v2
@@ -286,7 +286,7 @@ jobs:
       - name: Switch
         id: Switch
         run: |
-          sed -i "s|FROM alpine:.*|FROM alpine:${RELEASE}|g" Dockerfile
+          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
 
       - name: Build
         uses: docker/build-push-action@v2
@@ -382,7 +382,7 @@ jobs:
       - name: Switch
         id: Switch
         run: |
-          sed -i "s|FROM alpine:.*|FROM alpine:${RELEASE}|g" Dockerfile
+          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
 
       - name: Build
         uses: docker/build-push-action@v2
@@ -478,7 +478,7 @@ jobs:
       - name: Switch
         id: Switch
         run: |
-          sed -i "s|FROM alpine:.*|FROM alpine:${RELEASE}|g" Dockerfile
+          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
 
       - name: Build
         uses: docker/build-push-action@v2
@@ -574,7 +574,7 @@ jobs:
       - name: Switch
         id: Switch
         run: |
-          sed -i "s|FROM alpine:.*|FROM alpine:${RELEASE}|g" Dockerfile
+          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
 
       - name: Build
         uses: docker/build-push-action@v2
@@ -670,7 +670,7 @@ jobs:
       - name: Switch
         id: Switch
         run: |
-          sed -i "s|FROM alpine:.*|FROM alpine:${RELEASE}|g" Dockerfile
+          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
 
       - name: Build
         uses: docker/build-push-action@v2
@@ -766,7 +766,7 @@ jobs:
       - name: Switch
         id: Switch
         run: |
-          sed -i "s|FROM alpine:.*|FROM alpine:${RELEASE}|g" Dockerfile
+          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
 
       - name: Build
         uses: docker/build-push-action@v2
@@ -862,7 +862,7 @@ jobs:
       - name: Switch
         id: Switch
         run: |
-          sed -i "s|FROM alpine:.*|FROM alpine:${RELEASE}|g" Dockerfile
+          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
 
       - name: Build
         uses: docker/build-push-action@v2
@@ -958,7 +958,7 @@ jobs:
       - name: Switch
         id: Switch
         run: |
-          sed -i "s|FROM alpine:.*|FROM alpine:${RELEASE}|g" Dockerfile
+          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
 
       - name: Build
         uses: docker/build-push-action@v2
@@ -1054,7 +1054,7 @@ jobs:
       - name: Switch
         id: Switch
         run: |
-          sed -i "s|FROM alpine:.*|FROM alpine:${RELEASE}|g" Dockerfile
+          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
 
       - name: Build
         uses: docker/build-push-action@v2

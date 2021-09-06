@@ -90,7 +90,7 @@ else
 EOF
 
           for custom_parser in /etc/fluent-bit/parsers.d/*.conf ; do
-            print_debug "[logship] Found additional parser for '$(echo "${custom_parser,,}" | sed "s|conf||g")'"
+            print_debug "[logship] Found additional parser for '$(echo "${custom_parser,,}" | sed "s|.conf||g")'"
             additional_parsers=$(echo "${additional_parsers}" ; cat<<EOF
     parsers_file ${custom_parser}
 EOF
