@@ -1,3 +1,9 @@
+## 7.1.14 2021-09-05 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Unmatched sed statement
+
+
 ## 7.1.13 2021-09-05 <dave at tiredofit dot ca>
 
    ### Changed

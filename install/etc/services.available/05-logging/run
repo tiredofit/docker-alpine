@@ -92,7 +92,7 @@ EOF
             unset multiple_parsers
             unset multi_parsers
           done
-        sed -i "s|//|/" /etc/fluent-bit/conf.d/*.conf
+        sed -i "s|//|/|g" /etc/fluent-bit/conf.d/*.conf
         touch /tmp/state/logship/logrotate
         fi
       fi
