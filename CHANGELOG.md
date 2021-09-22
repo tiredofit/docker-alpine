@@ -1,3 +1,9 @@
+## 7.1.16 2021-09-22 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Revert back to Fluent bit 1.8.6
+
+
 ## 7.1.15 2021-09-19 <dave at tiredofit dot ca>
 
    ### Added
