@@ -7,7 +7,7 @@ ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
 
 ### Set defaults
-ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.6"} \
+ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.7"} \
     #PROMTAIL_VERSION=${PROMTAIL_VERSION:-"v2.3.0"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"v2.2.0.3"} \
     ZABBIX_VERSION=${ZABBIX_VERSION:-"5.4.4"} \
@@ -89,6 +89,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
                 cmake \
                 flex \
                 fts-dev \
+                openssl-dev \
                 && \
     \
     cp -R /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
