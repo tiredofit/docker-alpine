@@ -35,7 +35,7 @@ Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container im
 - [Installation](#installation)
   - [Build from Source](#build-from-source)
   - [Prebuilt Images](#prebuilt-images)
-    - [Multi Archictecture](#multi-archictecture)
+    - [Multi Architecture](#multi-archictecture)
 - [Configuration](#configuration)
   - [Quick Start](#quick-start)
   - [Persistent Storage](#persistent-storage)
@@ -94,7 +94,7 @@ The following image tags are available along with their tagged release based on 
 | `3.6`          | `:3.6`  |
 | `3.5`          | `:3.5`  |
 
-#### Multi Archictecture
+#### Multi Architecture
 Images are built primarily for `amd64` architecture, and may also include builds for `arm/v6`, `arm/v7`, `arm64` and others. These variants are all unsupported. Consider [sponsoring](https://github.com/sponsors/tiredofit) my work so that I can work with various hardware. To see if this image supports multiple architecures, type `docker manifest (image):(tag)`
 
 

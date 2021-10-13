@@ -324,11 +324,11 @@ db_ready() {
     output_on
 }
 
-dir_empty(){
+dir_empty() {
     [ ! -n "$(ls -A $1)" ]
 }
 
-dir_notempty(){
+dir_notempty() {
     [ -n "$(ls -A "$1")" ]
 }
 
@@ -647,7 +647,6 @@ print_info() {
 
 print_notice() {
     output_off
-
     case "$CONTAINER_LOG_LEVEL" in
             "DEBUG" | "NOTICE" )
                 if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] ; then

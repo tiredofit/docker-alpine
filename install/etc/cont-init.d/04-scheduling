@@ -99,7 +99,6 @@ EOF
       exit 1
     ;;
   esac
-
 fi
 
 output_on
