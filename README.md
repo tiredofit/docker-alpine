@@ -181,8 +181,8 @@ See the [MSMTP Configuration Options](https://marlam.de/msmtp/msmtp.html) for fu
 | `SMTP_DOMAIN`         | HELO Domain                                       | `docker`        |
 | `SMTP_MAILDOMAIN`     | Mail Domain From                                  | `local`         |
 | `SMTP_AUTHENTICATION` | SMTP Authentication                               | `none`          |
-| `SMTP_USER`           | Enable SMTP services                              | `user`          |
-| `SMTP_PASS`           | Enable Zabbix Agent                               | `password`      |
+| `SMTP_USER`           | SMTP Username                                     | ``              |
+| `SMTP_PASS`           | SMTP Password                                     | ``              |
 | `SMTP_TLS`            | Use TLS                                           | `FALSE`         |
 | `SMTP_STARTTLS`       | Start TLS from within session                     | `FALSE`         |
 | `SMTP_TLSCERTCHECK`   | Check remote certificate                          | `FALSE`         |
