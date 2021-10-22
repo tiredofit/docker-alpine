@@ -1,3 +1,9 @@
+## 7.1.19 2021-10-22 <dave at tiredofit dot ca>
+
+   ### Added
+      - Added new features and defaults for Fluent-Bit Tail Input Plugin
+
+
 ## 7.1.18 2021-10-13 <dave at tiredofit dot ca>
 
    ### Added
