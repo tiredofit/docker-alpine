@@ -1,3 +1,10 @@
+## 7.1.21 2021-10-28 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 1.8.9
+      - Zabbix Agent 5.4.7
+
+
 ## 7.1.20 2021-10-28 <dave at tiredofit dot ca>
 
    ### Changed
