@@ -1,3 +1,9 @@
+## 7.1.20 2021-10-28 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Disable Time Formatting for Zabbix Fluent-bit parsing
+
+
 ## 7.1.19 2021-10-22 <dave at tiredofit dot ca>
 
    ### Added
