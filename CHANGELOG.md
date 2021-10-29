@@ -1,3 +1,9 @@
+## 7.1.22 2021-10-28 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Compile go manually to continue installing Zabbix Agent 2
+
+
 ## 7.1.21 2021-10-28 <dave at tiredofit dot ca>
 
    ### Added

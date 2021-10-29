@@ -1,14 +1,13 @@
-FROM docker.io/alpine:3.14
+FROM docker.io/alpine:3.15
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
+ARG GOLANG_VERSION=1.17.2
 ARG ZABBIX_VERSION
 ARG FLUENTBIT_VERSION
-#ARG PROMTAIL_VERSION
 ARG S6_OVERLAY_VERSION
 
 ### Set defaults
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.9"} \
-    #PROMTAIL_VERSION=${PROMTAIL_VERSION:-"v2.3.0"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"v2.2.0.3"} \
     ZABBIX_VERSION=${ZABBIX_VERSION:-"5.4.7"} \
     DEBUG_MODE=FALSE \
@@ -28,7 +27,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     esac ; \
     \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
-        3.11|3.12|3.13|3.14|3.15) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ;; \
+        "3.11" |"3.12" | "3.13" | "3.14" |"3.15" ) echo "INSTALLING ZABBIX2" ; zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ;; \
         *) : ;; \
     esac ; \
     \
@@ -68,13 +67,17 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
                 vim \
                 && \
     \
+    apk add -t .golang-build-deps \
+                go \
+                musl-dev \
+                && \
+    \
     apk add -t .zabbix-build-deps \
                 alpine-sdk \
                 autoconf \
                 automake \
                 binutils \
                 coreutils \
-                go \
                 g++ \
                 openssl-dev \
                 make \
@@ -98,7 +101,18 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     ## Quiet down sudo
     echo "Set disable_coredump false" > /etc/sudo.conf && \
     \
-### Zabbix installation
+### Golang installation
+    mkdir -p /usr/src/golang && \
+    curl -sSL https://dl.google.com/go/go${GOLANG_VERSION}.src.tar.gz | tar xvfz - --strip 1 -C /usr/src/golang && \
+    cd /usr/src/golang/src/ && \
+    ./make.bash 1>/dev/null && \
+    export GOROOT=/usr/src/golang/ && \
+    export PATH="/usr/src/golang/bin:$PATH" && \
+    #rm -rf /usr/lib/go && \
+    #cp -R /usr/src/golang /usr/lib/go && \
+
+    ### Zabbix installation
+    set -ex && \
     addgroup -g 10050 zabbix && \
     adduser -S -D -H -h /dev/null -s /sbin/nologin -G zabbix -u 10050 zabbix && \
     mkdir -p /etc/zabbix && \
@@ -214,8 +228,9 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     ### Clean up
     mkdir -p /etc/logrotate.d && \
     apk del --purge \
-            .zabbix-build-deps \
             .fluentbit-build-deps \
+            .golang-build-deps \
+            .zabbix-build-deps \
             && \
     rm -rf /etc/logrotate.d/* && \
     rm -rf /root/.cache && \
