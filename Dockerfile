@@ -1,4 +1,4 @@
-FROM docker.io/alpine:3.15
+FROM docker.io/alpine:3.14
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ARG GOLANG_VERSION=1.17.2
@@ -27,7 +27,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     esac ; \
     \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
-        "3.11" |"3.12" | "3.13" | "3.14" |"3.15" ) echo "INSTALLING ZABBIX2" ; zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ;; \
+        "3.11" |"3.12" | "3.13" | "3.14" |"3.15" ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ;; \
         *) : ;; \
     esac ; \
     \
@@ -102,17 +102,16 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     echo "Set disable_coredump false" > /etc/sudo.conf && \
     \
 ### Golang installation
-    mkdir -p /usr/src/golang && \
-    curl -sSL https://dl.google.com/go/go${GOLANG_VERSION}.src.tar.gz | tar xvfz - --strip 1 -C /usr/src/golang && \
-    cd /usr/src/golang/src/ && \
-    ./make.bash 1>/dev/null && \
-    export GOROOT=/usr/src/golang/ && \
-    export PATH="/usr/src/golang/bin:$PATH" && \
-    #rm -rf /usr/lib/go && \
-    #cp -R /usr/src/golang /usr/lib/go && \
-
+    if [ "$zabbix_agent2" = "true" ] ; then \
+    mkdir -p /usr/src/golang ; \
+    curl -sSL https://dl.google.com/go/go${GOLANG_VERSION}.src.tar.gz | tar xvfz - --strip 1 -C /usr/src/golang ; \
+    cd /usr/src/golang/src/ ; \
+    ./make.bash 1>/dev/null ; \
+    export GOROOT=/usr/src/golang/ ; \
+    export PATH="/usr/src/golang/bin:$PATH" ; \
+    fi ; \
+    \
     ### Zabbix installation
-    set -ex && \
     addgroup -g 10050 zabbix && \
     adduser -S -D -H -h /dev/null -s /sbin/nologin -G zabbix -u 10050 zabbix && \
     mkdir -p /etc/zabbix && \

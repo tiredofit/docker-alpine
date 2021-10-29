@@ -1,3 +1,9 @@
+## 7.1.23 2021-10-28 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Don't build go unless we absoutely have to
+
+
 ## 7.1.22 2021-10-28 <dave at tiredofit dot ca>
 
    ### Changed
