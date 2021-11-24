@@ -14,7 +14,7 @@
 
 Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container image.
 
-* Currently tracking 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12, 3.13, 3.14 and edge.
+* Currently tracking 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12, 3.13, 3.14, 3.15 and edge.
 * [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 init capabilities.
 * [zabbix-agent](https://zabbix.org) (Classic and Modern) for individual container monitoring.
 * Scheduling via cron with other helpful tools (bash, curl, less, logrotate, nano, vim) for easier management.
@@ -83,6 +83,7 @@ The following image tags are available along with their tagged release based on 
 | Alpine version | Tag     |
 | -------------- | ------- |
 | `edge`         | `:edge` |
+| `3.15`         | `:3.15` |
 | `3.14`         | `:3.14` |
 | `3.13`         | `:3.13` |
 | `3.12`         | `:3.12` |
