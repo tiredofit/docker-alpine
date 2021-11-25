@@ -123,9 +123,8 @@ EOF
               fi
 
               mkdir -p ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d
-              echo "UserParameter=agent.os,grep \"PRETTY_NAME\" /etc/os-release | cut -d \'\"\' -f2" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/container_os.conf
+              echo "UserParameter=agent.os,grep \"PRETTY_NAME\" /etc/os-release | cut -d '\"' -f2" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/container_os.conf
               os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
-
               case ${os} in
                 "alpine" )
                   echo "UserParameter=packages.upgradable,sudo apk update >/dev/null && apk version | sed '/Installed/d' | wc -l" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/updated_packages.conf

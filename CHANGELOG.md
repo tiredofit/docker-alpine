@@ -1,3 +1,9 @@
+## 7.1.25 2021-11-25 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for Zabbix Agent OS checking
+
+
 ## 7.1.24 2021-11-19 <dave at tiredofit dot ca>
 
    ### Added
