@@ -1,3 +1,10 @@
+## 7.1.26 2021-11-29 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 5.4.8
+      - Go 1.17.3
+
+
 ## 7.1.25 2021-11-25 <dave at tiredofit dot ca>
 
    ### Changed
