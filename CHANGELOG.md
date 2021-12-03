@@ -1,3 +1,9 @@
+## 7.2.0 2021-12-03 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add Zabbix Agent PSK encryption support
+
+
 ## 7.1.26 2021-11-29 <dave at tiredofit dot ca>
 
    ### Added

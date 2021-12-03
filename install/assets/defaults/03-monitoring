@@ -7,6 +7,7 @@ ZABBIX_AGENT_LOG_PATH=${ZABBIX_AGENT_LOG_PATH:-"/var/log/zabbix/agent/"}
 ZABBIX_ALLOW_ROOT=${ZABBIX_ALLOW_ROOT:-"1"}
 ZABBIX_BUFFER_SEND=${ZABBIX_BUFFER_SEND:-"5"}
 ZABBIX_BUFFER_SIZE=${ZABBIX_BUFFER_SIZE:-"100"}
+ZABBIX_CERT_PATH=${ZABBIX_CERT_PATH:-"/etc/zabbix/certs/"}
 ZABBIX_CONFIG_FILE=${ZABBIX_CONFIG_FILE:-"zabbix_agentd.conf"}
 ZABBIX_CONFIG_PATH=${ZABBIX_CONFIG_PATH:-"/etc/zabbix/"}
 ZABBIX_DEBUGLEVEL=${ZABBIX_DEBUGLEVEL:-"1"}
@@ -31,7 +32,7 @@ os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
     case ${os} in
     "alpine" )
         case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in
-            3.11|3.12|3.13|3.14|edge )
+            3.11|3.12|3.13|3.14|3.15|edge )
                 ZABBIX_AGENT_TYPE=${ZABBIX_AGENT_TYPE:-"modern"}
             ;;
             *)

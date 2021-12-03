@@ -208,6 +208,10 @@ This image comes with Zabbix Agent 1 (Classic or C compiled) and Zabbix Agent 2 
 | `ZABBIX_AGENT_TYPE`            | Which version of Zabbix Agent to load `1` or `2`                                  | 1                        | N/A | N/A |
 | `ZABBIX_AGENT_LOG_PATH`        | Log File Path                                                                     | `/var/log/zabbix/agent/` | x   | x   |
 | `ZABBIX_AGENT_LOG_FILE`        | Logfile name                                                                      | `zabbix_agentd.log`      | x   | x   |
+| `ZABBIX_CERT_PATH`             | Zabbix Certificates Path                                                          | `/etc/zabbix/certs/`     | x   | x   |
+| `ZABBIX_ENCRYPT_PSK_ID`        | Zabbix Encryption PSK ID                                                          |                          | x   | x   |
+| `ZABBIX_ENCRYPT_PSK_KEY`       | Zabbix Encryption PSK Key                                                         |                          | x   | x   |
+| `ZABBIX_ENCRYPT_PSK_FILE`      | Zabbix Encryption PSK File (If not using above env var)                           |                          | x   | x   |
 | `ZABBIX_LOG_FILE_SIZE`         | Logfile size                                                                      | `0`                      | x   | x   |
 | `ZABBIX_DEBUGLEVEL`            | Debug level                                                                       | `1`                      | x   | x   |
 | `ZABBIX_REMOTECOMMANDS_ALLOW`  | Enable remote commands                                                            | `*`                      | x   | x   |

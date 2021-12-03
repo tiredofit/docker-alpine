@@ -25,6 +25,31 @@ if var_true "${CONTAINER_ENABLE_MONITORING}" ; then
         grant_sudo zabbix
       fi
 
+      if [ -n "${ZABBIX_ENCRYPT_PSK_ID}" ] || [ -n "${ZABBIX_ENCRYPT_PSK_KEY}" ] || [ -n "${ZABBIX_ENCRYPT_PSK_FILE}" ] ; then
+        print_debug "Zabbix Agent - Using PSK Encryption"
+        if [ ! -n "${ZABBIX_ENCRYPT_PSK_FILE}" ] && [ ! -n "${ZABBIX_ENCRYPT_PSK_KEY}" ] ; then
+          print_error "You've selected Zabbix Agent PSK Encryption but haven't supplied a file or a Key!"
+          exit 1
+        fi
+
+        if [ ! -n "${ZABBIX_ENCRYPT_PSK_FILE}" ] && [ -n "${ZABBIX_ENCRYPT_PSK_KEY}" ] ; then
+          print_debug "Zabbix Agent - Only have PSK via ENV Var (Automated creation of file)"
+          # libreoffice/openssl rand -hex 32 = 256bit
+          mkdir -p ${ZABBIX_CERT_PATH}
+          ZABBIX_ENCRYPT_PSK_FILE="zabbix_agent.psk"
+          echo "${ZABBIX_ENCRYPT_PSK_KEY}" > "${ZABBIX_CERT_PATH}"/"${ZABBIX_ENCRYPT_PSK_FILE}"
+        fi
+
+        chmod -f 0600 "${ZABBIX_CERT_PATH}"/"${ZABBIX_ENCRYPT_PSK_FILE}"
+        chown -f -R "${ZABBIX_USER}" "${ZABBIX_CERT_PATH}"
+        tls_psk=$(cat<<EOF
+TLSConnect=psk
+TLSPSKIdentity=${ZABBIX_ENCRYPT_PSK_ID}
+TLSPSKFile=${ZABBIX_CERT_PATH}/${ZABBIX_ENCRYPT_PSK_FILE}
+EOF
+        )
+      fi
+
       case "${ZABBIX_AGENT_TYPE}" in
         "1" | "classic" | "c" | "legacy" | "old" )
           logship_version="classic"
@@ -51,6 +76,7 @@ Server=${ZABBIX_SERVER}
 ServerActive=${ZABBIX_SERVER_ACTIVE}
 StartAgents=${ZABBIX_START_AGENTS}
 User=${ZABBIX_USER}
+${tls_psk}
 
 Include=${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf
 EOF
@@ -114,6 +140,7 @@ RefreshActiveChecks=${ZABBIX_REFRESH_ACTIVE_CHECKS}
 Server=${ZABBIX_SERVER}
 ServerActive=${ZABBIX_SERVER_ACTIVE}
 StatusPort=${ZABBIX_STATUS_PORT}
+${tls_psk}
 
 Include=${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf
 EOF
@@ -127,10 +154,10 @@ EOF
               os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
               case ${os} in
                 "alpine" )
-                  echo "UserParameter=packages.upgradable,sudo apk update >/dev/null && apk version | sed '/Installed/d' | wc -l" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/updated_packages.conf
+                  echo "UserParameter=packages.upgradable,sudo apk update > /dev/null && apk version | sed '/Installed/d' | wc -l" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/updated_packages.conf
                 ;;
                 "debian" )
-                  echo "UserParameter=packages.upgradable,sudo apt-get update >/dev/null && sudo aptitude search '~U' | wc -l" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/updated_packages.conf
+                  echo "UserParameter=packages.upgradable,sudo apt-get update > /dev/null && sudo aptitude search '~U' | wc -l" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/updated_packages.conf
                 ;;
               esac
 
