@@ -233,6 +233,8 @@ This image comes with Zabbix Agent 1 (Classic or C compiled) and Zabbix Agent 2 
 | `ZABBIX_USER`                  | User to start agent                                                               | `zabbix`                 | x   | x   |
 | `ZABBIX_USER_SUDO`             | Allow Zabbix user to utilize sudo commands                                        | `TRUE`                   | x   | x   |
 
+This image supports autoregistering configuration as an Active Agent to a Zabbix Proxy or a Server. It looks in `/etc/zabbix_agent.conf.d/*.conf` for the string `# Autoregister=` and takes these values and adds it to the `HostMetadata` configuration entry automatically wrapped around `:` eg `:application:` . Use it by creating an Auto register rule and search for that string. You can find server templates in this repository in the `[zabbix_templates](zabbix_templates/)` directory.
+
 #### Logging Options
 
 This is work in progress for a larger logging solution. Presently there is functionality to rotate logs on a daily basis, however as this section matures there will be the capability to also ship the logs to an external data warehouse like Loki, or Elastic Search. At present Log shipping is only supported by `fluent-bit` and x86_64 only.

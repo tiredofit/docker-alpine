@@ -1,3 +1,9 @@
+## 7.2.3 2021-12-03 <dave at tiredofit dot ca>
+
+   ### Added
+      - Introduce Autoregister support by parsing /etc/zabbix/zabbix_agent.conf.d/*.conf files looking for '# Autoregister =' - See README
+
+
 ## 7.2.2 2021-12-03 <dave at tiredofit dot ca>
 
    ### Changed

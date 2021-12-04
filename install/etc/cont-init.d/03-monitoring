@@ -78,13 +78,8 @@ ServerActive=${ZABBIX_SERVER_ACTIVE}
 StartAgents=${ZABBIX_START_AGENTS}
 User=${ZABBIX_USER}
 ${tls_psk}
-
 Include=${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf
 EOF
-
-              if [ -n "${ZABBIX_REMOTECOMMANDS_DENY}" ]; then
-                echo "DenyKey=system.run[${ZABBIX_REMOTECOMMANDS_DENY}]" >> ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
-              fi
           else
             print_debug "Skipping Configuring Zabbix classic Agent"
           fi
@@ -129,22 +124,20 @@ ServerActive=${ZABBIX_SERVER_ACTIVE}
 StatusPort=${ZABBIX_STATUS_PORT}
 PidFile=${ZABBIX_PID}
 ${tls_psk}
-
 Include=${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf
 EOF
-
-            if [ -n "${ZABBIX_REMOTECOMMANDS_DENY}" ]; then
-              echo "DenyKey=system.run[${ZABBIX_REMOTECOMMANDS_DENY}]" >> ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
-            fi
           else
             print_debug "Skipping Configuring Zabbix modern Agent"
           fi
         ;;
       esac
 
-      os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
+      if [ -n "${ZABBIX_REMOTECOMMANDS_DENY}" ]; then
+        echo "DenyKey=system.run[${ZABBIX_REMOTECOMMANDS_DENY}]" >> ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
+      fi
 
       print_debug "Zabbix Agent - Generating Collection Configuration"
+      os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
       case ${os} in
         "alpine" )
           updated_packages="UserParameter=packages.upgradable,sudo apk update >/dev/null && apk version | sed '/Installed/d' | wc -l"
@@ -154,12 +147,11 @@ EOF
         ;;
       esac
 
-      mkdir -p ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d
-      cat <<EOF > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/tiredofit-container_agent.conf
+      mkdir -p "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}.d"
+      cat <<EOF > "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}.d"/tiredofit-container_agent.conf
 # Zabbix Container Agent Configuration - Automatically Generated based on Operating System
 # Find Companion Zabbix Server Templates at https://github.com/tiredofit/docker-alpine or https://github.com/tiredofit/docker-debian
 # Autoregister=toica
-# Last Modified December 3rd, 2021
 
 ## Report on Container OS
 UserParameter=agent.os,grep "PRETTY_NAME" /etc/os-release | cut -d '"' -f2"
@@ -168,10 +160,13 @@ UserParameter=agent.os,grep "PRETTY_NAME" /etc/os-release | cut -d '"' -f2"
 ${updated_packages}
 EOF
 
+      print_debug "Zabbix Agent - Adding Autoregister Configuration '$(grep -h "# Autoregister=" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf | cut -d = -f2 | xargs | tr " " ":" | sed 's/^/:/' | sed 's/$/:/')'"
+      sed "/^Include=.*/i HostMetadata=$(grep -h "# Autoregister=" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf | cut -d = -f2 | xargs | tr " " ":" | sed 's/^/:/' | sed 's/$/:/')" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
+
       mkdir -p "${ZABBIX_AGENT_LOG_PATH}"
       chown -R "${ZABBIX_USER}:root" "${ZABBIX_AGENT_LOG_PATH}"
-      chown -R "${ZABBIX_USER}:root" ${ZABBIX_CONFIG_PATH}/
-      chmod 770 ${ZABBIX_CONFIG_PATH}
+      chown -R "${ZABBIX_USER}:root" "${ZABBIX_CONFIG_PATH}/"
+      chmod 770 "${ZABBIX_CONFIG_PATH}"
       create_logrotate zabbix-agent ${ZABBIX_AGENT_LOG_PATH}/${ZABBIX_AGENT_LOG_FILE} zabbix-agent-${logship_version} ${ZABBIX_USER} root
       print_notice "Container configured for monitoring with '${CONTAINER_MONITORING_BACKEND} ${ZABBIX_AGENT_TYPE}'"
     ;;
