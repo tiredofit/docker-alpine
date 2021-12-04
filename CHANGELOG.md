@@ -1,3 +1,9 @@
+## 7.2.1 2021-12-03 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Move Zabbix Agent Pid and Socket to private directory
+
+
 ## 7.2.0 2021-12-03 <dave at tiredofit dot ca>
 
    ### Added
