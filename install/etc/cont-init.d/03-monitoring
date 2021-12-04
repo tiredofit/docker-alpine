@@ -169,7 +169,7 @@ ${updated_packages}
 EOF
 
       mkdir -p "${ZABBIX_AGENT_LOG_PATH}"
-      chown -R "${ZABBIX_USER}" "${ZABBIX_AGENT_LOG_PATH}"
+      chown -R "${ZABBIX_USER}:root" "${ZABBIX_AGENT_LOG_PATH}"
       chown -R "${ZABBIX_USER}:root" ${ZABBIX_CONFIG_PATH}/
       chmod 770 ${ZABBIX_CONFIG_PATH}
       create_logrotate zabbix-agent ${ZABBIX_AGENT_LOG_PATH}/${ZABBIX_AGENT_LOG_FILE} zabbix-agent-${logship_version} ${ZABBIX_USER} root
