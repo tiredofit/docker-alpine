@@ -85,20 +85,6 @@ EOF
               if [ -n "${ZABBIX_REMOTECOMMANDS_DENY}" ]; then
                 echo "DenyKey=system.run[${ZABBIX_REMOTECOMMANDS_DENY}]" >> ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
               fi
-
-              mkdir -p ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d
-              echo "UserParameter=agent.os,grep \"PRETTY_NAME\" /etc/os-release | cut -d \'\"\' -f2" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/container_os.conf
-              os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
-
-              case ${os} in
-                "alpine" )
-                  echo "UserParameter=packages.upgradable,sudo apk update >/dev/null && apk version | sed '/Installed/d' | wc -l" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/updated_packages.conf
-                ;;
-                "debian" )
-                  echo "UserParameter=packages.upgradable,sudo apt-get update >/dev/null && sudo aptitude search '~U' | wc -l" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/updated_packages.conf
-                ;;
-              esac
-
           else
             print_debug "Skipping Configuring Zabbix classic Agent"
           fi
@@ -108,7 +94,7 @@ EOF
           case ${os} in
             "alpine" )
               case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
-                3.11|3.12|3.13|3.14|3.15)
+                3.11|3.12|3.13|3.14|3.15|3.16|edge)
                   logship_version="modern"
                 ;;
                 *)
@@ -147,31 +133,45 @@ ${tls_psk}
 Include=${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf
 EOF
 
-              if [ -n "${ZABBIX_REMOTECOMMANDS_DENY}" ]; then
-                echo "DenyKey=system.run[${ZABBIX_REMOTECOMMANDS_DENY}]" >> ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
-              fi
-
-              mkdir -p ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d
-              echo "UserParameter=agent.os,grep \"PRETTY_NAME\" /etc/os-release | cut -d '\"' -f2" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/container_os.conf
-              os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
-              case ${os} in
-                "alpine" )
-                  echo "UserParameter=packages.upgradable,sudo apk update > /dev/null && apk version | sed '/Installed/d' | wc -l" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/updated_packages.conf
-                ;;
-                "debian" )
-                  echo "UserParameter=packages.upgradable,sudo apt-get update > /dev/null && sudo aptitude search '~U' | wc -l" > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/updated_packages.conf
-                ;;
-              esac
-
+            if [ -n "${ZABBIX_REMOTECOMMANDS_DENY}" ]; then
+              echo "DenyKey=system.run[${ZABBIX_REMOTECOMMANDS_DENY}]" >> ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
+            fi
           else
             print_debug "Skipping Configuring Zabbix modern Agent"
           fi
         ;;
       esac
 
+      os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
+
+      print_debug "Zabbix Agent - Generating Collection Configuration"
+      case ${os} in
+        "alpine" )
+          updated_packages="UserParameter=packages.upgradable,sudo apk update >/dev/null && apk version | sed '/Installed/d' | wc -l"
+        ;;
+        "debian" )
+          updated_packages="UserParameter=packages.upgradable,sudo apt-get update >/dev/null && sudo aptitude search '~U' | wc -l"
+        ;;
+      esac
+
+      mkdir -p ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d
+      cat <<EOF > ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/tiredofit-container_agent.conf
+# Zabbix Container Agent Configuration - Automatically Generated based on Operating System
+# Find Companion Zabbix Server Templates at https://github.com/tiredofit/docker-alpine or https://github.com/tiredofit/docker-debian
+# Autoregister=toica
+# Last Modified December 3rd, 2021
+
+## Report on Container OS
+UserParameter=agent.os,grep "PRETTY_NAME" /etc/os-release | cut -d '"' -f2"
+
+## Report on packages that are available to be upgraded
+${updated_packages}
+EOF
+
       mkdir -p "${ZABBIX_AGENT_LOG_PATH}"
       chown -R "${ZABBIX_USER}" "${ZABBIX_AGENT_LOG_PATH}"
-      chown -R "${ZABBIX_USER}" ${ZABBIX_CONFIG_PATH}/
+      chown -R "${ZABBIX_USER}:root" ${ZABBIX_CONFIG_PATH}/
+      chmod 770 ${ZABBIX_CONFIG_PATH}
       create_logrotate zabbix-agent ${ZABBIX_AGENT_LOG_PATH}/${ZABBIX_AGENT_LOG_FILE} zabbix-agent-${logship_version} ${ZABBIX_USER} root
       print_notice "Container configured for monitoring with '${CONTAINER_MONITORING_BACKEND} ${ZABBIX_AGENT_TYPE}'"
     ;;
