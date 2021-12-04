@@ -124,7 +124,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     chown --quiet -R zabbix:root /etc/zabbix && \
     chown --quiet -R zabbix:root /var/lib/zabbix && \
     chown --quiet -R zabbix:root /var/log/zabbix && \
-    chmod -R 770 zabbix /var/lib/zabbix/run && \
+    chmod -R 770 /var/lib/zabbix/run && \
     \
 ### Zabbix compilation
     mkdir -p /usr/src/zabbix && \

@@ -1,3 +1,9 @@
+## 7.2.4 2021-12-03 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for Docker build
+
+
 ## 7.2.3 2021-12-03 <dave at tiredofit dot ca>
 
    ### Added
