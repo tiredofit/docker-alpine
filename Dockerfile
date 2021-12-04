@@ -119,10 +119,12 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     mkdir -p /var/lib/zabbix && \
     mkdir -p /var/lib/zabbix/enc && \
     mkdir -p /var/lib/zabbix/modules && \
+    mkdir -p /var/lib/zabbix/run && \
     mkdir -p /var/log/zabbix && \
     chown --quiet -R zabbix:root /etc/zabbix && \
     chown --quiet -R zabbix:root /var/lib/zabbix && \
     chown --quiet -R zabbix:root /var/log/zabbix && \
+    chmod -R 770 zabbix /var/lib/zabbix/run && \
     \
 ### Zabbix compilation
     mkdir -p /usr/src/zabbix && \

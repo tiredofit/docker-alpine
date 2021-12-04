@@ -156,7 +156,7 @@ There are two ways to add jobs to be triggered via cron. One is to drop files in
 
 | Parameter | Description                                            | Default |
 | --------- | ------------------------------------------------------ | ------- |
-| `CRON_*`  | Name of the job value of the time and output to be run |         |
+| `CRON_*`  | Name of the job value of the time and output to be run | ``      |
 
 Example: `CRON_HELLO="* * * * * echo 'hello' > /tmp/hello.log`
 
@@ -209,27 +209,27 @@ This image comes with Zabbix Agent 1 (Classic or C compiled) and Zabbix Agent 2 
 | `ZABBIX_AGENT_LOG_PATH`        | Log File Path                                                                     | `/var/log/zabbix/agent/` | x   | x   |
 | `ZABBIX_AGENT_LOG_FILE`        | Logfile name                                                                      | `zabbix_agentd.log`      | x   | x   |
 | `ZABBIX_CERT_PATH`             | Zabbix Certificates Path                                                          | `/etc/zabbix/certs/`     | x   | x   |
-| `ZABBIX_ENCRYPT_PSK_ID`        | Zabbix Encryption PSK ID                                                          |                          | x   | x   |
-| `ZABBIX_ENCRYPT_PSK_KEY`       | Zabbix Encryption PSK Key                                                         |                          | x   | x   |
-| `ZABBIX_ENCRYPT_PSK_FILE`      | Zabbix Encryption PSK File (If not using above env var)                           |                          | x   | x   |
+| `ZABBIX_ENCRYPT_PSK_ID`        | Zabbix Encryption PSK ID                                                          | ``                       | x   | x   |
+| `ZABBIX_ENCRYPT_PSK_KEY`       | Zabbix Encryption PSK Key                                                         | ``                       | x   | x   |
+| `ZABBIX_ENCRYPT_PSK_FILE`      | Zabbix Encryption PSK File (If not using above env var)                           | ``                       | x   | x   |
 | `ZABBIX_LOG_FILE_SIZE`         | Logfile size                                                                      | `0`                      | x   | x   |
 | `ZABBIX_DEBUGLEVEL`            | Debug level                                                                       | `1`                      | x   | x   |
 | `ZABBIX_REMOTECOMMANDS_ALLOW`  | Enable remote commands                                                            | `*`                      | x   | x   |
-| `ZABBIX_REMOTECOMMANDS_DENY`   | Deny remote commands                                                              |                          | x   | x   |
-| `ZABBIX_REMOTECOMMANDS_LOG`    | Enable remote commands Log (`0`/`1`)                                              | `1`                      | x   |     |
+| `ZABBIX_REMOTECOMMANDS_DENY`   | Deny remote commands                                                              | ``                       | x   | x   |
+| `ZABBIX_REMOTECOMMANDS_LOG`    | Enable remote commands Log (`0`/`1`)                                              | `1`                      | x   | ``  |
 | `ZABBIX_SERVER`                | Allow connections from Zabbix server IP                                           | `0.0.0.0/0`              | x   | x   |
-| `ZABBIX_STATUS_PORT`           | Agent will listen to this port for status requests (http://localhost:port/status) | `10050`                  |     | x   |
+| `ZABBIX_STATUS_PORT`           | Agent will listen to this port for status requests (http://localhost:port/status) | `10050`                  | ``  | x   |
 | `ZABBIX_LISTEN_PORT`           | Zabbix Agent listening port                                                       | `10050`                  | x   | x   |
 | `ZABBIX_LISTEN_IP`             | Zabbix Agent listening IP                                                         | `0.0.0.0`                | x   | x   |
-| `ZABBIX_START_AGENTS`          | How many Zabbix Agents to start                                                   | `1`                      | x   |     |
+| `ZABBIX_START_AGENTS`          | How many Zabbix Agents to start                                                   | `1`                      | x   | ``  |
 | `ZABBIX_SERVER_ACTIVE`         | Server for active checks                                                          | `zabbix-proxy`           | x   | x   |
 | `ZABBIX_HOSTNAME`              | Container hostname to report to server                                            | `$CONTAINER_NAME`        | x   | x   |
 | `ZABBIX_REFRESH_ACTIVE_CHECKS` | Seconds to refresh Active Checks                                                  | `120`                    | x   | x   |
 | `ZABBIX_BUFFER_SEND`           | Buffer Send                                                                       | `5`                      | x   | x   |
 | `ZABBIX_BUFFER_SIZE`           | Buffer Size                                                                       | `100`                    | x   | x   |
-| `ZABBIX_MAXLINES_SECOND`       | Max Lines Per Second                                                              | `20`                     | x   |     |
-| `ZABBIX_SOCKET`                | Socket for communicating                                                          | `/tmp/zabbix.sock`       |     | x   |
-| `ZABBIX_ALLOW_ROOT`            | Allow running as root                                                             | `1`                      | x   |     |
+| `ZABBIX_MAXLINES_SECOND`       | Max Lines Per Second                                                              | `20`                     | x   | ``  |
+| `ZABBIX_SOCKET`                | Socket for communicating                                                          | `/tmp/zabbix.sock`       | ``  | x   |
+| `ZABBIX_ALLOW_ROOT`            | Allow running as root                                                             | `1`                      | x   | ``  |
 | `ZABBIX_USER`                  | User to start agent                                                               | `zabbix`                 | x   | x   |
 | `ZABBIX_USER_SUDO`             | Allow Zabbix user to utilize sudo commands                                        | `TRUE`                   | x   | x   |
 
