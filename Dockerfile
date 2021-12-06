@@ -144,12 +144,15 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
             && \
     make -j"$(nproc)" -s 1>/dev/null && \
     cp src/zabbix_agent/zabbix_agentd /usr/sbin/zabbix_agentd && \
+    cp src/zabbix_get/zabbix_get /usr/sbin/zabbix_get && \
     cp src/zabbix_sender/zabbix_sender /usr/sbin/zabbix_sender && \
     if [ "$zabbix_agent2" = "true" ] ; then cp src/go/bin/zabbix_agent2 /usr/sbin/zabbix_agent2 ; fi ; \
     strip /usr/sbin/zabbix_agentd && \
+    strip /usr/sbin/zabbix_get && \
     strip /usr/sbin/zabbix_sender && \
     if [ "$zabbix_agent2" = true ] ; then strip /usr/sbin/zabbix_agent2 ; fi ; \
     if [ "$apkArch" = "x86_64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_agentd ; fi ; \
+    if [ "$apkArch" = "x86_64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_get ; fi ; \
     if [ "$apkArch" = "x86_64" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_sender ; fi ; \
     if [ "$apkArch" = "x86_64" ] && [ "$zabbix_agent2" = "true" ] && [ "$no_upx" != "true" ]; then upx /usr/sbin/zabbix_agent2 ; fi ; \
     rm -rf /usr/src/zabbix && \

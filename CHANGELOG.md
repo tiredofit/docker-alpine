@@ -1,3 +1,9 @@
+## 7.2.5 2021-12-06 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add zabbix_get to image
+
+
 ## 7.2.4 2021-12-03 <dave at tiredofit dot ca>
 
    ### Changed
