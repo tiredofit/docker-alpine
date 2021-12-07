@@ -160,9 +160,6 @@ UserParameter=agent.os,grep "PRETTY_NAME" /etc/os-release | cut -d '"' -f2"
 ${updated_packages}
 EOF
 
-      print_debug "Zabbix Agent - Adding Autoregister Configuration '$(grep -h "# Autoregister=" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf | cut -d = -f2 | xargs | tr " " ":" | sed 's/^/:/' | sed 's/$/:/')'"
-      sed "/^Include=.*/i HostMetadata=$(grep -h "# Autoregister=" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf | cut -d = -f2 | xargs | tr " " ":" | sed 's/^/:/' | sed 's/$/:/')" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
-
       mkdir -p "${ZABBIX_AGENT_LOG_PATH}"
       chown -R "${ZABBIX_USER}:root" "${ZABBIX_AGENT_LOG_PATH}"
       chown -R "${ZABBIX_USER}:root" "${ZABBIX_CONFIG_PATH}/"

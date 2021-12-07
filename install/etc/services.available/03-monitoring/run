@@ -28,6 +28,9 @@ case "${CONTAINER_MONITORING_BACKEND}" in
                 ;;
             esac
 
+    print_debug "Zabbix Agent - Adding Autoregister Configuration '$(grep -h "# Autoregister=" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf | cut -d = -f2 | xargs | tr " " ":" | sed 's/^/:/' | sed 's/$/:/')'"
+    sed -i "/^Include=.*/i HostMetadata=$(grep -h "# Autoregister=" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf | cut -d = -f2 | xargs | tr " " ":" | sed 's/^/:/' | sed 's/$/:/')" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
+
     print_start "Starting Zabbix Agent (${zabbix_agent_type}) ${ZABBIX_VERSION}"
     silent s6-setuidgid "${ZABBIX_USER}" ${zabbix_command}  -c ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE} -f
     ;;

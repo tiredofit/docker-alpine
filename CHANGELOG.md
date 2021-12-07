@@ -1,3 +1,9 @@
+## 7.2.6 2021-12-06 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Move Zabbix Autoregister to later in the boot process to ensure all scripts are complete
+
+
 ## 7.2.5 2021-12-06 <dave at tiredofit dot ca>
 
    ### Added
