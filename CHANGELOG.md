@@ -1,3 +1,9 @@
+## 7.2.7 2021-12-08 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Stop writing multiple HostMetaData strings in Zabbix configuration
+
+
 ## 7.2.6 2021-12-06 <dave at tiredofit dot ca>
 
    ### Changed
