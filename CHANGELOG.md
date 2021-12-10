@@ -1,3 +1,9 @@
+## 7.2.8 2021-12-10 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Tweak to Zabbix configuration folder permissions
+
+
 ## 7.2.7 2021-12-08 <dave at tiredofit dot ca>
 
    ### Changed
