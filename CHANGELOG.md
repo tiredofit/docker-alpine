@@ -1,3 +1,9 @@
+## 7.2.9 2021-12-10 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for Zabbix Container OS detection
+
+
 ## 7.2.8 2021-12-10 <dave at tiredofit dot ca>
 
    ### Changed

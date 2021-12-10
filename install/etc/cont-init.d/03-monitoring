@@ -154,7 +154,7 @@ EOF
 # Autoregister=toica
 
 ## Report on Container OS
-UserParameter=agent.os,grep "PRETTY_NAME" /etc/os-release | cut -d '"' -f2"
+UserParameter=agent.os,grep "PRETTY_NAME" /etc/os-release | cut -d '"' -f2
 
 ## Report on packages that are available to be upgraded
 ${updated_packages}
