@@ -30,8 +30,19 @@ case "${CONTAINER_MONITORING_BACKEND}" in
 
     print_debug "Zabbix Agent - Adding Autoregister Configuration '$(grep -h "# Autoregister=" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf | cut -d = -f2 | xargs | tr " " ":" | sed 's/^/:/' | sed 's/$/:/')'"
     sed -i "/HostMetadata/d" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
-    sed -i "/^Include=.*/i HostMetadata=$(grep -h "# Autoregister=" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf | cut -d = -f2 | xargs | tr " " ":" | sed 's/^/:/' | sed 's/$/:/')" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
-
+    if var_true "${ZABBIX_ENABLE_AUTOREGISTER}" ; then
+        print_debug "Zabbix Agent - Enabling Auto Register"
+        sed -i "/^Include=.*/i HostMetadata=$(grep -h "# Autoregister=" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf | cut -d = -f2 | xargs | tr " " ":" | sed 's/^/:/' | sed 's/$/:/')" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
+        if var_true "${ZABBIX_ENABLE_AUTOREGISTER_DNS}" ; then
+            print_debug "Zabbix Agent - Enabling Auto Register by DNS"
+            if [ -n "${ZABBIX_AUTOREGISTER_DNS_NAME}" ] ; then
+                print_debug "Zabbix Autoregsiter DNS: Using ${ZABBIX_AUTOREGISTER_DNS_NAME} as hostname"
+            else
+                ZABBIX_AUTOREGISTER_DNS_NAME="${ZABBIX_HOSTNAME}${ZABBIX_AUTOREGISTER_SUFFIX}"
+            fi
+            sed -i "/^Include=.*/i HostInterface=${ZABBIX_AUTOREGISTER_DNS_NAME}" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
+        fi
+    fi
     print_start "Starting Zabbix Agent (${zabbix_agent_type}) ${ZABBIX_VERSION}"
     silent s6-setuidgid "${ZABBIX_USER}" ${zabbix_command}  -c ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE} -f
     ;;
