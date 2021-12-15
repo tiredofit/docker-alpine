@@ -40,6 +40,7 @@ case "${CONTAINER_MONITORING_BACKEND}" in
             else
                 ZABBIX_AUTOREGISTER_DNS_NAME="${ZABBIX_HOSTNAME}${ZABBIX_AUTOREGISTER_SUFFIX}"
             fi
+            sed "/HostInterface=.*/d" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
             sed -i "/^Include=.*/i HostInterface=${ZABBIX_AUTOREGISTER_DNS_NAME}" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
         fi
     fi
