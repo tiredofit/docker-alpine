@@ -347,6 +347,13 @@ EOF
 EOF
         fi
         create_logrotate fluentbit "${FLUENTBIT_LOG_PATH}"/"${FLUENTBIT_LOG_FILE}"
+        if var_true "${CONTAINER_ENABLE_MONITORING}" && [ "${CONTAINER_MONITORING_BACKEND,,}" = "zabbix" ]; then
+          cat <<EOF > "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}.d"/tiredofit-fluentbit.conf
+# Zabbix Fluentbit Configuration - Automatically generated based on container startup options
+# Find Companion Zabbix Server Templates at https://github.com/tiredofit/docker-alpine or https://github.com/tiredofit/docker-debian
+# Autoregister=fluentbit
+EOF
+        fi
         print_notice "Container configured to ship logs via '${CONTAINER_LOGSHIPPING_BACKEND}'"
     ;;
     *)

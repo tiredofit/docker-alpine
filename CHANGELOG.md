@@ -1,3 +1,9 @@
+## 7.2.12 2021-12-15 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add fluentbit auto registration
+
+
 ## 7.2.11 2021-12-15 <dave at tiredofit dot ca>
 
    ### Changed
