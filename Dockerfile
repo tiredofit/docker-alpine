@@ -53,6 +53,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
                 fts \
                 grep \
                 iputils \
+                jq \
                 less \
                 libgcc \
                 $(apk search libssl1* -q) \

@@ -1,3 +1,9 @@
+## 7.2.15 2021-12-21 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add jq package
+
+
 ## 7.2.14 2021-12-17 <dave at tiredofit dot ca>
 
    ### Added
