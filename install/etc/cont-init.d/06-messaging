@@ -8,7 +8,7 @@ PROCESS_NAME="messaging"
 output_off
 
 ## Legacy
-if var_false "${ENABLE_SMTP}"; then CONTAINER_ENABLE_MESSAGING=TRUE ; fi
+if var_false "${ENABLE_SMTP}"; then CONTAINER_ENABLE_MESSAGING=FALSE ; fi
 if var_true "${ENABLE_SMTP}"; then
   CONTAINER_ENABLE_MESSAGING=TRUE
   CONTAINER_MESSAGING_BACKEND=msmtp
