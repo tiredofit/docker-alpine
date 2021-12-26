@@ -1,3 +1,8 @@
+## 7.2.16 2021-12-21 <zeridon@github>
+
+   ### Fixed
+      - Actually disable "messaging" via both environment variables
+
 ## 7.2.15 2021-12-21 <dave at tiredofit dot ca>
 
    ### Added
