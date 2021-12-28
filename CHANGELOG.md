@@ -1,3 +1,9 @@
+## 7.2.17 2021-12-27 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 5.4.9
+
+
 ## 7.2.16 2021-12-21 <zeridon@github>
 
    ### Fixed
