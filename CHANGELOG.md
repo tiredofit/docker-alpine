@@ -1,3 +1,9 @@
+## 7.2.18 2022-01-06 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change to db_ready mariadb command to accomodate for Percona / MySQL 5.7 + without needing PROCESS privileges
+
+
 ## 7.2.17 2021-12-27 <dave at tiredofit dot ca>
 
    ### Added
