@@ -1,3 +1,9 @@
+## 7.2.19 2022-01-20 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Rework again db_ready command for MySQL / MariaDB
+
+
 ## 7.2.18 2022-01-06 <dave at tiredofit dot ca>
 
    ### Changed
