@@ -1,3 +1,9 @@
+## 7.3.1 2022-02-10 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Disable service timeout for images that take longer than 5 seconds to boot
+
+
 ## 7.3.0 2022-02-07 <dave at tiredofit dot ca>
 
    ### Added

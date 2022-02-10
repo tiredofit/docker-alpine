@@ -23,6 +23,7 @@ ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.12"} \
     CONTAINER_ENABLE_LOGSHIPPING=FALSE \
     S6_GLOBAL_PATH=/command:/usr/bin:/bin:/usr/sbin:sbin:/usr/local/bin:/usr/local/sbin \
     S6_KEEP_ENV=1 \
+    S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0 \
     IMAGE_NAME="tiredofit/alpine" \
     IMAGE_REPO_URL="https://github.com/tiredofit/docker-alpine/"
 

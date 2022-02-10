@@ -51,4 +51,3 @@ case "${CONTAINER_MONITORING_BACKEND}" in
     silent s6-setuidgid "${ZABBIX_USER}" ${zabbix_command}  -c "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}" -f
     ;;
 esac
-
