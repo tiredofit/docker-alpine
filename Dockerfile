@@ -2,14 +2,16 @@ FROM docker.io/alpine:3.15
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ARG GOLANG_VERSION=1.17.6
-ARG ZABBIX_VERSION
+ARG DOAS_VERSION
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
+ARG ZABBIX_VERSION
 
 ### Set defaults
-ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.11"} \
-    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"v2.2.0.3"} \
-    ZABBIX_VERSION=${ZABBIX_VERSION:-"5.4.9"} \
+ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.12"} \
+    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.0.0.2"} \
+    ZABBIX_VERSION=${ZABBIX_VERSION:-"5.4.10"} \
+    DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
     CONTAINER_ENABLE_SCHEDULING=TRUE \
@@ -18,16 +20,20 @@ ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.11"} \
     CONTAINER_MESSAGING_BACKEND=msmtp \
     CONTAINER_ENABLE_MONITORING=TRUE \
     CONTAINER_MONITORING_BACKEND=zabbix \
-    CONTAINER_ENABLE_LOGSHIPPING=FALSE
+    CONTAINER_ENABLE_LOGSHIPPING=FALSE \
+    S6_GLOBAL_PATH=/command:/usr/bin:/bin:/usr/sbin:sbin:/usr/local/bin:/usr/local/sbin \
+    S6_KEEP_ENV=1 \
+    IMAGE_NAME="tiredofit/alpine" \
+    IMAGE_REPO_URL="https://github.com/tiredofit/docker-alpine/"
 
 ## Mono Repo workarounds
 RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
-        3.5|3.6) no_upx=true ;; \
+        "3.5" | "3.6" ) no_upx=true ;; \
         *) busybox_extras="busybox-extras" ;; \
     esac ; \
     \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
-        "3.11" |"3.12" | "3.13" | "3.14" | "3.15" ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ;; \
+        "3.11" |"3.12" | "3.13" | "3.14" | "3.15" | "edge" ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ;; \
         *) : ;; \
     esac ; \
     \
@@ -38,18 +44,24 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     esac; \
     \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
-        3.5|3.6) upx="" ;; \
+        "3.5"| "3.6") upx="" ;; \
     esac ; \
     \
-##
+    case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
+        "3.5" | "3.6" | "3.7" | "3.8" ) build_doas=true ;; \
+        *) doas_package="doas" ;; \
+    esac ; \
+    ##
     set -ex && \
     apk update && \
     apk upgrade && \
     ### Add core utils
     apk add -t .base-rundeps \
                 bash \
+                bc \
                 ${busybox_extras} \
                 curl \
+                ${doas_package} \
                 fts \
                 grep \
                 iputils \
@@ -102,7 +114,18 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     ## Quiet down sudo
     echo "Set disable_coredump false" > /etc/sudo.conf && \
     \
-### Golang installation
+### Build Doas
+    if [ "$build_doas" = "true" ] ; then \
+    mkdir -p /usr/src/doas ; \
+    curl -sSL https://github.com/Duncaen/OpenDoas/archive/${DOAS_VERSION}.tar.gz | tar xfz - --strip 1 -C /usr/src/doas ; \
+    cd /usr/src/doas ; \
+    ./configure --prefix=/usr \
+                --enable-static \
+                --without-pam ; \
+    make ; \
+    make install ; \
+    fi ; \
+    ### Golang installation
     if [ "$zabbix_agent2" = "true" ] ; then \
     mkdir -p /usr/src/golang ; \
     curl -sSL https://dl.google.com/go/go${GOLANG_VERSION}.src.tar.gz | tar xvfz - --strip 1 -C /usr/src/golang ; \
@@ -218,7 +241,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
         -DFLB_RELEASE=Yes \
         -DFLB_SHARED_LIB=No \
         -DFLB_SIGNV4=No \
-        -DFLB_SMALL=No \
+        -DFLB_SMALL=Yes \
         . && \
     if [ "$fluentbit_make" = "true" ] ; then if [ "$apkArch" = "x86_64" ] ; then make -j"$(nproc)" ; make install ; mv /usr/etc/fluent-bit /etc/fluent-bit ; mkdir -p /etc/fluent-bit/parsers.d; mkdir -p /etc/fluent-bit/conf.d ; strip /usr/bin/fluent-bit ; if [ "$apkArch" = "x86_64" ] && [ "$no_upx" != "true" ]; then upx /usr/bin/fluent-bit ; fi ; fi ; fi ;\
     \
@@ -231,13 +254,15 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     #mv promtail /usr/sbin && \
     \
     ### Clean up
-    mkdir -p /etc/logrotate.d && \
+    mkdir -p /etc/logrotate && \
+    mkdir -p /etc/doas.d && \
     apk del --purge \
             .fluentbit-build-deps \
             .golang-build-deps \
             .zabbix-build-deps \
             && \
     rm -rf /etc/logrotate.d/* && \
+    rm -rf /etc/doas.conf /etc/doas.d/* && \
     rm -rf /root/.cache && \
     rm -rf /root/go && \
     rm -rf /tmp/* && \
@@ -245,15 +270,34 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     rm -rf /var/cache/apk/* && \
     \
     ### S6 overlay installation
+    apkArch="$(apk --print-arch)"  && \
     case "$apkArch" in \
-        x86_64) s6Arch='amd64' ;; \
-        armv7) s6Arch='arm' ;; \
+        x86_64) s6Arch='x86_64' ;; \
+        armv7) s6Arch='armhf' ;; \
         armhf) s6Arch='armhf' ;; \
         aarch64) s6Arch='aarch64' ;; \
-        ppc64le) s6Arch='ppc64le' ;; \
         *) echo >&2 "Error: unsupported architecture ($apkArch)"; exit 1 ;; \
     esac; \
-    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/${S6_OVERLAY_VERSION}/s6-overlay-${s6Arch}.tar.gz | tar xfz - -C /
+    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch-${S6_OVERLAY_VERSION}.tar.xz | tar xvpfJ - -C / && \
+    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${s6Arch}-${S6_OVERLAY_VERSION}.tar.xz | tar xvpfJ - -C / && \
+    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-noarch-${S6_OVERLAY_VERSION}.tar.xz | tar xvpfJ - -C / && \
+    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-arch-${S6_OVERLAY_VERSION}.tar.xz | tar xvpfJ - -C / && \
+    mkdir -p /etc/cont-init.d && \
+    mkdir -p /etc/cont-finish.d && \
+    mkdir -p /etc/services.d && \
+    chown -R 0755 /etc/cont-init.d && \
+    chown -R 0755 /etc/cont-finish.d && \
+    chmod -R 0755 /etc/services.d && \
+    # To remove when S6 3.1.0 is released
+    echo "/command:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin" > /etc/s6-overlay/config/global_path && \
+    ##
+    sed -i "s|s6-rc -v2|s6-rc -v1|g" /package/admin/s6-overlay/etc/s6-linux-init/skel/rc.init && \
+    sed -i "s|s6-rc -v2|s6-rc -v1|g" /package/admin/s6-overlay/etc/s6-linux-init/skel/rc.shutdown && \
+    sed -i "s|echo|# echo |g" /package/admin/s6-overlay/etc/s6-rc/scripts/cont-init && \
+    sed -i "s|echo|# echo |g" /package/admin/s6-overlay/etc/s6-rc/scripts/cont-finish && \
+    sed -i "s|echo ' (no readiness notification)'|# echo ' (no readiness notification)'|g" /package/admin/s6-overlay/etc/s6-rc/scripts/services-up && \
+    sed -i "s|s6-echo -n|# s6-echo -n|g" /package/admin/s6-overlay/etc/s6-rc/scripts/services-up
+
 
 ### Networking configuration
 EXPOSE 2020/TCP 10050/TCP
@@ -262,4 +306,4 @@ EXPOSE 2020/TCP 10050/TCP
 ENTRYPOINT ["/init"]
 
 ### Add folders
-ADD install/ /
+COPY install/ /

@@ -1,7 +1,10 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 
+chmod -f -R 0755 /assets/{defaults,functions} > /dev/null 2&>1
+chmod -f -R 0755 /etc/{cont-init.d,cont-finish.d,services.available} > /dev/null 2&>1
 source /assets/functions/00-container
 PROCESS_NAME="container-init"
+showoff
 
 ### Routine to check if container has been restarted or not
 if [ -d "/tmp/state" ] ; then
@@ -13,7 +16,51 @@ else
 fi
 
 print_debug "Adding shortcuts to .bashrc"
-echo 'down() { s6-svc -d /var/run/s6/services/$1 ;} '>> /root/.bashrc
-echo 'up() { s6-svc -u /var/run/s6/services/$1 ;} ' >> /root/.bashrc
+echo "alias env='with-contenv env | sort'" >> /root/.bashrc
+echo 'service_down() { echo "** Disabling s6 Service $1" ; s6-svc -d /var/run/s6/legacy-services/$1 ;} '>> /root/.bashrc
+echo 'service_up() { echo "** Enabling s6 Service $1" ; s6-svc -u /var/run/s6/legacy-services/$1 ;} ' >> /root/.bashrc
+
+## Show last changelog version and details of current running image
+if [ -f "/assets/.changelogs/${IMAGE_NAME/\//_}.md" ] ; then
+   changelogname="/assets/.changelogs/${IMAGE_NAME/\//_}.md"
+elif [ -f /assets/.changelogs/docker-${IMAGE_NAME/\//_}.md ] ; then
+   changelogname="/assets/.changelogs/docker-${IMAGE_NAME/\//_}.md"
+else
+   if [ -f /assets/.changelogs/tiredofit_docker-${IMAGE_NAME/\//_}.md ] ; then
+      changelogname="/assets/.changelogs/tiredofit_docker-${IMAGE_NAME/\//_}.md"
+   else
+      strip_image_repo_url=$(echo ${IMAGE_REPO_URL%/} | sed "s#https://github.com/##g")
+      if [ -f /assets/.changelogs/${strip_image_repo_url/\//_}.md ] ; then
+         changelogname="/assets/.changelogs/${strip_image_repo_url/\//_}.md"
+      fi
+   fi
+fi
+
+if [ -z "${changelogname// }" ] ; then
+   print_debug "Not adding 'changelog' command to .bashrc as I can't detect what changelog it is"
+   echo "image_changelog() { echo '** Sorry - I do not know what image this is. Check if there are changelogs in /assets/.changelogs';}" >> /root/.bashrc
+else
+   print_debug "Adding 'changelog' command to .bashrc"
+   echo "image_changelog() { echo \"** Showing the most recent version entry changelog for ${IMAGE_NAME} - See more at /assets/.changelogs\" ; awk '/^##/{p++} p==2{print; exit} p>=1' $changelogname | sed '\$d' ;}" >> /root/.bashrc
+fi
+
+## Rewrite Bash Prompt
+if [ -n "${CONTAINER_CUSTOM_BASH_PROMPT}" ] ; then
+   bash_prompt=${CONTAINER_CUSTOM_BASH_PROMPT}
+else
+   image_version=$(get_image_version)
+
+   if [ ! -z "${image_version// }" ] ; then
+      bash_ver=":${image_version}"
+   fi
+   bash_prompt="[${IMAGE_NAME}${bash_ver} \\t] # "
+fi
+
+echo "export PS1=\"${bash_prompt/  /}\"" >> /root/.bashrc
+
+## Add Support to list all Changelogs known of all base images
+if [ -d "/assets/.changelogs" ] ; then
+  echo "image_version() { for clname in /assets/.changelogs/* ; do version=\$(head -n 1 \$clname | awk '{print \$2}') ; echo \"Image: $(basename \$clname) \$version\" ; done ;}" >> /root/.bashrc
+fi
 
 liftoff

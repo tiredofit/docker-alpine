@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 
 source /assets/functions/00-container
 prepare_service single
@@ -16,7 +16,7 @@ fi
 ##
 
 if var_true "${CONTAINER_ENABLE_MESSAGING}" ; then
-  case "${CONTAINER_MESSAGING_BACKEND}" in
+  case "${CONTAINER_MESSAGING_BACKEND,,}" in
     "msmtp" )
       rm -f /usr/sbin/sendmail
       ln -s /usr/bin/msmtp /usr/sbin/sendmail
@@ -50,7 +50,7 @@ if var_true "${CONTAINER_ENABLE_MESSAGING}" ; then
     ;;
   esac
 else
-    print_notice "Disabling Container messaging features"
+    :
 fi
 
 output_on

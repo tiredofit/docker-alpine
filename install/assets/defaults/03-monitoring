@@ -1,7 +1,5 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 
-CONTAINER_ENABLE_MONITORING=${CONTAINER_ENABLE_MONITORING:-"TRUE"}
-CONTAINER_MONITORING_BACKEND=${CONTAINER_MONITORING_BACKEND:-"zabbix"}
 ZABBIX_AGENT_LOG_FILE=${ZABBIX_AGENT_LOG_FILE:-"zabbix_agentd.log"}
 ZABBIX_AGENT_LOG_PATH=${ZABBIX_AGENT_LOG_PATH:-"/var/log/zabbix/agent/"}
 ZABBIX_ALLOW_ROOT=${ZABBIX_ALLOW_ROOT:-"1"}
@@ -29,19 +27,18 @@ ZABBIX_SOCKET=${ZABBIX_SOCKET:-"/var/lib/zabbix/run/zabbix-agent.sock"}
 ZABBIX_START_AGENTS=${ZABBIX_START_AGENTS:-"1"}
 ZABBIX_STATUS_PORT=${ZABBIX_STATUS_PORT:-"8050"}
 ZABBIX_USER=${ZABBIX_USER:-"zabbix"}
+ZABBIX_USER_DOAS=${ZABBIX_USER_DOAS:-"TRUE"}
 ZABBIX_USER_SUDO=${ZABBIX_USER_SUDO:-"TRUE"}
 
 os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
     case ${os} in
     "alpine" )
-        case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in
-            3.11|3.12|3.13|3.14|3.15|3.16|edge )
-                ZABBIX_AGENT_TYPE=${ZABBIX_AGENT_TYPE:-"modern"}
-            ;;
-            *)
-                ZABBIX_AGENT_TYPE=${ZABBIX_AGENT_TYPE:-"classic"}
-            ;;
-        esac
+        osver=$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)
+        if (( $(bc -l <<< "$osver >= 3.11") )) || [ "$osver" = "edge" ] ; then
+            ZABBIX_AGENT_TYPE=${ZABBIX_AGENT_TYPE:-"modern"}
+        else
+            ZABBIX_AGENT_TYPE=${ZABBIX_AGENT_TYPE:-"classic"}
+        fi
     ;;
     "debian" )
         ZABBIX_AGENT_TYPE=${ZABBIX_AGENT_TYPE:-"modern"}

@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 
 source /assets/functions/00-container
 PROCESS_NAME="scheduling"
@@ -14,19 +14,21 @@ if var_true "${CONTAINER_ENABLE_LOGROTATE}" ; then
     print_debug "Setting Logrotate retention days after all services have finished initializing"
     sed -i "s|rotate .*|rotate ${LOGROTATE_RETAIN_DAYS}|g" /etc/logrotate.d/*
     sed -i "s|//|/|g" /etc/logrotate.d/*
+    chown -R root:root /etc/logrotate.d
+    chmod -R 0644 /etc/logrotate.d
 fi
 
 case "${CONTAINER_SCHEDULING_BACKEND}" in
     "cron" )
-      if [ "${SCHEDULING_LOG_TYPE}" = "FILE" ] || [ "${SCHEDULING_LOG_TYPE}" = "file" ]; then
+      if [ "${SCHEDULING_LOG_TYPE,,}" = "file" ]; then
         cron_log_file="-L ${SCHEDULING_LOG_LOCATION}/cron.log"
       fi
 
       print_debug "Parsing all files from ${CONTAINER_SCHEDULING_LOCATION}"
       temp_crontab=$(date +%s)
       echo 'MAILTO=""' > $temp_crontab
-      if dir_empty ${CONTAINER_SCHEDULING_LOCATION}; then echo "# Intentionally empty" > ${CONTAINER_SCHEDULING_LOCATION}/empty ; fi;
-      sed "/#/d" ${CONTAINER_SCHEDULING_LOCATION}/* | awk 'NF' >> /tmp/state/cron/${temp_crontab}
+      if dir_empty "${CONTAINER_SCHEDULING_LOCATION}" ; then echo "# Intentionally empty" > "${CONTAINER_SCHEDULING_LOCATION}"/empty ; fi;
+      sed "/#/d" "${CONTAINER_SCHEDULING_LOCATION}"/* | awk 'NF' >> /tmp/state/cron/${temp_crontab}
       silent crontab -r
       crontab /tmp/state/cron/${temp_crontab}
 

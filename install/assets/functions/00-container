@@ -1,65 +1,18 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 
 source /assets/defaults/00-container
 
-### Colours
-# Foreground (Text) Colors
-cbl="\e[30m"       # Color Black
-cdr="\e[31m"       # Color Dark Red
-cdg="\e[32m"       # Color Dark Green
-cdy="\e[33m"       # Color Dark Yellow
-cdb="\e[34m"       # Color Dark Blue
-cdm="\e[35m"       # Color Dark Magenta
-cdc="\e[36m"       # Color Dark Cyan
-cdgy="\e[90m"      # Color Dark Gray
-clgy="\e[37m"      # Color Light Gray
-clr="\e[91m"       # Color Light Red
-clg="\e[92m"       # Color Light Green
-cly="\e[93m"       # Color Light Yellow
-clb="\e[94m"       # Color Light Blue
-clm="\e[95m"       # Color Light Magenta
-clc="\e[96m"       # Color Light Cyan
-cwh="\e[97m"       # Color White
-
-# Turns off all formatting
-coff="\e[0m"       # Color Off
-
 # Background Colors
-bbl="\e[40m"       # Background Color Black
-bdr="\e[41m"       # Background Color Dark Red
 bdg="\e[42m"       # Background Color Dark Green
-bdy="\e[43m"       # Background Color Dark Yellow
 bdb="\e[44m"       # Background Color Dark Blue
 bdm="\e[45m"       # Background Color Dark Magenta
-bdc="\e[46m"       # Background Color Dark Cyan
 bdgy="\e[100m"     # Background Color Dark Gray
-blgy="\e[47m"      # Background Color Light Gray
 blr="\e[101m"      # Background Color Light Red
-blg="\e[102m"      # Background Color Light Green
-bly="\e[103m"      # Background Color Light Yellow
-blb="\e[104m"      # Background Color Light Blue
-blm="\e[105m"      # Background Color Light Magenta
-blc="\e[106m"      # Background Color Light Cyan
-bwh="\e[107m"      # Background Color White
 boff="\e[49m"      # Background Color Off
 
-# Styles
-sbo="\e[1m"        # Style Bold
-sdi="\e[2m"        # Style Dim
-sun="\e[4m"        # Style Underline
-sbl="\e[5m"        # Style Blink
-sre="\e[7m"        # Style Reverse
-shi="\e[8m"        # Style Hidden
-sbof="\e[21m"      # Style Bold Off
-sdif="\e[22m"      # Style Dim Off
-sunf="\e[24m"      # Style Underline Off
-sblf="\e[25m"      # Style Blink Off
-sref="\e[27m"      # Style Reverse Off
-shif="\e[28m"      # Style Hidden Off
 
-
-### Check to see Initialization Script ran
 check_container_initialized() {
+    ### Check to see Initialization Script ran
     print_debug "Checking to see if container initialization scripts have completed"
     output_off
     while [ ! -f /tmp/state/99-container-init ]; do
@@ -89,7 +42,7 @@ check_service_initialized() {
     if [ "$csi_bypass" = "FALSE" ] ; then
         if [ -z "$2" ]; then
             case "$(dirname "$0")" in
-                "/var/run/s6/etc/cont-init.d")
+                "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d" )
                     service=$(basename "$0")
                 ;;
                 *)
@@ -111,10 +64,10 @@ check_service_initialized() {
 }
 
 create_logrotate() {
-## Usage <Logrotate Config Name> <path> (optional logship parser) (optional user) (optional group) (optional logship parser)
-## e.g. create_logrotate cron /var/log/cron/cron.log cron root root
-## If you dont have a parser just use 'none'
-## If you are passing wilcard characters ie /logs/*.log make sure you 'set -f' before the function and 'set +f' afterwards.
+    ## Usage <Logrotate Config Name> <path> (optional logship parser) (optional user) (optional group) (optional logship parser)
+    ## e.g. create_logrotate cron /var/log/cron/cron.log cron root root
+    ## If you dont have a parser just use 'none'
+    ## If you are passing wilcard characters ie /logs/*.log make sure you 'set -f' before the function and 'set +f' afterwards.
 
     if [ -n "$1" ] && [ -n "$2" ]; then
         if [ ! -f /etc/logrotate.d/"$1" ] ; then
@@ -144,10 +97,32 @@ $2 {
 ${lruser}
 }
 EOF
-            chown root:root /etc/logrotate.d/${1}
-            chmod 0644 /etc/logrotate.d/${1}
+            chown root:root /etc/logrotate.d/"${1}"
+            chmod 0644 /etc/logrotate.d/"${1}"
         else
             print_debug "Skipping creating automatic logrotation for ${1}"
+        fi
+    fi
+}
+
+create_zabbix() {
+    ## Usage <Zabbix configuration name> (optional custom Autoregister name)
+    ## e.g. create_zabbix cron
+    ## If you dont put an autoregister argument it will just use the Configuration Name
+
+    if [ -n "$1" ] ; then
+        if [ -n "$2" ] ; then
+            autoregister=$2
+        else
+            autoregister=$1
+        fi
+        print_debug "Adding Zabbix Auto Register configuration for '$1'"
+        if var_true "${CONTAINER_ENABLE_MONITORING}" && [ "${CONTAINER_MONITORING_BACKEND,,}" = "zabbix" ]; then
+            source /assets/defaults/03-monitoring
+            cat <<EOF > "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}.d"/tiredofit_$1.conf
+# Zabbix $1 Configuration - Automatically Generated
+# Autoregister=$autoregister
+EOF
         fi
     fi
 }
@@ -164,8 +139,8 @@ custom_files() {
         ccustom_files_destination="${1}"
     fi
 
-    if [ -d "${ccustom_files_source}" ] && dir_notempty ; then
-        print "Custom Files: Copying files from '${ccustom_files_source}' to '${ccustom_files_destination}'"
+    if [ -d "${ccustom_files_source}" ] && dir_notempty "${ccustom_files_source}" ; then
+        print_debug "Custom Files: Copying files from '${ccustom_files_source}' to '${ccustom_files_destination}'"
         if [ -d "${ccustom_files-destination}" ] ; then
             mkdir -p "${ccustom_files-destination}"
         fi
@@ -332,64 +307,62 @@ dir_notempty() {
     [ -n "$(ls -A "$1")" ]
 }
 
-## Docker Secrets Support
-## usage: file_env VAR [DEFAULT]
-##    ie: file_env 'XYZ_DB_PASSWORD' 'example'
-##        (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
 file_env() {
-  if [ "$CONTAINER_ENABLE_DOCKER_SECRETS" = "TRUE" ] || [ "$CONTAINER_ENABLE_DOCKER_SECRETS" = "true" ] ; then
-      local var="$1"
-      local fileVar="${var}_FILE"
-      local def="${2:-}"
-      local val="$def"
-      if [ "${!fileVar:-}" ]; then
+    ## Docker Secrets Support
+    ## usage: file_env VAR [DEFAULT]
+    ##    ie: file_env 'XYZ_DB_PASSWORD' 'example'
+    ##        (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
+    if [ "${CONTAINER_ENABLE_DOCKER_SECRETS,,}" = "true" ] ; then
+        local var="$1"
+        local fileVar="${var}_FILE"
+        local def="${2:-}"
+        local val="$def"
+        if [ "${!fileVar:-}" ]; then
         val="$(cat "${!fileVar}")"
-      elif [ "${!var:-}" ]; then
+        elif [ "${!var:-}" ]; then
         val="${!var}"
-      fi
+        fi
 
-      if [ -z "${val}" ]; then
+        if [ -z "${val}" ]; then
         print_error "error: neither $var nor $fileVar are set but are required"
         exit 1
-      fi
-      export "$var"="$val"
-      unset "$fileVar"
-  fi
+        fi
+        export "$var"="$val"
+        unset "$fileVar"
+    fi
 }
 
-## Get Defaults
-## Usage: get_defaults <option>
-##      Option: all - Load all default files from /assets/defaults folder
-##      Option: app | single - Load existing scripts defaults from /assets/defaults (e.g. If cont-init.d/10-app is running load 10-app from defaults)
-##      Option: 10-app,11-app,12-app - Load in Sequence all of these Default Files from /assets/defaults/
-##         Leaving option blank will load all files from the /assets/defaults folder
 get_defaults() {
+    ## Get Defaults
+    ## Usage: get_defaults <option>
+    ##      Option: all - Load all default files from /assets/defaults folder
+    ##      Option: app | single - Load existing scripts defaults from /assets/defaults (e.g. If cont-init.d/10-app is running load 10-app from defaults)
+    ##      Option: 10-app,11-app,12-app - Load in Sequence all of these Default Files from /assets/defaults/
+    ##         Leaving option blank will load all files from the /assets/defaults folder
     if [ -n "$1" ] ; then
-        case "$1" in
-            "ALL" | "all" )
+        case "${1,,}" in
+            "all" )
                 for d in /assets/defaults/* ; do
-                    print_debug "Container: Getting defaults for $d"
+                    print_debug "Container: Getting defaults for '${d}'"
                     # shellcheck source=/assets/defaults/
                     source "$d"
                 done
             ;;
-            "APP" | "app" | "SINGLE" | "single" )
+            "app" | "single" )
                 case "$(dirname "$0")" in
-                    "/var/run/s6/etc/cont-init.d")
+                    "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d" )
                         if [ -f "/assets/defaults/$(basename "$0")" ] ; then
-                            print_debug "Container: Getting defaults for $(basename "$0")"
+                            print_debug "Container: Getting defaults for '$(basename "$0")'"
                             # shellcheck source=/assets/defaults/
-                            source /assets/defaults/00-container
                             source /assets/defaults/"$(basename "$0")"
                         else
-                            print_debug "Container: No defaults available for $(basename "$0")"
+                            print_debug "Container: No defaults available for '$(basename "$0")'"
                         fi
                     ;;
                     *)
                         if [ -f "/assets/defaults/$(basename "$PWD")" ] ; then
-                            print_debug "Container: Getting defaults for $(basename "$PWD")"
+                            print_debug "Container: Getting defaults for '$(basename "$PWD")'"
                             # shellcheck source=/assets/defaults/
-                            source /assets/defaults/00-container
                             source /assets/defaults/"$(basename "$PWD")"
                         else
                             print_debug "Container: No defaults available for $(basename "$PWD")"
@@ -399,60 +372,59 @@ get_defaults() {
             ;;
             * )
                 defaults=$(echo "$1" | tr "," "\n")
-                    for d in $defaults; do
-                        if [ -f "/assets/defaults/${d}" ] ; then
-                            print_debug "Container: Getting defaults for $d"
-                            # shellcheck source=/assets/defaults/
-                            source /assets/defaults/00-container
-                            source /assets/defaults/"${d}"
-                        else
-                            print_debug "Container: No defaults available for $d"
-                        fi
-                    done
+                for d in $defaults; do
+                    if [ -f "/assets/defaults/${d}" ] ; then
+                        print_debug "Container: Getting defaults for $d"
+                        # shellcheck source=/assets/defaults/
+                        source /assets/defaults/"${d}"
+                    else
+                        print_debug "Container: No defaults available for '$d'"
+                    fi
+                done
             ;;
         esac
     else
         for d in /assets/defaults/* ; do
-            print_debug "Container: Getting Defaults for $d"
+            print_debug "Container: Getting defaults for $d"
             # shellcheck source=/assets/defaults/
             source /assets/defaults/00-container
-            source "$d"
+            source "${d}"
+
         done
     fi
 }
 
-## Get Functions
-## Usage: get_functions <option>
-## Option: all - Load all default files from /assets/functions folder
-## Option: app | single - Load existing scripts defaults from /assets/functions (e.g. If cont-init.d/10-app is running load 10-app from functions)
-## Option: 10-app,11-app,12-app - Load in Sequence all of these Default Files from /assets/functions/
-## Leaving option blank will load all files from the /assets/functions folder
 get_functions() {
+    ## Usage: get_functions <option>
+    ## Option: all - Load all default files from /assets/functions folder
+    ## Option: app | single - Load existing scripts defaults from /assets/functions (e.g. If cont-init.d/10-app is running load 10-app from functions)
+    ## Option: 10-app,11-app,12-app - Load in Sequence all of these Default Files from /assets/functions/
+    ## Leaving option blank will load all files from the /assets/functions folder
     if [ -n "$1" ] ; then
-        case "$1" in
-            "ALL" | "all" )
+        case "${1,,}" in
+            "all" )
                 for f in /assets/functions/* ; do
                     if [ "$f" != "/assets/functions/00-container" ] ; then
-                        print_debug "Container: Getting functions for $f"
+                        print_debug "Container: Getting functions for '${f}'"
                         # shellcheck source=/assets/functions/
                         source "$f"
                     fi
                 done
             ;;
-            "APP" | "app" | "SINGLE" | "single" )
+            "app" | "single" )
                 case "$(dirname "$0")" in
-                    "/var/run/s6/etc/cont-init.d")
+                    "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d" )
                         if [ -f "/assets/functions/$(basename "$0")" ] ; then
-                            print_debug "Container: Getting functions for $(basename "$0")"
+                            print_debug "Container: Getting functions for '$(basename "$0")'"
                             # shellcheck source=/assets/functions/
                             source /assets/functions/"$(basename "$0")"
                         else
-                            print_debug "Container: No functions available for $(basename "$0")"
+                            print_debug "Container: No functions available for '$(basename "$0")'"
                         fi
                     ;;
                     *)
                         if [ -f "/assets/functions/$(basename "$PWD")" ] ; then
-                            print_debug "Container: Getting functions for $(basename "$PWD")"
+                            print_debug "Container: Getting functions for '$(basename "$PWD")'"
                             # shellcheck source=/assets/functions/
                             source /assets/functions/"$(basename "$PWD")"
                         else
@@ -469,7 +441,7 @@ get_functions() {
                         # shellcheck source=/assets/functions/
                         source /assets/functions/"${f}"
                     else
-                        print_debug "Container: No functions available for: $f"
+                        print_debug "Container: No functions available for '$f'"
                     fi
                 done
             ;;
@@ -479,15 +451,60 @@ get_functions() {
             if [ "$f" != "/assets/functions/00-container" ] ; then
                 print_debug "Container: Getting functions for $f"
                 # shellcheck source=/assets/functions/
-                source "$f"
+                source "${f}"
             fi
         done
     fi
 }
 
+get_image_version() {
+    if [ -n "${IMAGE_NAME}" ] ; then
+        if [ -f "/assets/.changelogs/${IMAGE_NAME/\//_}.md" ] ; then
+            image_version=$(head -n1 /assets/.changelogs/${IMAGE_NAME/\//_}.md | awk '{print $2}')
+        elif [ -f /assets/.changelogs/docker-${IMAGE_NAME/\//_}.md ] ; then
+            image_version=$(head -n1 /assets/.changelogs/docker-${IMAGE_NAME/\//_}.md | awk '{print $2}')
+        else
+            if [ -f /assets/.changelogs/tiredofit_docker-${IMAGE_NAME/\//_}.md ] ; then
+                image_version=$(head -n1 /assets/.changelogs/docker-${IMAGE_NAME/\//_}.md | awk '{print $2}')
+            else
+                strip_image_repo_url=$(echo ${IMAGE_REPO_URL%/} | sed "s#https://github.com/##g")
+                if [ -f /assets/.changelogs/${strip_image_repo_url/\//_}.md ] ; then
+                    image_version=$(head -n1 /assets/.changelogs/${strip_image_repo_url/\//_}.md | awk '{print $2}')
+                fi
+            fi
+
+            if [ -f /assets/.changelogs/tiredofit_docker-${IMAGE_NAME/\//_}.md ] ; then
+                image_version=$(head -n1 /assets/.changelogs/tiredofit_docker-${IMAGE_NAME/\//_}.md | awk '{print $2}')
+            fi
+        fi
+
+        if [ -n "${image_version}" ] ; then
+            echo "${image_version}"
+        fi
+    fi
+}
+
+grant_doas() {
+    ## Grant doas priveleges to a user
+    ## grant_doas (username) (command) | If no command set will be ALL
+    if [ -n "$1" ] ; then
+        print_debug "Adding Doas privileges to '$1'"
+        if [ -n "$2" ] ; then
+            print_debug="Adding doas privileges to '$1' for '${doas_command}' command"
+            doas_command="cmd $2"
+        else
+            doas_command=""
+        fi
+
+        echo "permit nopass $1 ${doas_command} as root" >> /etc/doas.d/doas.conf
+        chmod 0440 -R /etc/doas.d
+    fi
+}
+
 grant_sudo() {
-## Grant sudo priveleges to a user
-## grant_sudo (username) (command) | If no command set will be ALL
+    ## 2022-02-07 Will be deprecated in future releases. Use "grant_doas" instead
+    ## Grant sudo priveleges to a user
+    ## grant_sudo (username) (command) | If no command set will be ALL
     if [ -n "$1" ] ; then
         if [ -n "$2" ] ; then
             sudo_command="$2"
@@ -501,21 +518,22 @@ grant_sudo() {
 
 log_prefix() {
     output_off
-    if [ "${CONTAINER_ENABLE_LOG_PREFIX}" = "TRUE" ] || [ "${CONTAINER_ENABLE_LOG_PREFIX}" = "true" ] ; then
+    if [ "${CONTAINER_ENABLE_LOG_PREFIX,,}" = "true" ] ; then
         echo "$(date +"${CONTAINER_LOG_PREFIX_DATE_FMT}")${CONTAINER_LOG_PREFIX_SEPERATOR}$(date +"${CONTAINER_PROCESS_HELPER_TIME_FMT}") "
     fi
     output_on
 }
 
-## For writing script initalization state to ensure proper application execution
+
 liftoff() {
+    ## For writing script initalization state to ensure proper application execution
     output_off
     mkdir -p /tmp/state
     if [ "$DONOTSTART" = "TRUE" ]; then
         liftoff_prefix="DONOTSTART "
     fi
     case "$(dirname "$0")" in
-        "/var/run/s6/etc/cont-init.d")
+        "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d" )
             echo "${liftoff_prefix} $(basename "$0")-init initialized on $(log_prefix)" >> /tmp/state/"$(basename "$0")"-init
         ;;
         *)
@@ -529,32 +547,33 @@ liftoff() {
     output_on
 }
 
-## An attempt to shut down so much noise in the log files, specifically for echo statements
+
 output_off() {
-    if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] ; then
+    ## An attempt to shut down so much noise in the log files, specifically for echo statements
+    if [ "${DEBUG_MODE,,}" = "true" ] ; then
         set +x
     fi
 }
 
 output_on() {
-    if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] ; then
+    if [ "${DEBUG_MODE,,}" = "true" ] ; then
         set -x
     fi
 }
 
-## Prepare Service by loading defaults and functions
-## Relies on get_defaults and get_functions above in script
-## Usage: prepare_service <options>
-## By default if script is running before container has initialized then both defaults and functions are loaded
-## If running outside of /etc/cont-init.d pass 'defaults' or 'functions' to only load specific types (Useful when not wanting to load the entire function file in /etc/services.d)
 prepare_service() {
+    ## Prepare Service by loading defaults and functions
+    ## Relies on get_defaults and get_functions above in script
+    ## Usage: prepare_service <options>
+    ## By default if script is running before container has initialized then both defaults and functions are loaded
+    ## If running outside of /etc/cont-init.d pass 'defaults' or 'functions' to only load specific types (Useful when not wanting to load the entire function file in /etc/services.d)
     if [ -n "$1" ] ; then
         case "$(dirname "$0")" in
-            "/var/run/s6/etc/cont-init.d")
+            "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d" )
                     get_defaults "$1"
                     get_functions "$1"
             ;;
-        *)
+            *)
                 case "$1" in
                     "BOTH" | "both" | "ALL" | "all" )
                         get_defaults "$2"
@@ -571,30 +590,31 @@ prepare_service() {
         esac
     else
         case "$(dirname "$0")" in
-            "/var/run/s6/etc/cont-init.d")
+            "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d")
                 get_defaults
                 get_functions
             ;;
-        *)
+            *)
                 get_defaults
             ;;
         esac
     fi
 }
 
-### Text Coloration
+
 print_debug() {
+    ### Text Coloration
     output_off
-    case "$CONTAINER_LOG_LEVEL" in
-            "DEBUG" )
-                if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] ; then
-                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+    case "${CONTAINER_LOG_LEVEL,,}" in
+            "debug" )
+                if [ "${DEBUG_MODE,,}" = "true" ] ; then
+                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
                         echo -e "$(log_prefix)[DEBUG] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                     else
                         echo -e "$(log_prefix)${bdm}[DEBUG]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                     fi
                 else
-                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
                         echo -e "$(log_prefix)[DEBUG] ** [${PROCESS_NAME}] $1"
                     else
                         echo -e "$(log_prefix)${bdm}[DEBUG]${boff} ** [${PROCESS_NAME}] $1"
@@ -607,16 +627,16 @@ print_debug() {
 
 print_error() {
     output_off
-    case "$CONTAINER_LOG_LEVEL" in
-            "DEBUG" | "NOTICE" | "WARN" | "ERROR")
-                if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] ; then
-                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+    case "${CONTAINER_LOG_LEVEL,,}" in
+            "debug" | "notice" | "warn" | "error")
+                if [ "${DEBUG_MODE,,}" = "true" ] ; then
+                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
                         echo -e "$(log_prefix)[ERROR] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                     else
                         echo -e "$(log_prefix)${blr}[ERROR]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                     fi
                 else
-                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
                         echo -e "$(log_prefix)[ERROR] ** [${PROCESS_NAME}] $1"
                     else
                         echo -e "$(log_prefix)${blr}[ERROR]${boff} ** [${PROCESS_NAME}] $1"
@@ -629,14 +649,14 @@ print_error() {
 
 print_info() {
     output_off
-    if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] ; then
-        if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+    if [ "${DEBUG_MODE,,}" = "true" ] ; then
+        if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
             echo -e "$(log_prefix)[INFO] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
         else
             echo -e "$(log_prefix)${bdg}[INFO]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
         fi
     else
-        if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+        if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
             echo -e "$(log_prefix)[INFO] ** [${PROCESS_NAME}] $1"
         else
             echo -e "$(log_prefix)${bdg}[INFO]${boff} ** [${PROCESS_NAME}] $1"
@@ -647,16 +667,16 @@ print_info() {
 
 print_notice() {
     output_off
-    case "$CONTAINER_LOG_LEVEL" in
-            "DEBUG" | "NOTICE" )
-                if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] ; then
-                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+    case "${CONTAINER_LOG_LEVEL,,}" in
+            "debug" | "notice" )
+                if [ "${DEBUG_MODE,,}" = "true" ] ; then
+                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
                         echo -e "$(log_prefix)[NOTICE] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                     else
                         echo -e "$(log_prefix)${bdgy}[NOTICE]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                     fi
                 else
-                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
                         echo -e "$(log_prefix)[NOTICE] ** [${PROCESS_NAME}] $1"
                     else
                         echo -e "$(log_prefix)${bdgy}[NOTICE]${boff} ** [${PROCESS_NAME}] $1"
@@ -669,14 +689,14 @@ print_notice() {
 
 print_start() {
     output_off
-    if [ "${CONTAINER_ENABLE_PROCESS_COUNTER}" = "TRUE" ] || [ "${CONTAINER_ENABLE_PROCESS_COUNTER}" = "true" ]; then
+    if [ "${CONTAINER_ENABLE_PROCESS_COUNTER,,}" = "true" ] ; then
         if [ -f /tmp/state/$(basename "$PWD") ]; then
             proc_start_count="$(cat /tmp/state/$(basename "$PWD") | wc -l)"
             proc_start_wrapper="[${proc_start_count}] "
         fi
     fi
 
-    if [ "${CONTAINER_ENABLE_PROCESS_HELPER}" = "TRUE" ] || [ "${CONTAINER_ENABLE_PROCESS_HELPER}" = "true" ]; then
+    if [ "${CONTAINER_ENABLE_PROCESS_COUNTER,,}" = "true" ] ; then
         proc_help_arg="$(date +"${CONTAINER_PROCESS_HELPER_DATE_FMT}") $(date +"${CONTAINER_PROCESS_HELPER_TIME_FMT}") $(basename "$(pwd)") ${proc_start_count} $(cat /etc/hostname)"
         if [ -d "${CONTAINER_PROCESS_HELPER_PATH}" ]; then
             if [ -f "${CONTAINER_PROCESS_HELPER_PATH}"/$(basename "$0").sh ]; then
@@ -687,14 +707,14 @@ print_start() {
         fi
     fi
 
-    if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] ; then
-        if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+    if [ "${DEBUG_MODE,,}" = "true" ] ; then
+        if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
             echo -e "$(log_prefix)[STARTING] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
         else
             echo -e "$(log_prefix)${bdg}[STARTING]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
         fi
     else
-        if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+        if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
             echo -e "$(log_prefix)[STARTING] ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
         else
             echo -e "$(log_prefix)${bdg}[STARTING]${boff} ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
@@ -706,16 +726,16 @@ print_start() {
 
 print_warn() {
     output_off
-    case "$CONTAINER_LOG_LEVEL" in
-            "DEBUG" | "NOTICE" | "WARN" )
-                if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] ; then
-                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+    case "${CONTAINER_LOG_LEVEL,,}" in
+            "debug" | "notice" | "warn" )
+                if [ "${DEBUG_MODE,,}" = "true" ] ; then
+                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
                         echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1"
                     else
                         echo -e "$(log_prefix)${bdb}[WARN]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                     fi
                 else
-                    if [ "${CONTAINER_COLORIZE_OUTPUT}" = "FALSE" ] || [ "${CONTAINER_COLORIZE_OUTPUT}" = "false" ] ; then
+                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
                         echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1"
                     else
                         echo -e "$(log_prefix)${bdb}[WARN]${boff} ** [${PROCESS_NAME}] $1"
@@ -725,13 +745,14 @@ print_warn() {
     output_on
 }
 
-## Quiet down output
+
 silent() {
-  if [ "$DEBUG_MODE" = "TRUE" ] || [ "$DEBUG_MODE" = "true" ] || [ "$SHOW_OUTPUT" = "TRUE" ] || [ "$SHOW_OUTPUT" = "true" ] || [ "$CONTAINER_LOG_LEVEL" = "DEBUG" ] ;  then
-    "$@"
-  else
-    "$@" > /dev/null 2>&1
-  fi
+    ## Quiet down output
+    if [ "${DEBUG_MODE}" = "true" ] || [ "${SHOW_OUTPUT,,}" = "true" ] || [ "${CONTAINER_LOG_LEVEL,,}" = "debug" ] ;  then
+        "$@"
+    else
+        "$@" > /dev/null 2>&1
+    fi
 }
 
 ## Make sure DB is defined
@@ -740,7 +761,7 @@ silent() {
 sanity_db() {
     output_off
     if [ -n "$1" ] ; then
-        case "$1" in
+        case "${1,,}" in
             "couch" | "couchdb" )
                 print_debug "Checking Couch DB Parameters"
                 if [ -n "${DB_HOST}" ] ; then couch_host=${DB_HOST} ; fi ;
@@ -768,7 +789,7 @@ sanity_db() {
                     exit 1
                 fi
             ;;
-            "mysql" | "mariadb" | "MARIADB" | "MYSQL" )
+            "mysql" | "mariadb" )
                 print_debug "Checking MariaDB DB Parameters"
                 if [ -n "${DB_HOST}" ] ; then maria_host=${DB_HOST} ; fi ;
                 if [ -n "${MYSQL_HOST}" ] ; then maria_host=${MYSQL_HOST} ; fi ;
@@ -882,9 +903,9 @@ sanity_db() {
     fi
 }
 
-## Check is Variable is Defined
-## Usage: sanity_var varname "Description"
 sanity_var() {
+    ## Check is Variable is Defined
+    ## Usage: sanity_var varname "Description"
     output_off
     print_debug "Looking for existence of $1 environment variable"
     if [ ! -v "$1" ]; then
@@ -906,8 +927,8 @@ service_stop() {
     DONOTSTART=TRUE
 }
 
-## Timezone Setup
-set_timezone () {
+set_timezone() {
+    ## Timezone Setup
     if [ -f /usr/share/zoneinfo/"${TIMEZONE}" ]; then
         if [ "${TIMEZONE}" != "$(cat /etc/timezone)" ] ; then
         print_notice "Timezone: Setting to '${TIMEZONE}' from '$(cat /etc/timezone)'"
@@ -919,38 +940,57 @@ set_timezone () {
     fi
 }
 
-## Convert TRUE or FALSE statements to either yes or no
-## Usage: 'truefalse_yesno varname'
-## Don't prefix it with a $
-## Optionally add "uppercase" / "lowercase" as second value on how you wish it to be replaced
+showoff() {
+    if [ -n "${IMAGE_NAME}" ] ; then
+        iv=$(get_image_version)
+        is="$(echo 'H4sIAAAAAAAAA/PMTUxPtVLgAgDj9n4BCAAAAA==' | base64 -d | gunzip) ${IMAGE_NAME}"
+        if [ ! -z "${iv// }" ] ; then
+            is="${is}$(echo 'H4sIAAAAAAAAA1OoUQhLLSrOzM9TUOACAAiVoSgNAAAA' | base64 -d | gunzip)${iv}$(echo 'H4sIAAAAAAAAA1MIqSxIVVDPzE1MT41PzkjMS0/NyU9XV0jLL1JISS1JzMwp5gIAZRrZYCQAAAA=' | base64 -d | gunzip)"
+        fi
+        is="${is}"
+        if [ -n "${IMAGE_REPO_URL}" ] ; then
+            ir="$(echo 'H4sIAAAAAAAAAwtKLcgvzizJL6rU9ywuLk0t1g8uLSjILyqxUuACAPHokJMcAAAA' | base64 -d | gunzip) ${IMAGE_REPO_URL}"
+        fi
+    fi
+    echo "H4sIAAAAAAAAA61RQRLEIAi78wpvXAq971t68CE8vgni2s7urWUGEyRBHVt7JTYzc+Ga4WD+T+Q/pm9jmQNbIZpNN9OOpGSqnA6I4jJlp1RZZ2OZUbrK3B9nxWw5VB9NiOFNCt5ta8s0kSD3suiBxOQDRh0WxSWQcbuYj9Mp4KuksKAoOVm3qlvRfq1Vl4Nj5fkvZnCsnEeFItgXAgAA" | base64 -d | gunzip
+    echo ${is}
+    echo ${ir}
+    echo "H4sIAAAAAAAAA1NQgAOfzOxUhdxKhfL8omx7hbDM4swShYySkoJiK3398vJyvZLMotSU/LTMEr3kRP3igvy84vwiLgD/c17OQAAAAA==" | base64 -d | gunzip
+    echo ""
+}
+
 truefalse_yesno() {
+    ## Convert TRUE or FALSE statements to either yes or no
+    ## Usage: 'truefalse_yesno varname'
+    ## Don't prefix it with a $
+    ## Optionally add "uppercase" / "lowercase" as second value on how you wish it to be replaced
     value=$(set | grep "${1}"= | cut -d '=' -f2)
     var=$(set | grep "${1}"= | sed "s/=.*//g")
 
-    if [ "$value" = "TRUE" ] || [ "$value" = "true" ] || [ "$value" = "YES" ] || [ "$value" = "yes" ] ; then
+    if [ "${value,,}" = "true" ] || [ "${value,,}" = "yes" ] ; then
             print_debug "Converting Variable Name ${var} value to 'yes'"
             unset "$1"
             if [ -n "$2" ] ; then
-                case "$2" in
-                    "UPPERCASE" | "uppercase" | "UPPER" | "upper" | "UC" | "uc" )
+                case "${2,,}" in
+                    "uppercase" | "upper" | "uc" )
                         export "$1=YES"
                     ;;
-                    "LOWERCASE" | "lowercase" | "LOWER" | "lower" | "LC" | "lc" )
+                    "lowercase" | "lower" | "lc" )
                         export "$1=yes"
                     ;;
                 esac
             else
                 export "$1=yes"
             fi
-    elif [ "$value" = "FALSE" ] || [ "$value" = "false" ] || [ "$value" = "NO" ] || [ "$value" = "no" ] ; then
+    elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
             print_debug "Converting Variable Name ${var} value to 'no'"
             unset "$1"
             if [ -n "$2" ] ; then
-                case "$2" in
-                    "UPPERCASE" | "uppercase" | "UPPER" | "upper" | "UC" | "uc" )
+                case "${2,,}" in
+                    "uppercase" | "upper" | "uc" )
                         export "$1=NO"
                     ;;
-                    "LOWERCASE" | "lowercase" | "LOWER" | "lower" | "LC" | "lc" )
+                    "lowercase" | "lower" | "lc" )
                         export "$1=no"
                     ;;
                 esac
@@ -960,38 +1000,38 @@ truefalse_yesno() {
     fi
 }
 
-## Convert TRUE or FALSE statements to either yes or no
-## Usage: 'truefalse_yesno varname'
-## Don't prefix it with a $
-## Optionally add "uppercase" / "lowercase" as second value on how you wish it to be replaced
 truefalse_onoff() {
+    ## Convert TRUE or FALSE statements to either yes or no
+    ## Usage: 'truefalse_yesno varname'
+    ## Don't prefix it with a $
+    ## Optionally add "uppercase" / "lowercase" as second value on how you wish it to be replaced
     value=$(set | grep "${1}"= | cut -d '=' -f2)
     var=$(set | grep "${1}"= | sed "s/=.*//g")
 
-    if [ "$value" = "TRUE" ] || [ "$value" = "true" ] || [ "$value" = "YES" ] || [ "$value" = "yes" ] ; then
+    if [ "${value,,}" = "true" ] || [ "${value,,}" = "yes" ] ; then
             print_debug "Converting Variable Name ${var} value to 'On'"
             unset "$1"
             if [ -n "$2" ] ; then
-                case "$2" in
-                    "UPPERCASE" | "uppercase" | "UPPER" | "upper" | "UC" | "uc" )
+                case "${2,,}" in
+                    "uppercase" | "upper" | "uc" )
                         export "$1=ON"
                     ;;
-                    "LOWERCASE" | "lowercase" | "LOWER" | "lower" | "LC" | "lc" )
+                    "lowercase" | "lower" | "lc" )
                         export "$1=on"
                     ;;
                 esac
             else
                 export "$1=ON"
             fi
-    elif [ "$value" = "FALSE" ] || [ "$value" = "false" ] || [ "$value" = "NO" ] || [ "$value" = "no" ] ; then
+    elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
             print_debug "Converting Variable Name ${var} value to 'Off'"
             unset "$1"
             if [ -n "$2" ] ; then
-                case "$2" in
-                    "UPPERCASE" | "uppercase" | "UPPER" | "upper" | "UC" | "uc" )
+                case "${2,,}" in
+                    "uppercase" | "upper" | "uc" )
                         export "$1=OFF"
                     ;;
-                    "LOWERCASE" | "lowercase" | "LOWER" | "lower" | "LC" | "lc" )
+                    "lowercase" | "lower" | "lc" )
                         export "$1=off"
                     ;;
                 esac
@@ -1001,45 +1041,45 @@ truefalse_onoff() {
     fi
 }
 
-## Timesaver for if statements
-## Usage: if var_false $VARNAME ; then ... fi
 var_false() {
-    [ "${1}" = "FALSE" ] || [ "${1}" = "false" ] || [ "${1}" = "NO" ] || [ "${1}" = "no" ]
+    ## Timesaver for if statements
+    ## Usage: if var_false $VARNAME ; then ... fi
+    [ "${1,,}" = "false" ] || [ "${1,,}" = "no" ]
 }
 
 var_notfalse() {
-    [ "${1}" != "FALSE" ]
+    [ "${1,,}" != "false" ]
 }
 
 var_nottrue() {
-    [ "${1}" != "TRUE" ]
+    [ "${1,,}" != "true" ]
 }
 
 var_true() {
-    [ "${1}" = "TRUE" ] || [ "${1}" = "true" ] || [ "${1}" = "YES" ] || [ "${1}" = "yes" ]
+    [ "${1,,}" = "true" ] || [ "${1,,}" = "yes" ]
 }
 
-## Wait for Directory to exist
-## Usage: wait_for_directory socketname
 wait_for_directory() {
+    ## Wait for Directory to exist
+    ## Usage: wait_for_directory socketname
     print_debug "Looking for existence of directory: $1"
     while [ ! -d "${1}" ] ; do
       sleep 1
     done
 }
 
-## Wait for File to exist
-## Usage: wait_for_file filename
 wait_for_file() {
+    ## Wait for File to exist
+    ## Usage: wait_for_file filename
     print_debug "Looking for existence of file: $1"
     while [ ! -f "${1}" ] ; do
       sleep 1
     done
 }
 
-## Wait for Port to exist
-## Usage: wait_for_port hostname port
 wait_for_port() {
+    ## Wait for Port to exist
+    ## Usage: wait_for_port hostname port
     print_debug "Looking for existence of listening port on $1:$2"
     counter=0
     while ! (nc -z "${1}" "${2}") ; do
@@ -1049,48 +1089,47 @@ wait_for_port() {
     done
 }
 
-## Wait for Socket to exist
-## Usage: wait_for_socket socketname
 wait_for_socket() {
+    ## Wait for Socket to exist
+    ## Usage: wait_for_socket socketname
     print_debug "Looking for existence of socket: $1"
     while [ ! -S "${1}" ] ; do
       sleep 1
     done
 }
 
-
-## Convert YES or NO statements to either TRUE or FALSE
-## Usage: 'yesno_truefalse varname'
-## Don't prefix it with a $
-## Optionally add "uppercase" / "lowercase" as second value on how you wish it to be replaced
 yesno_truefalse() {
+    ## Convert YES or NO statements to either TRUE or FALSE
+    ## Usage: 'yesno_truefalse varname'
+    ## Don't prefix it with a $
+    ## Optionally add "uppercase" / "lowercase" as second value on how you wish it to be replaced
     value=$(set | grep "${1}"= | cut -d '=' -f2)
     var=$(set | grep "${1}"= | sed "s/=.*//g")
 
-    if [ "$value" = "TRUE" ] || [ "$value" = "true" ] || [ "$value" = "YES" ] || [ "$value" = "yes" ] ; then
+    if [ "${value,,}" = "true" ] || [ "${value,,}" = "yes" ] ; then
             print_debug "Converting Variable Name ${var} value to 'yes'"
             unset "$1"
             if [ -n "$2" ] ; then
-                case "$2" in
-                    "UPPERCASE" | "uppercase" | "UPPER" | "upper" | "UC" | "uc" )
+                case "${2,,}" in
+                    "uppercase" | "upper" | "uc" )
                         export "$1=TRUE"
                     ;;
-                    "LOWERCASE" | "lowercase" | "LOWER" | "lower" | "LC" | "lc" )
+                    "lowercase" | "lower" | "lc" )
                         export "$1=true"
                     ;;
                 esac
             else
                 export "$1=TRUE"
             fi
-    elif [ "$value" = "FALSE" ] || [ "$value" = "false" ] || [ "$value" = "NO" ] || [ "$value" = "no" ] ; then
+    elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
             print_debug "Converting Variable Name ${var} value to 'no'"
             unset "$1"
             if [ -n "$2" ] ; then
                 case "$2" in
-                    "UPPERCASE" | "uppercase" | "UPPER" | "upper" | "UC" | "uc" )
+                    "uppercase" | "upper" | "uc" )
                         export "$1=FALSE"
                     ;;
-                    "LOWERCASE" | "lowercase" | "LOWER" | "lower" | "LC" | "lc" )
+                    "lowercase" | "lower" | "lc" )
                         export "$1=false"
                     ;;
                 esac
@@ -1101,22 +1140,22 @@ yesno_truefalse() {
 }
 
 ## Keep this last
-case "$DEBUG_MODE" in
-            "TRUE" | "true" )
+case "${DEBUG_MODE}" in
+            "TRUE" | "true" | "YES" | "yes" | "ON" | "on" )
                 CONTAINER_LOG_LEVEL="DEBUG"
                 set -x
             ;;
-            "FALSE" | "false" )
+            "FALSE" | "false" | "NO" | "no" | "OFF" | "off" )
                 :
             ;;
             * )
-                if [ "$(dirname "$0")" = "/var/run/s6/etc/cont-init.d" ] ; then
-                        if [ "$DEBUG_MODE" = "$(basename \""$0"\")" ] ; then
+                if [ "$(dirname "$0")" = "/var/run/s6/etc/cont-init.d" ] || [ "$(dirname "$0")" = "/etc/cont-init.d" ]; then
+                        if [ "${DEBUG_MODE}" = "$(basename \""$0"\")" ] ; then
                             print_notice "Enabling Debug mode for $(basename \""$0"\") scripts"
                             set -x
                         fi
                 fi
-                if [ "$DEBUG_MODE" = "$(basename "$PWD")" ] ; then
+                if [ "${DEBUG_MODE}" = "$(basename "$PWD")" ] ; then
                     print_notice "Enabling Debug mode for $(basename "$PWD") scripts"
                     set -x
                 fi

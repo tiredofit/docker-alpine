@@ -122,19 +122,20 @@ The following directories are used for configuration and can be mapped for persi
 
 Below is the complete list of available options that can be used to customize your installation.
 #### Container Options
-| Parameter                           | Description                                                            | Default                  |
-| ----------------------------------- | ---------------------------------------------------------------------- | ------------------------ |
-| `CONAINER_ENABLE_LOG_TIMESTAMP`     | Prefix this images container logs with timestamp                       | `TRUE`                   |
-| `CONTAINER_COLORIZE_OUTPUT`         | Enable/Disable colorized console output                                | `TRUE`                   |
-| `CONTAINER_CUSTOM_PATH`             | Used for adding custom files into the image upon startup               | `/assets/custom`         |
-| `CONTAINER_CUSTOM_SCRIPTS_PATH`     | Used for adding custom scripts to execute upon startup                 | `/assets/custom-scripts` |
-| `CONTAINER_ENABLE_PROCESS_COUNTER`  | Show how many times process has executed in console log                | `TRUE`                   |
-| `CONTAINER_LOG_LEVEL`               | Control level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG` | `NOTICE`                 |
-| `CONTAINER_LOG_TIMESAMP_TIME_FMT`   | Timestamp Time Format                                                  | `%H:%M:%S`               |
-| `CONTAINER_LOG_TIMESTAMP_DATE_FMT`  | Timestamp Date Format                                                  | `%Y-%m-%d`               |
-| `CONTAINER_LOG_TIMESTAMP_SEPERATOR` | Timestamp seperator                                                    | `-`                      |
-| `CONTAINER_NAME`                    | Used for setting entries in Monnitoring and Log Shipping               | (hostname)               |
-| `TIMEZONE`                          | Set Timezone                                                           | `Etc/GMT`                |
+| Parameter                           | Description                                                                         | Default                  |
+| ----------------------------------- | ----------------------------------------------------------------------------------- | ------------------------ |
+| `CONAINER_ENABLE_LOG_TIMESTAMP`     | Prefix this images container logs with timestamp                                    | `TRUE`                   |
+| `CONTAINER_COLORIZE_OUTPUT`         | Enable/Disable colorized console output                                             | `TRUE`                   |
+| `CONTAINER_CUSTOM_BASH_PROMPT`      | If you wish to set a different bash prompt then '(imagename):(version) HH:MM:SS # ' |                          |
+| `CONTAINER_CUSTOM_PATH`             | Used for adding custom files into the image upon startup                            | `/assets/custom`         |
+| `CONTAINER_CUSTOM_SCRIPTS_PATH`     | Used for adding custom scripts to execute upon startup                              | `/assets/custom-scripts` |
+| `CONTAINER_ENABLE_PROCESS_COUNTER`  | Show how many times process has executed in console log                             | `TRUE`                   |
+| `CONTAINER_LOG_LEVEL`               | Control level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG`              | `NOTICE`                 |
+| `CONTAINER_LOG_TIMESAMP_TIME_FMT`   | Timestamp Time Format                                                               | `%H:%M:%S`               |
+| `CONTAINER_LOG_TIMESTAMP_DATE_FMT`  | Timestamp Date Format                                                               | `%Y-%m-%d`               |
+| `CONTAINER_LOG_TIMESTAMP_SEPERATOR` | Timestamp seperator                                                                 | `-`                      |
+| `CONTAINER_NAME`                    | Used for setting entries in Monnitoring and Log Shipping                            | (hostname)               |
+| `TIMEZONE`                          | Set Timezone                                                                        | `Etc/GMT`                |
 
 
 #### Scheduling Options
@@ -380,7 +381,7 @@ See `/assets/functions/00-container` for more detailed documentation for the var
   Put at the top:
 
 ````bash
-#!/usr/bin/with-contenv bash          # Pull in Container Environment Variables from Dockerfile/Docker Runtime
+#!/command/with-contenv bash          # Pull in Container Environment Variables from Dockerfile/Docker Runtime
 source /assets/functions/00-container # Pull in all custom container functions from this image
 prepare_service single                # Read functions and defaults only from files matching this script filename - see detailed docs for more
 PROCESS_NAME="process"                # set the prefix for any logging
@@ -398,7 +399,7 @@ liftoff                               # this writes to the state files at /tmp/s
   Put at the top:
 
 ````bash
-#!/usr/bin/with-contenv bash          # Pull in Container Environment Variables from Dockerfile/Docker Runtime
+#!/command/with-contenv bash          # Pull in Container Environment Variables from Dockerfile/Docker Runtime
 source /assets/functions/00-container # Pull in all custom container functions from this image
 prepare_service defaults single       # Read defaults only from files matching this script filename - see detailed docs for more
 PROCESS_NAME="process"                # set the prefix for any logging

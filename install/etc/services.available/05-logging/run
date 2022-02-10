@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 
 source /assets/functions/00-container
 PROCESS_NAME="logging"
@@ -9,7 +9,7 @@ check_container_initialized
 check_service_initialized init
 liftoff
 
-case "${CONTAINER_LOGSHIPPING_BACKEND}" in
+case "${CONTAINER_LOGSHIPPING_BACKEND,,}" in
     "fluent-bit" | "fluentbit" )
       ### Config Setup
       if var_true "${FLUENTBIT_TAIL_KEY_PATH_ENABLE}" ; then
@@ -50,8 +50,8 @@ EOF
                                 )
                       done
                   fi
-                  case "$(echo "${logrotate_parser}" | awk '{print $1}')" in
-                    "SKIP" | "skip" | "IGNORE" | "ignore" )
+                  case "$(echo "${logrotate_parser,,}" | awk '{print $1}')" in
+                    "skip" | "ignore" )
                       print_debug "[logship] Logrotate configuration is telling us to skip shipping logs for '$(basename "${logrotate_file}")'"
                       skip_processing=TRUE
                     ;;

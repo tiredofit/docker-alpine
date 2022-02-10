@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 
 source /assets/functions/00-container
 PROCESS_NAME="monitoring"
@@ -12,7 +12,7 @@ output_on
 case "${CONTAINER_MONITORING_BACKEND}" in
     "zabbix" )
         print_debug "Trying to execute Container Monitoring Backend Zabbix"
-            case "${ZABBIX_AGENT_TYPE}" in
+            case "${ZABBIX_AGENT_TYPE,,}" in
                 "1" | "c" | "classic" | "legacy" | "old" )
                     print_debug "Starting classic Zabbix Agent"
                     zabbix_command="zabbix_agentd"
@@ -28,11 +28,11 @@ case "${CONTAINER_MONITORING_BACKEND}" in
                 ;;
             esac
 
-    print_debug "Zabbix Agent - Adding Autoregister Configuration '$(grep -h "# Autoregister=" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf | cut -d = -f2 | xargs | tr " " ":" | sed 's/^/:/' | sed 's/$/:/')'"
-    sed -i "/HostMetadata/d" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
+    print_debug "Zabbix Agent - Adding Autoregister Configuration '$(grep -h "# Autoregister=" "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}".d/*.conf | cut -d = -f2 | xargs | tr " " ":" | sed 's/^/:/' | sed 's/$/:/')'"
+    sed -i "/HostMetadata/d" "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}"
     if var_true "${ZABBIX_ENABLE_AUTOREGISTER}" ; then
         print_debug "Zabbix Agent - Enabling Auto Register"
-        sed -i "/^Include=.*/i HostMetadata=$(grep -h "# Autoregister=" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}.d/*.conf | cut -d = -f2 | xargs | tr " " ":" | sed 's/^/:/' | sed 's/$/:/')" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
+        sed -i "/^Include=.*/i HostMetadata=$(grep -h "# Autoregister=" "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}".d/*.conf | cut -d = -f2 | xargs | tr " " ":" | sed 's/^/:/' | sed 's/$/:/')" "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}"
         if var_true "${ZABBIX_ENABLE_AUTOREGISTER_DNS}" ; then
             print_debug "Zabbix Agent - Enabling Auto Register by DNS"
             if [ -n "${ZABBIX_AUTOREGISTER_DNS_NAME}" ] ; then
@@ -40,12 +40,15 @@ case "${CONTAINER_MONITORING_BACKEND}" in
             else
                 ZABBIX_AUTOREGISTER_DNS_NAME="${ZABBIX_HOSTNAME}${ZABBIX_AUTOREGISTER_SUFFIX}"
             fi
-            sed -i "/HostInterface=.*/d" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
-            sed -i "/^Include=.*/i HostInterface=${ZABBIX_AUTOREGISTER_DNS_NAME}" ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE}
+            sed -i "/HostInterface=.*/d" "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}"
+            sed -i "/^Include=.*/i HostInterface=${ZABBIX_AUTOREGISTER_DNS_NAME}" "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}"
         fi
     fi
+
+    chown -R "${ZABBIX_USER}":root "${ZABBIX_CONFIG_PATH}"
+    chmod -R 0755 "${ZABBIX_CONFIG_PATH}"
     print_start "Starting Zabbix Agent (${zabbix_agent_type}) ${ZABBIX_VERSION}"
-    silent s6-setuidgid "${ZABBIX_USER}" ${zabbix_command}  -c ${ZABBIX_CONFIG_PATH}/${ZABBIX_CONFIG_FILE} -f
+    silent s6-setuidgid "${ZABBIX_USER}" ${zabbix_command}  -c "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}" -f
     ;;
 esac
 

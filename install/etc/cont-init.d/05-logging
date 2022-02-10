@@ -1,7 +1,7 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 
 source /assets/functions/00-container
-prepare_service single
+prepare_service
 PROCESS_NAME="logging"
 
 output_off
@@ -18,13 +18,12 @@ EOF
 fi
 
 if var_false "${CONTAINER_ENABLE_LOGSHIPPING}" ;  then
-  print_notice "Disabling Log Shipping Functionality"
-  service_stop "$(basename "$0")"
+    service_stop "$(basename "$0")"
 else
-  case "${CONTAINER_LOGSHIPPING_BACKEND}" in
+  case "${CONTAINER_LOGSHIPPING_BACKEND,,}" in
     "fluent-bit" | "fluentbit" )
         os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
-            case ${os} in
+            case ${os,,} in
               "alpine" )
                 archit="$(apk --print-arch)"
                 case "$archit" in
@@ -34,7 +33,7 @@ else
                           :
                       ;;
                       *)
-                        print_error "Sorry this functionality is not available on pre Alpine 3.11 releases"
+                        print_error "Sorry this functionality is not available on < Alpine 3.11 releases"
                         service_stop "$(basename "$0")"
                         liftoff
                         exit
@@ -65,7 +64,7 @@ else
               ;;
         esac
 
-        if [ "${FLUENTBIT_SETUP_TYPE}" = "AUTO" ] || [ "${FLUENTBIT_SETUP_TYPE}" = "auto" ] ; then
+        if [ "${FLUENTBIT_SETUP_TYPE,,}" = "auto" ] ; then
           print_debug "[logship] Configuring Fluent-bit agent"
           truefalse_onoff FLUENTBIT_ENABLE_HTTP_SERVER
           truefalse_onoff FLUENTBIT_ENABLE_STORAGE_METRICS
@@ -121,8 +120,8 @@ ${additional_parsers}
 EOF
 
 ##### Input Plugins
-          case "${FLUENTBIT_MODE}" in
-            "NORMAL" | "normal" )
+          case "${FLUENTBIT_MODE,,}" in
+            "normal" )
               print_debug "[logship] Configuring Fluent-Bit for Normal/Client mode"
 
               ### Config Setup
@@ -256,7 +255,7 @@ EOF
                 fi
               done
             ;;
-            "PROXY" | "proxy" | "FORWARDER" | "forward" )
+            "proxy" | "forward" )
               print_debug "[logship] Configuring Fluent-Bit for Proxy/Forwarding Mode"
               cat <<EOF > /etc/fluent-bit/conf.d/in_forward.conf
 [INPUT]
@@ -270,8 +269,8 @@ EOF
           esac
 
 ##### Output Plugins
-          case "${FLUENTBIT_OUTPUT}" in
-            "LOKI" | "loki" )
+          case "${FLUENTBIT_OUTPUT,,}" in
+            "loki" )
               if [ -n "${FLUENTBIT_OUTPUT_LOKI_USER}" ] ; then
                 loki_user="    http_user              ${FLUENTBIT_OUTPUT_LOKI_USER}"
               fi
@@ -306,7 +305,7 @@ ${loki_tenant_id}
 
 EOF
             ;;
-            "FLUENTD" | "fluentd" | "FORWARD" | "forward" )
+            "fluentd" | "forward" )
               truefalse_onoff FLUENTBIT_OUTPUT_FORWARD_TLS
               truefalse_onoff FLUENTBIT_OUTPUT_FORWARD_TLS_VERIFY
               if [ ! -z "${FLUENTBIT_OUTPUT_FORWARD_SECRET}" ] ; then
@@ -327,7 +326,7 @@ EOF
 ${forward_secret}
 EOF
             ;;
-            "NULL" | "null" )
+            "null" )
               cat <<EOF > /etc/fluent-bit/conf.d/out_null.conf
 ## Auto generated NULL Output plugin for Fluent Bit
 ## Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
@@ -339,7 +338,7 @@ EOF
             ;;
           esac
         else
-          print "[logship] Not auto configuring Fluent-Bit. Drop configuration files in /etc/fluent-bit/conf.d"
+          print_notice "[logship] Not auto configuring Fluent-Bit. Drop configuration files in /etc/fluent-bit/conf.d"
           cat <<EOF > /etc/fluent-bit/fluent-bit.conf
 ## This configuration file allows you to put your own configuration in /etc/fluent-bit/conf.d - Don't delete or it will fail :)
 ## Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
@@ -348,7 +347,7 @@ EOF
         fi
         create_logrotate fluentbit "${FLUENTBIT_LOG_PATH}"/"${FLUENTBIT_LOG_FILE}"
         if var_true "${CONTAINER_ENABLE_MONITORING}" && [ "${CONTAINER_MONITORING_BACKEND,,}" = "zabbix" ]; then
-          cat <<EOF > "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}.d"/tiredofit-fluentbit.conf
+          cat <<EOF > "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}".d/tiredofit-fluentbit.conf
 # Zabbix Fluentbit Configuration - Automatically generated based on container startup options
 # Find Companion Zabbix Server Templates at https://github.com/tiredofit/docker-alpine or https://github.com/tiredofit/docker-debian
 # Autoregister=fluentbit

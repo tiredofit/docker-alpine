@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 
 source /assets/functions/00-container
 prepare_service single
@@ -20,11 +20,11 @@ if var_false "${CONTAINER_ENABLE_SCHEDULING}" ; then
 	print_notice "Disabling Scheduling"
 	service_stop "$(basename "$0")"
 else
-  case "${CONTAINER_SCHEDULING_BACKEND}" in
+  case "${CONTAINER_SCHEDULING_BACKEND,,}" in
     "cron" )
       mkdir -p /tmp/state/cron
 
-      if [ "${SCHEDULING_LOG_TYPE}" = "FILE" ] || [ "${SCHEDULING_LOG_TYPE}" = "file" ]; then
+      if [ "${SCHEDULING_LOG_TYPE,,}" = "FILE" ] ; then
         mkdir -p "${SCHEDULING_LOG_LOCATION}"
         touch "${SCHEDULING_LOG_LOCATION}"/cron.log
         create_logrotate cron "${SCHEDULING_LOG_LOCATION}"/cron.log
@@ -83,7 +83,7 @@ EOF
 ${schedule_value}
 EOF
                     else
-                      print_debug "Skipping adding ${schedule_title} as it already exists"
+                      print_debug "Skipping adding '${schedule_title}' as it already exists"
                     fi
                   done < "${cronenv}"
                 rm -rf $cronenv

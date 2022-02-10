@@ -1,3 +1,23 @@
+## 7.3.0 2022-02-07 <dave at tiredofit dot ca>
+
+   ### Added
+      - S6 Overlay 3.0.0.2
+      - FluentBit 1.7.12
+      - Zabbix Agent 5.4.10
+      - New functions (create_zabbix) for easier development
+      - doas package for eventual replacement of sudo
+      - Added new helpers on command line (service_up/service_down/changelog/version)
+      - Added banner showing image name and version upon startup
+      - Custom Bash Prompt when entering in container
+
+   ### Changed
+      - Stop relying on /usr/bin/with-contenv - Instead use recommended /command/ folder as outlined in S6 overlay documentation
+      - Cleanup of code and allow for CaMeLCasE environment variables (specifically for var_true/var_false and others)
+      - Many optimizations and cleanup of scripts for pure modernization sake
+
+   ### Removed
+      - Removed fix-attrs.d reliance due to deprecation by S6 Overlay
+
 ## 7.2.19 2022-01-20 <dave at tiredofit dot ca>
 
    ### Changed

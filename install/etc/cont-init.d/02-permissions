@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 
 source /assets/functions/00-container
 # shellcheck disable=SC2034
@@ -62,7 +62,7 @@ if var_true "${CONTAINER_ENABLE_PERMISSIONS}" ; then
     for userstogroup in ${uta} ; do
         print_debug "Adding user '${userstogroup}' to '${g}'"
         os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
-        case ${os} in
+        case ${os,,} in
           "alpine" )
             silent addgroup ${userstogroup} ${g}
           ;;

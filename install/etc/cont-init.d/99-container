@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 
 source /assets/defaults/00-container
 source /assets/functions/00-container
@@ -6,6 +6,7 @@ PROCESS_NAME="container"
 
 if var_false "${CONTAINER_SKIP_SANITY_CHECK}" ; then
   output_off
+
   ### Final sanity check to make sure all scripts have executed and initialized properly, otherwise stop
   files_init=$(find /etc/cont-init.d/ -maxdepth 1 -type f | wc -l)
   files_init=$(( "$files_init" - 1 ))
@@ -38,6 +39,29 @@ if var_false "${CONTAINER_SKIP_SANITY_CHECK}" ; then
     if [ "$init_complete" -gt "$files_init" ] ; then
       :
     else
+      if [ -n "${IMAGE_NAME}" ] ; then
+        if [ -f "/assets/.changelogs/${IMAGE_NAME/\//_}.md" ] ; then
+            image_version=$(head -n1 /assets/.changelogs/"${IMAGE_NAME/\//_}".md | awk '{print $2}')
+        elif [ -f /assets/.changelogs/docker-"${IMAGE_NAME/\//_}".md ] ; then
+            image_version=$(head -n1 /assets/.changelogs/docker-"${IMAGE_NAME/\//_}".md | awk '{print $2}')
+        else
+            if [ -f /assets/.changelogs/tiredofit_docker-"${IMAGE_NAME/\//_}".md ] ; then
+                image_version=$(head -n1 /assets/.changelogs/tiredofit_docker-"${IMAGE_NAME/\//_}".md | awk '{print $2}')
+            fi
+        fi
+
+        image_string="Image: ${IMAGE_NAME}"
+
+        if [ -n "${image_version}" ] ; then
+            image_string="${image_string} | Version ${image_version} Type 'changelog' for details"
+        fi
+
+        image_string="${image_string}"
+
+        if [ -n "${IMAGE_REPO_URL}" ] ; then
+            image_url="Repository/Issues/Support: ${IMAGE_REPO_URL}"
+        fi
+      fi
       echo "**********************************************************************************************************************"
       echo "**********************************************************************************************************************"
       echo "****                                                                                                              ****"
@@ -60,6 +84,9 @@ if var_false "${CONTAINER_SKIP_SANITY_CHECK}" ; then
       echo "****                                                                                                              ****"
       echo "**********************************************************************************************************************"
       echo "**********************************************************************************************************************"
+      echo ""
+      echo "$image_string"
+      echo "$image_url"
       exit 1
     fi
   fi
