@@ -24,7 +24,7 @@ else
     "cron" )
       mkdir -p /tmp/state/cron
 
-      if [ "${SCHEDULING_LOG_TYPE,,}" = "FILE" ] ; then
+      if [ "${SCHEDULING_LOG_TYPE,,}" = "file" ] ; then
         mkdir -p "${SCHEDULING_LOG_LOCATION}"
         touch "${SCHEDULING_LOG_LOCATION}"/cron.log
         create_logrotate cron "${SCHEDULING_LOG_LOCATION}"/cron.log
