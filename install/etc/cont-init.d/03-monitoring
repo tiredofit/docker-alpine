@@ -22,7 +22,11 @@ if var_true "${CONTAINER_ENABLE_MONITORING}" ; then
         ZABBIX_DEBUGLEVEL=4
       fi
 
-      if var_true "${ZABBIX_USER_DOAS}" || var_true "${ZABBIX_USER_SUDO}" ; then
+      if var_true "${ZABBIX_USER_SUDO}" ; then
+        grant_sudo zabbix
+      fi
+
+      if var_true "${ZABBIX_USER_DOAS}" ; then
         grant_doas zabbix
       fi
 

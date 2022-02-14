@@ -1,3 +1,9 @@
+## 7.3.4 2022-02-14 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix breaking change on restricting downstream images relying on Zabbix sudo
+
+
 ## 7.3.3 2022-02-14 <dave at tiredofit dot ca>
 
    ### Added
