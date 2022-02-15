@@ -1,3 +1,9 @@
+## 7.3.5 2022-02-15 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Add truefalse_onezero function
+
+
 ## 7.3.4 2022-02-14 <dave at tiredofit dot ca>
 
    ### Changed

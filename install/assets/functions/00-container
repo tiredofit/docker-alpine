@@ -1041,6 +1041,24 @@ truefalse_onoff() {
     fi
 }
 
+truefalse_onezero() {
+    ## Convert TRUE or FALSE statements to either 1 or 0
+    ## Usage: 'truefalse_yesno varname'
+    ## Don't prefix it with a $
+    value=$(set | grep "${1}"= | cut -d '=' -f2)
+    var=$(set | grep "${1}"= | sed "s/=.*//g")
+
+    if [ "${value,,}" = "true" ] || [ "${value,,}" = "yes" ] ; then
+            print_debug "Converting Variable Name ${var} value to '1'"
+            unset "$1"
+            export "$1=1"
+    elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
+            print_debug "Converting Variable Name ${var} value to '0'"
+            unset "$1"
+            export "$1=0"
+    fi
+}
+
 var_false() {
     ## Timesaver for if statements
     ## Usage: if var_false $VARNAME ; then ... fi
