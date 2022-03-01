@@ -1,3 +1,11 @@
+## 7.3.6 2022-03-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix 6.0.1
+      - S6 Overlay 3.0.0.2-2 (3.0.10.0??)
+      - GoLang 1.17.7 for building
+
+
 ## 7.3.5 2022-02-15 <dave at tiredofit dot ca>
 
    ### Changed
