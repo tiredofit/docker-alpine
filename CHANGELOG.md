@@ -1,3 +1,9 @@
+## 7.3.8 2022-03-02 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add CONTAINER_POST_INIT_SCRIPT and CONTAINER_POST_INIT_COMMAND environment variables to either execute scripts or commands at the very end of the container initialization process
+
+
 ## 7.3.7 2022-03-02 <dave at tiredofit dot ca>
 
    ### Added
