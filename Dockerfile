@@ -9,7 +9,7 @@ ARG ZABBIX_VERSION
 
 ### Set defaults
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.13"} \
-    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.0.0.2-2"} \
+    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.0.1"} \
     ZABBIX_VERSION=${ZABBIX_VERSION:-"6.0.1"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
@@ -279,19 +279,16 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
         aarch64) s6Arch='aarch64' ;; \
         *) echo >&2 "Error: unsupported architecture ($apkArch)"; exit 1 ;; \
     esac; \
-    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch-${S6_OVERLAY_VERSION}.tar.xz | tar xvpfJ - -C / && \
-    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${s6Arch}-${S6_OVERLAY_VERSION}.tar.xz | tar xvpfJ - -C / && \
-    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-noarch-${S6_OVERLAY_VERSION}.tar.xz | tar xvpfJ - -C / && \
-    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-arch-${S6_OVERLAY_VERSION}.tar.xz | tar xvpfJ - -C / && \
+    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz | tar xvpfJ - -C / && \
+    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${s6Arch}.tar.xz | tar xvpfJ - -C / && \
+    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-noarch.tar.xz | tar xvpfJ - -C / && \
+    curl -sSL https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-symlinks-arch.tar.xz | tar xvpfJ - -C / && \
     mkdir -p /etc/cont-init.d && \
     mkdir -p /etc/cont-finish.d && \
     mkdir -p /etc/services.d && \
     chown -R 0755 /etc/cont-init.d && \
     chown -R 0755 /etc/cont-finish.d && \
     chmod -R 0755 /etc/services.d && \
-    # To remove when S6 3.1.0 is released
-    echo "/command:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin" > /etc/s6-overlay/config/global_path && \
-    ##
     sed -i "s|s6-rc -v2|s6-rc -v1|g" /package/admin/s6-overlay/etc/s6-linux-init/skel/rc.init && \
     sed -i "s|s6-rc -v2|s6-rc -v1|g" /package/admin/s6-overlay/etc/s6-linux-init/skel/rc.shutdown && \
     sed -i "s|echo|# echo |g" /package/admin/s6-overlay/etc/s6-rc/scripts/cont-init && \
