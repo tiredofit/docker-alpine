@@ -29,9 +29,9 @@ case "${CONTAINER_LOGSHIPPING_BACKEND,,}" in
 
       if var_true "${LOGSHIPPING_AUTO_CONFIG_LOGROTATE}" ; then
         print_debug "[logship] Starting to parse logrotate files for log shipping"
-        mkdir -p /tmp/state/logship/
+        mkdir -p /tmp/.container/logship/
         sed -i "s|//|/|g" /etc/logrotate.d/*
-        if [ ! -f "/tmp/state/logship/logrotate" ]; then
+        if [ ! -f "/tmp/.container/logship/logrotate" ]; then
           for logrotate_file in /etc/logrotate.d/* ; do
             set -f
             logrotate_paths=$(grep '{' "${logrotate_file}" | cut -d { -f 1 | xargs | tr " " "\n" ; )
@@ -128,7 +128,7 @@ EOF
             unset multi_parsers
           done
         sed -i "s|//|/|g" /etc/fluent-bit/conf.d/*.conf
-        touch /tmp/state/logship/logrotate
+        touch /tmp/.container/logship/logrotate
         fi
       fi
 

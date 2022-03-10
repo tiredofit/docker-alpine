@@ -22,7 +22,7 @@ if var_false "${CONTAINER_ENABLE_SCHEDULING}" ; then
 else
   case "${CONTAINER_SCHEDULING_BACKEND,,}" in
     "cron" )
-      mkdir -p /tmp/state/cron
+      mkdir -p /tmp/.container/cron
 
       if [ "${SCHEDULING_LOG_TYPE,,}" = "file" ] ; then
         mkdir -p "${SCHEDULING_LOG_LOCATION}"

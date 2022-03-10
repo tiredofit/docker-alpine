@@ -17,12 +17,12 @@ if var_false "${CONTAINER_SKIP_SANITY_CHECK}" ; then
     files_init_name[${#files_init_name[@]}+1]=$(echo "$f" | sed "s#filename##g" | sed "s#/etc/cont-init.d/##g" | sed "s#99-container##g" );
   done
 
-  init_complete=$(find /tmp/state/*-init -maxdepth 1 -type f | wc -l)
+  init_complete=$(find /tmp/.container/*-init -maxdepth 1 -type f | wc -l)
   declare -a init_complete_name
   declare -a length_of_init_complete_name
-  for f in /tmp/state/*-init; do
+  for f in /tmp/.container/*-init; do
     init_complete_name[length_of_init_complete_name + 1]=filename
-    init_complete_name[${#init_complete_name[@]}+1]=$(echo "$f" | sed "s#filename##g" | sed "s#/tmp/state/##g" | sed "s#-init##g");
+    init_complete_name[${#init_complete_name[@]}+1]=$(echo "$f" | sed "s#filename##g" | sed "s#/tmp/.container/##g" | sed "s#-init##g");
   done
 
   uninitialized_scripts=()
@@ -96,8 +96,8 @@ fi
 for services in /etc/services.available/*/
 do
     service=${services%*/}
-    if [ -f "/tmp/state/${service##*/}-init" ]; then
-        if grep -q "DONOTSTART" "/tmp/state/${service##*/}-init"; then
+    if [ -f "/tmp/.container/${service##*/}-init" ]; then
+        if grep -q "DONOTSTART" "/tmp/.container/${service##*/}-init"; then
            print_debug "Skipping '${service##*/}' service for startup routines"
         else
            print_debug "Getting ready to start '${service##*/}' service"

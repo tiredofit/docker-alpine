@@ -393,7 +393,7 @@ print_info "This an INFO log"
 print_warn "This a WARN log"
 print_error "This is a ERROR log"
 
-liftoff                               # this writes to the state files at /tmp/state to prove the script executed properly see CONTAINER_SKIP_SANITY_CHECK
+liftoff                               # this writes to the state files at /tmp/.container/ to prove the script executed properly see CONTAINER_SKIP_SANITY_CHECK
 ````
 
 - Put Services script in `/etc/services.available/(script name)`

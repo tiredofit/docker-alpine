@@ -28,9 +28,9 @@ case "${CONTAINER_SCHEDULING_BACKEND}" in
       temp_crontab=$(date +%s)
       echo 'MAILTO=""' > $temp_crontab
       if dir_empty "${CONTAINER_SCHEDULING_LOCATION}" ; then echo "# Intentionally empty" > "${CONTAINER_SCHEDULING_LOCATION}"/empty ; fi;
-      sed "/#/d" "${CONTAINER_SCHEDULING_LOCATION}"/* | awk 'NF' >> /tmp/state/cron/${temp_crontab}
+      sed "/#/d" "${CONTAINER_SCHEDULING_LOCATION}"/* | awk 'NF' >> /tmp/.container/cron/${temp_crontab}
       silent crontab -r
-      crontab /tmp/state/cron/${temp_crontab}
+      crontab /tmp/.container/cron/${temp_crontab}
 
       print_start "Starting cron"
       os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)

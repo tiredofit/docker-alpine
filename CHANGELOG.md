@@ -1,3 +1,10 @@
+## 7.4.0 2022-03-10 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change /tmp/state to /tmp/.container
+      - Add logic to tell when a container was started and when it was warm started
+
+
 ## 7.3.9 2022-03-08 <dave at tiredofit dot ca>
 
    ### Added

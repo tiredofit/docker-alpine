@@ -15,7 +15,7 @@ check_container_initialized() {
     ### Check to see Initialization Script ran
     print_debug "Checking to see if container initialization scripts have completed"
     output_off
-    while [ ! -f /tmp/state/99-container-init ]; do
+    while [ ! -f /tmp/.container/99-container-init ]; do
       print_debug "Checking to see if container initialization scripts have completed"
       sleep 1
     done
@@ -24,9 +24,9 @@ check_container_initialized() {
 
 check_service_initialized() {
     ## Usage:
-    ## check_service_initialized init: Look for the matching filename of /etc/services.available/<folder-name> in /tmp/state/<folder-name>-init
-    ## ## check_service_initialized <service folder> Look for the matching filename of /etc/services.available/<folder-name> in /tmp/state/<folder-name>
-    ## Related to liftoff function, which writes /tmp/state/script|foldername
+    ## check_service_initialized init: Look for the matching filename of /etc/services.available/<folder-name> in /tmp/.container/<folder-name>-init
+    ## ## check_service_initialized <service folder> Look for the matching filename of /etc/services.available/<folder-name> in /tmp/.container/<folder-name>
+    ## Related to liftoff function, which writes /tmp/.container/script|foldername
     ## Scripts that run in /etc/cont-init.d get an -init at the end of their filename
     ## Scripts that run from /etc/services.available/* just get the foldername without any suffix
     print_debug "Checking to see if service has initialized"
@@ -54,10 +54,10 @@ check_service_initialized() {
         fi
     fi
 
-    while [ ! -f /tmp/state/"${service}"${service_suffix} ]
+    while [ ! -f /tmp/.container/"${service}"${service_suffix} ]
     do
       sleep 1
-      print_debug "Looking for existence of /tmp/state/${service}${service_suffix}"
+      print_debug "Looking for existence of /tmp/.container/${service}${service_suffix}"
     done
     unset csi_bypass
     output_on
@@ -528,19 +528,19 @@ log_prefix() {
 liftoff() {
     ## For writing script initalization state to ensure proper application execution
     output_off
-    mkdir -p /tmp/state
+    mkdir -p /tmp/.container
     if [ "$DONOTSTART" = "TRUE" ]; then
         liftoff_prefix="DONOTSTART "
     fi
     case "$(dirname "$0")" in
         "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d" )
-            echo "${liftoff_prefix} $(basename "$0")-init initialized on $(log_prefix)" >> /tmp/state/"$(basename "$0")"-init
+            echo "${liftoff_prefix} $(basename "$0")-init initialized on $(log_prefix)" >> /tmp/.container/"$(basename "$0")"-init
         ;;
         *)
-            if [ ! -f /tmp/state/"$(basename "$PWD")" ]; then
-                echo "$(basename "$PWD") initialized on $(log_prefix)" >> /tmp/state/"$(basename "$PWD")"
+            if [ ! -f /tmp/.container/"$(basename "$PWD")" ]; then
+                echo "$(basename "$PWD") initialized on $(log_prefix)" >> /tmp/.container/"$(basename "$PWD")"
             else
-                echo "$(basename "$PWD") reinitialized on $(log_prefix)" >> /tmp/state/"$(basename "$PWD")"
+                echo "$(basename "$PWD") reinitialized on $(log_prefix)" >> /tmp/.container/"$(basename "$PWD")"
             fi
         ;;
     esac
@@ -690,8 +690,8 @@ print_notice() {
 print_start() {
     output_off
     if [ "${CONTAINER_ENABLE_PROCESS_COUNTER,,}" = "true" ] ; then
-        if [ -f /tmp/state/$(basename "$PWD") ]; then
-            proc_start_count="$(cat /tmp/state/$(basename "$PWD") | wc -l)"
+        if [ -f /tmp/.container/$(basename "$PWD") ]; then
+            proc_start_count="$(cat /tmp/.container/$(basename "$PWD") | wc -l)"
             proc_start_wrapper="[${proc_start_count}] "
         fi
     fi
@@ -922,7 +922,7 @@ service_start() {
 
 service_stop() {
     if [ "${1}" != "$(basename "$0")" ] ; then
-        echo "DONOTSTART added by $(basename \""$0"\")" >> /tmp/state/"${1}"-init
+        echo "DONOTSTART added by $(basename \""$0"\")" >> /tmp/.container/"${1}"-init
     fi
     DONOTSTART=TRUE
 }

@@ -7,12 +7,14 @@ PROCESS_NAME="container-init"
 showoff
 
 ### Routine to check if container has been restarted or not
-if [ -d "/tmp/state" ] ; then
-   print_notice "Detected Container that has been restarted - Cleaning '/tmp/state' files"
-   rm -rf /tmp/state/*
+if [ -d "/tmp/.container" ] ; then
+   print_notice "Detected Container that has been restarted - Cleaning '/tmp/.container' files"
+   rm -rf /tmp/.container/*
    rm -rf /etc/services.d/*
+   echo "$(date +%s) $(date +'%Y-%m-%d %H:%M:%S %Z') - Warm restart detected" >> /tmp/.container/container-restart
 else
    print_debug "Cold Container startup detected - Proceeding to initialize services normally"
+   echo "$(date +%s) $(date +'%Y-%m-%d %H:%M:%S %Z') - Container started" >> /tmp/.container/container-startup
 fi
 
 print_debug "Adding shortcuts to .bashrc"
