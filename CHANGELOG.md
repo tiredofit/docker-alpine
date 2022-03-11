@@ -1,7 +1,13 @@
+## 7.4.1 2022-03-11 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add CONTAINER_PROCESS_RUNAWAY_PROTECTOR function to disable a service from restarting (X) amount of times and taking down a system
+
+
 ## 7.4.0 2022-03-10 <dave at tiredofit dot ca>
 
    ### Changed
-      - Change /tmp/state to /tmp/.container
+      - Change /tmp/.container to /tmp/.container
       - Add logic to tell when a container was started and when it was warm started
 
 
@@ -613,7 +619,7 @@ Major changes to this base image, reworking technical debt, creating consistency
 ## 4.3.0 2020-03-02 <dave at tiredofit dot ca>
 
    ### Added
-      - New routine to cleanup /tmp/state for users who only restart the container, not fully bring down and remove.
+      - New routine to cleanup /tmp/.container for users who only restart the container, not fully bring down and remove.
 
 
 ## 4.2.0 2020-02-12 <dave at tiredofit dot ca>

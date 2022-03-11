@@ -694,15 +694,21 @@ print_start() {
             proc_start_count="$(cat /tmp/.container/$(basename "$PWD") | wc -l)"
             proc_start_wrapper="[${proc_start_count}] "
         fi
-    fi
 
-    if [ "${CONTAINER_ENABLE_PROCESS_COUNTER,,}" = "true" ] ; then
         proc_help_arg="$(date +"${CONTAINER_PROCESS_HELPER_DATE_FMT}") $(date +"${CONTAINER_PROCESS_HELPER_TIME_FMT}") $(basename "$(pwd)") ${proc_start_count} $(cat /etc/hostname)"
         if [ -d "${CONTAINER_PROCESS_HELPER_PATH}" ]; then
             if [ -f "${CONTAINER_PROCESS_HELPER_PATH}"/$(basename "$0").sh ]; then
                 exec "${CONTAINER_PROCESS_HELPER_PATH}"/$(basename "$0").sh "${proc_help_arg}"
             elif [ -f "${CONTAINER_PROCESS_HELPER_PATH}"/"${CONTAINER_PROCESS_HELPER_SCRIPT}".sh ] ; then
                 exec "${CONTAINER_PROCESS_HELPER_PATH}"/"${CONTAINER_PROCESS_HELPER_SCRIPT}".sh "${proc_help_arg}"
+            fi
+        fi
+
+        if [ "${CONTAINER_PROCESS_RUNAWAY_PROTECTOR,,}" = "true" ] ; then
+            if [ "${proc_start_count}" -ge "${CONTAINER_PROCESS_RUNAWAY_LIMIT}" ] ; then
+                s6-svc -d /var/run/s6/legacy-services/$(basename "$PWD")
+                print_error "POTENTIAL RUNWAY DETECTECTED: Disabling $(basename $PWD) service because it has tried restarting '${CONTAINER_PROCESS_AWAY_LIMIT}' times"
+                exit 1
             fi
         fi
     fi

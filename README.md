@@ -355,13 +355,14 @@ e.g: `2021-07-01 23:01:04 04-scheduling 2 container`
 Use the values in your own bash script using the `$1` `$2` `$3` `$4` `$5` syntax.
 Change time and date and settings with these environment variables
 
-| Parameter                           | Description                           | Default                            |
-| ----------------------------------- | ------------------------------------- | ---------------------------------- |
-| `CONTAINER_PROCESS_HELPER_PATH`     | Path to file external helper scripts  | `/assets/container/processhelper/` |
-| `CONTAINER_PROCESS_HELPER_SCRIPT`   | Default helper script name            | `processhelper.sh`                 |
-| `CONTAINER_PROCESS_HELPER_DATE_FMT` | Date format passed to external script | `%Y-%m-%d`                         |
-| `CONTAINER_PROCESS_HELPER_TIME_FMT` | Time format passed to external script | `%H:%M:%S`                         |
-
+| Parameter                             | Description                                                  | Default                            |
+| ------------------------------------- | ------------------------------------------------------------ | ---------------------------------- |
+| `CONTAINER_PROCESS_HELPER_PATH`       | Path to file external helper scripts                         | `/assets/container/processhelper/` |
+| `CONTAINER_PROCESS_HELPER_SCRIPT`     | Default helper script name                                   | `processhelper.sh`                 |
+| `CONTAINER_PROCESS_HELPER_DATE_FMT`   | Date format passed to external script                        | `%Y-%m-%d`                         |
+| `CONTAINER_PROCESS_HELPER_TIME_FMT`   | Time format passed to external script                        | `%H:%M:%S`                         |
+| `CONTAINER_PROCESS_RUNAWAY_PROTECTOR` | Disables a service if executed more than (x) amount of times | `TRUE`                             |
+| `CONTAINER_PROCESS_RUNAWAY_LIMIT`     | Disables a service if executed more than (x) amount of times | `50`                               |
 ### Networking
 
 The following ports are exposed.
