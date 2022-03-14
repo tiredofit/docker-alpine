@@ -363,6 +363,7 @@ Change time and date and settings with these environment variables
 | `CONTAINER_PROCESS_HELPER_TIME_FMT`   | Time format passed to external script                        | `%H:%M:%S`                         |
 | `CONTAINER_PROCESS_RUNAWAY_PROTECTOR` | Disables a service if executed more than (x) amount of times | `TRUE`                             |
 | `CONTAINER_PROCESS_RUNAWAY_LIMIT`     | Disables a service if executed more than (x) amount of times | `50`                               |
+
 ### Networking
 
 The following ports are exposed.

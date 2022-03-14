@@ -14,6 +14,7 @@ if [ -d "/tmp/.container" ] ; then
    echo "$(date +%s) $(date +'%Y-%m-%d %H:%M:%S %Z') - Warm restart detected" >> /tmp/.container/container-restart
 else
    print_debug "Cold Container startup detected - Proceeding to initialize services normally"
+   mkdir -p /tmp/.container/
    echo "$(date +%s) $(date +'%Y-%m-%d %H:%M:%S %Z') - Container started" >> /tmp/.container/container-startup
 fi
 

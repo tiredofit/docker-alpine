@@ -1,3 +1,12 @@
+## 7.4.2 2022-03-14 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 6.0.2
+
+   ### Changed
+      - Patchup for the warm / cold container startup routines
+
+
 ## 7.4.1 2022-03-11 <dave at tiredofit dot ca>
 
    ### Added
