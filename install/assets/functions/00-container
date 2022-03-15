@@ -622,6 +622,12 @@ print_debug() {
                 fi
             ;;
     esac
+
+    case "${CONTAINER_LOG_FILE_LEVEL,,}" in
+            "debug" )
+                echo -e "$(log_prefix)[DEBUG] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+            ;;
+    esac
     output_on
 }
 
@@ -644,6 +650,12 @@ print_error() {
                 fi
             ;;
     esac
+
+    case "${CONTAINER_LOG_FILE_LEVEL,,}" in
+            "debug" | "notice" | "warn" | "error")
+                echo -e "$(log_prefix)[ERROR] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+            ;;
+    esac
     output_on
 }
 
@@ -662,6 +674,8 @@ print_info() {
             echo -e "$(log_prefix)${bdg}[INFO]${boff} ** [${PROCESS_NAME}] $1"
         fi
     fi
+
+    echo -e "$(log_prefix)[INFO] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
     output_on
 }
 
@@ -682,6 +696,12 @@ print_notice() {
                         echo -e "$(log_prefix)${bdgy}[NOTICE]${boff} ** [${PROCESS_NAME}] $1"
                     fi
                 fi
+            ;;
+    esac
+
+    case "${CONTAINER_LOG_FILE_LEVEL,,}" in
+            "debug" | "notice" )
+                echo -e "$(log_prefix)[NOTICE] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
             ;;
     esac
     output_on
@@ -705,9 +725,10 @@ print_start() {
         fi
 
         if [ "${CONTAINER_PROCESS_RUNAWAY_PROTECTOR,,}" = "true" ] ; then
-            if [ "${proc_start_count}" -ge "${CONTAINER_PROCESS_RUNAWAY_LIMIT}" ] ; then
+            if [ "${proc_start_count}" -gt "${CONTAINER_PROCESS_RUNAWAY_LIMIT}" ] ; then
+                print_error "POTENTIAL RUNWAY DETECTECTED: Disabling $(basename $PWD) service because it has tried restarting '${CONTAINER_PROCESS_RUNAWAY_LIMIT}' times"
                 s6-svc -d /var/run/s6/legacy-services/$(basename "$PWD")
-                print_error "POTENTIAL RUNWAY DETECTECTED: Disabling $(basename $PWD) service because it has tried restarting '${CONTAINER_PROCESS_AWAY_LIMIT}' times"
+                sleep 3
                 exit 1
             fi
         fi
@@ -716,17 +737,19 @@ print_start() {
     if [ "${DEBUG_MODE,,}" = "true" ] ; then
         if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
             echo -e "$(log_prefix)[STARTING] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
+
         else
             echo -e "$(log_prefix)${bdg}[STARTING]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
         fi
+        echo -e "$(log_prefix)[STARTING] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
     else
         if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
             echo -e "$(log_prefix)[STARTING] ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
         else
             echo -e "$(log_prefix)${bdg}[STARTING]${boff} ** [${PROCESS_NAME}] ${proc_start_wrapper}$1"
         fi
+        echo -e "$(log_prefix)[STARTING] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] ${proc_start_wrapper}$1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
     fi
-
     output_on
 }
 
@@ -748,9 +771,13 @@ print_warn() {
                     fi
                 fi
     esac
+
+    case "${CONTAINER_LOG_FILE_LEVEL,,}" in
+            "debug" | "notice" | "warn" )
+                echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+    esac
     output_on
 }
-
 
 silent() {
     ## Quiet down output

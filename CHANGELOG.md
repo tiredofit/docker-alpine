@@ -1,3 +1,9 @@
+## 7.5.0 2022-03-15 <dave at tiredofit dot ca>
+
+   ### Added
+      - Introduce Container File Logging support
+
+
 ## 7.4.2 2022-03-14 <dave at tiredofit dot ca>
 
    ### Added

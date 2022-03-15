@@ -6,6 +6,11 @@ source /assets/functions/00-container
 PROCESS_NAME="container-init"
 showoff
 
+mkdir -p "${CONTAINER_LOG_FILE_PATH}"
+touch "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+echo "** Container Name: ${CONTAINER_NAME} - Commencing Logging" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+create_logrotate container "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+
 ### Routine to check if container has been restarted or not
 if [ -d "/tmp/.container" ] ; then
    print_notice "Detected Container that has been restarted - Cleaning '/tmp/.container' files"
