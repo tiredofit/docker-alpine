@@ -1,3 +1,9 @@
+## 7.5.1 2022-03-16 <dave at tiredofit dot ca>
+
+   ### Added
+      - Build Zabbix Agent with Go 1.18
+
+
 ## 7.5.0 2022-03-15 <dave at tiredofit dot ca>
 
    ### Added
