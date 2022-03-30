@@ -1,3 +1,9 @@
+## 7.5.5 2022-03-30 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for Fluentbit compilation on 3.11+
+
+
 ## 7.5.4 2022-03-23 <dave at tiredofit dot ca>
 
    ### Added
