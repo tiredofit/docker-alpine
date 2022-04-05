@@ -1,4 +1,4 @@
-FROM docker.io/alpine:3.15
+FROM docker.io/alpine:edge
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ARG GOLANG_VERSION=1.18
@@ -10,7 +10,7 @@ ARG ZABBIX_VERSION
 ### Set defaults
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.8.15"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.0.1"} \
-    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.0.2"} \
+    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.0.3"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
@@ -34,7 +34,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     esac ; \
     \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
-        "3.11" |"3.12" | "3.13" | "3.14" | "3.15" | "edge" ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ;; \
+        3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16* | edge ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ;; \
         *) : ;; \
     esac ; \
     \

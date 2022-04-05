@@ -1,3 +1,10 @@
+## 7.5.6 2022-04-05 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 6.0.3
+      - Fix for Fluent bit and Zabbix Agent not building on Alpine edge
+
+
 ## 7.5.5 2022-03-30 <dave at tiredofit dot ca>
 
    ### Changed
