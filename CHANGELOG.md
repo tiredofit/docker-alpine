@@ -1,3 +1,9 @@
+## 7.5.7 2022-04-05 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Additional fixes to support edge / 3.16
+
+
 ## 7.5.6 2022-04-05 <dave at tiredofit dot ca>
 
    ### Added
