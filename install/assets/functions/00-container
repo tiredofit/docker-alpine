@@ -70,7 +70,7 @@ create_logrotate() {
     ## If you are passing wilcard characters ie /logs/*.log make sure you 'set -f' before the function and 'set +f' afterwards.
 
     if [ -n "$1" ] && [ -n "$2" ]; then
-        if [ ! -f /etc/logrotate.d/"$1" ] ; then
+        if [ ! -f /assets/logrotate/"$1" ] ; then
             print_debug "Creating Logrotate Entry for $2"
             if [ -n "$3" ] ; then
                 if [ "${3,,}" != "none" ] ; then
@@ -80,11 +80,12 @@ create_logrotate() {
             if [ -n "$4" ] && [ -n "$5" ]; then
                 lruser="    su $4 $5"
             fi
-            if [ ! -d "/etc/logrotate.d" ] ; then
-                mkdir -p /etc/logrotate.d
+
+            if [ ! -d "/assets/logrotate" ] ; then
+                mkdir -p /assets/logrotate
             fi
 
-            cat <<EOF > /etc/logrotate.d/"${1}"
+            cat <<EOF > /assets/logrotate/"${1}"
 ${lrlsparser}
 $2 {
     daily
@@ -97,8 +98,8 @@ $2 {
 ${lruser}
 }
 EOF
-            chown root:root /etc/logrotate.d/"${1}"
-            chmod 0644 /etc/logrotate.d/"${1}"
+            chown root:root /assets/logrotate/"${1}"
+            chmod 0644 /assets/logrotate/"${1}"
         else
             print_debug "Skipping creating automatic logrotation for ${1}"
         fi

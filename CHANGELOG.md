@@ -1,3 +1,9 @@
+## 7.6.0 2022-04-30 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Move /etc/logrotate.d assets to /assets/logrotate to avoid packages being upgraded auto adding more configuration
+
+
 ## 7.5.7 2022-04-05 <dave at tiredofit dot ca>
 
    ### Changed

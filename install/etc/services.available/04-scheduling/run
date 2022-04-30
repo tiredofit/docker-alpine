@@ -12,6 +12,8 @@ output_on
 
 if var_true "${CONTAINER_ENABLE_LOGROTATE}" ; then
     print_debug "Setting Logrotate retention days after all services have finished initializing"
+    mkdir -p /etc/logrotate.d
+    cp -R /assets/logrotate/* /etc/logrotate.d
     sed -i "s|rotate .*|rotate ${LOGROTATE_RETAIN_DAYS}|g" /etc/logrotate.d/*
     sed -i "s|//|/|g" /etc/logrotate.d/*
     chown -R root:root /etc/logrotate.d

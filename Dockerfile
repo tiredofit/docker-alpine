@@ -1,4 +1,4 @@
-FROM docker.io/alpine:edge
+FROM docker.io/alpine:3.15
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ARG GOLANG_VERSION=1.18
