@@ -29,7 +29,7 @@ else
                 case "$archit" in
                   x86_64)
                     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in
-                      3.11|3.12|3.13|3.14|3.15|3.16* )
+                      3.11|3.12|3.13|3.14|3.15|3.16|3.17*|edge )
                           :
                       ;;
                       *)

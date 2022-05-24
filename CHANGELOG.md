@@ -1,3 +1,12 @@
+## 7.6.2 2022-05-24 <dave at tiredofit dot ca>
+
+   ### Added
+      - Introduce Alpine 3.16 builds
+
+   ### Changed
+      - Change for bash prompt when working in container to show path
+
+
 ## 7.6.1 2022-05-03 <dave at tiredofit dot ca>
 
    ### Changed

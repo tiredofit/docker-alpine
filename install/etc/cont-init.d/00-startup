@@ -65,7 +65,7 @@ else
    if [ ! -z "${image_version// }" ] ; then
       bash_ver=":${image_version}"
    fi
-   bash_prompt="[${IMAGE_NAME}${bash_ver} \\t] # "
+   bash_prompt="[${IMAGE_NAME}${bash_ver} \\t \\w] $ "
 fi
 
 echo "export PS1=\"${bash_prompt/  /}\"" >> /root/.bashrc
