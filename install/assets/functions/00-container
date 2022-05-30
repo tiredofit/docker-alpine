@@ -238,7 +238,7 @@ db_ready() {
         ;;
         "pgsql" | "psql" | "postgres" | "postgresql" )
             if [ -n "${DB_PORT}" ] ; then postgres_port=${DB_PORT} ; fi ;
-            if [ -n "${POSTGRES_PORT}" ] ; then postgres_port=${MYSQL_PORT} ; fi ;
+            if [ -n "${POSTGRES_PORT}" ] ; then postgres_port=${POSTGRES_PORT} ; fi ;
             postgres_port=${postgres_port:-5432}
             if [ -n "${DB_HOST}" ] ; then postgres_host=${DB_HOST} ; fi ;
             if [ -n "${POSTGRES_HOST}" ] ; then postgres_host=${POSTGRES_HOST} ; fi ;
