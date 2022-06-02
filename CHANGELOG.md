@@ -1,3 +1,9 @@
+## 7.6.4 2022-06-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Build with Golang 1.18.3
+
+
 ## 7.6.3 2022-05-30 <dave at tiredofit dot ca>
 
    ### Added
