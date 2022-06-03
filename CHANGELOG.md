@@ -1,3 +1,9 @@
+## 7.6.5 2022-06-03 <dave at tiredofit dot ca>
+
+   ### Added
+      - Update init scripts to allow to run on Ubuntu
+
+
 ## 7.6.4 2022-06-01 <dave at tiredofit dot ca>
 
    ### Added

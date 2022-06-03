@@ -140,7 +140,7 @@ EOF
         "alpine" )
           updated_packages="UserParameter=packages.upgradable,doas apk update >/dev/null && apk version | sed '/Installed/d' | wc -l"
         ;;
-        "debian" )
+        "debian" | "ubuntu" )
           updated_packages="UserParameter=packages.upgradable,doas apt-get update >/dev/null && doas aptitude search '~U' | wc -l"
         ;;
       esac

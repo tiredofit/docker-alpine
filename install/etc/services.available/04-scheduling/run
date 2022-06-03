@@ -40,7 +40,7 @@ case "${CONTAINER_SCHEDULING_BACKEND}" in
         "alpine" )
           silent /usr/sbin/crond -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
         ;;
-        "debian" )
+        "debian" | "ubuntu" )
           silent /usr/sbin/crond -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
         ;;
         esac

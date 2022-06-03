@@ -48,7 +48,7 @@ else
                   ;;
                 esac
               ;;
-              "debian" )
+              "debian" | "ubuntu" )
                 archit=$(dpkg --print-architecture) && \
                   case "$archit" in \
                     amd64)
