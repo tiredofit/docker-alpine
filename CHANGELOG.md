@@ -1,3 +1,10 @@
+## 7.6.8 2022-06-22 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Rollback to S6 Overlay v3.1.0.1
+      - Minor fix with logrotate directory handling
+
+
 ## 7.6.7 2022-06-17 <dave at tiredofit dot ca>
 
    ### Added

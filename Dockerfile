@@ -9,7 +9,7 @@ ARG ZABBIX_VERSION
 
 ### Set defaults
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.9.4"} \
-    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.1.0"} \
+    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.0.1"} \
     ZABBIX_VERSION=${ZABBIX_VERSION:-"6.0.5"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
@@ -255,7 +255,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     #mv promtail /usr/sbin && \
     \
     ### Clean up
-    mkdir -p /etc/logrotate && \
+    mkdir -p /etc/logrotate.d && \
     mkdir -p /etc/doas.d && \
     apk del --purge \
             .fluentbit-build-deps \
