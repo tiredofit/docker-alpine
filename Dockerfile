@@ -8,8 +8,8 @@ ARG S6_OVERLAY_VERSION
 ARG ZABBIX_VERSION
 
 ### Set defaults
-ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.9.4"} \
-    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.0.1"} \
+ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.9.5"} \
+    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.1.1"} \
     ZABBIX_VERSION=${ZABBIX_VERSION:-"6.0.5"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
@@ -289,13 +289,12 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     chown -R 0755 /etc/cont-init.d && \
     chown -R 0755 /etc/cont-finish.d && \
     chmod -R 0755 /etc/services.d && \
-    sed -i "s|s6-rc -v2|s6-rc -v1|g" /package/admin/s6-overlay/etc/s6-linux-init/skel/rc.init && \
-    sed -i "s|s6-rc -v2|s6-rc -v1|g" /package/admin/s6-overlay/etc/s6-linux-init/skel/rc.shutdown && \
     sed -i "s|echo|# echo |g" /package/admin/s6-overlay/etc/s6-rc/scripts/cont-init && \
     sed -i "s|echo|# echo |g" /package/admin/s6-overlay/etc/s6-rc/scripts/cont-finish && \
     sed -i "s|echo ' (no readiness notification)'|# echo ' (no readiness notification)'|g" /package/admin/s6-overlay/etc/s6-rc/scripts/services-up && \
-    sed -i "s|s6-echo -n|# s6-echo -n|g" /package/admin/s6-overlay/etc/s6-rc/scripts/services-up
-
+    sed -i "s|s6-echo -n|# s6-echo -n|g" /package/admin/s6-overlay/etc/s6-rc/scripts/services-up && \
+    sed -i "s|v=2|v=1|g" /package/admin/s6-overlay/etc/s6-linux-init/skel/rc.init && \
+    sed -i "s|v=2|v=1|g" /package/admin/s6-overlay/etc/s6-linux-init/skel/rc.shutdown
 
 ### Networking configuration
 EXPOSE 2020/TCP 10050/TCP
