@@ -1,3 +1,9 @@
+## 7.6.11 2022-06-24 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add yaml package for running fluent-bit
+
+
 ## 7.6.10 2022-06-23 <dave at tiredofit dot ca>
 
    ### Changed

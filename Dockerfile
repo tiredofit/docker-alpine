@@ -79,6 +79,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
                 sudo \
                 tzdata \
                 vim \
+                yaml \
                 && \
     \
     apk add -t .golang-build-deps \
