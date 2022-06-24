@@ -9,7 +9,7 @@ if var_false "${CONTAINER_SKIP_SANITY_CHECK}" ; then
 
   ### Final sanity check to make sure all scripts have executed and initialized properly, otherwise stop
   files_init=$(find /etc/cont-init.d/ -maxdepth 1 -type f | wc -l)
-  files_init=$(( "$files_init" - 1 ))
+  files_init=$(( $files_init-1 ))
   declare -a files_init_name
   declare -a length_of_files_init_name
   for f in /etc/cont-init.d/*; do

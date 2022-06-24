@@ -1,3 +1,10 @@
+## 7.6.12 2022-06-24 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix some issues with Pre Alpine 3.11 installations
+      - Fix issues with Alpine 3.5 bash version container initialization routines
+
+
 ## 7.6.11 2022-06-24 <dave at tiredofit dot ca>
 
    ### Added

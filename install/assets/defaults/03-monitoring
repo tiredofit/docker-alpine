@@ -31,10 +31,10 @@ ZABBIX_USER_DOAS=${ZABBIX_USER_DOAS:-"TRUE"}
 ZABBIX_USER_SUDO=${ZABBIX_USER_SUDO:-"TRUE"}
 
 os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
-    case ${os} in
+case ${os} in
     "alpine" )
-        osver=$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)
-        if (( $(bc -l <<< "$osver >= 3.11") )) || [ "$osver" = "edge" ] || [ "$osver" = "3.17*"]; then
+        osver=$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 2)
+        if [ "${osver}" -ge 11 ] || [ "$osver" = "edge" ] || [ "$osver" = "17*" ]; then
             ZABBIX_AGENT_TYPE=${ZABBIX_AGENT_TYPE:-"modern"}
         else
             ZABBIX_AGENT_TYPE=${ZABBIX_AGENT_TYPE:-"classic"}

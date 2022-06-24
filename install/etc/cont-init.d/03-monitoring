@@ -92,8 +92,8 @@ EOF
         "2" | "m" | "n" | "modern" | "new" )
           case ${os} in
             "alpine" )
-                  osver=$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)
-                  if (( $(bc -l <<< "$osver >= 3.11") )) || [ "$osver" = "edge" ] ; then
+                  osver=$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 2)
+                  if [ "${osver}" -ge 11 ] || [ "$osver" = "edge" ] || [ "$osver" = "17*" ]; then
                     print_debug "We are using newer than Alpine 3.11 to be able to use the Zabbix Modern client.."
                   else
                     print_error "Sorry, Modern version not available for this images version (Alpine 3.11 + only)"
