@@ -1,3 +1,9 @@
+## 7.6.10 2022-06-23 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Add yaml-dev package as a dependency for fluent-bit
+
+
 ## 7.6.9 2022-06-23 <dave at tiredofit dot ca>
 
    ### Added

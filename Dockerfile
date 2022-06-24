@@ -107,6 +107,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
                 flex \
                 fts-dev \
                 openssl-dev \
+                yaml-dev \
                 && \
     \
     cp -R /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
