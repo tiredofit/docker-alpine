@@ -1,3 +1,9 @@
+## 7.6.17 2022-07-04 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Add Version ARG for FROM command in Dockerfile
+
+
 ## 7.6.16 2022-06-29 <dave at tiredofit dot ca>
 
    ### Added

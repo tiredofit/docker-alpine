@@ -92,11 +92,6 @@ jobs:
             fi
           fi
 
-      - name: Switch
-        id: Switch
-        run: |
-          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
-
       - name: Build
         uses: docker/build-push-action@v3
         with:
@@ -106,6 +101,8 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: true
           tags: ${{ steps.prep.outputs.tags }}
+          build-args: |
+             ALPINE_VERSION=${{ env.RELEASE }}
   v3_16:
     env:
       RELEASE: "3.16"
@@ -187,11 +184,6 @@ jobs:
             fi
           fi
 
-      - name: Switch
-        id: Switch
-        run: |
-          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
-
       - name: Build
         uses: docker/build-push-action@v3
         with:
@@ -201,6 +193,9 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: true
           tags: ${{ steps.prep.outputs.tags }}
+          build-args: |
+             ALPINE_VERSION=${{ env.RELEASE }}
+
   v3_15:
     env:
       RELEASE: "3.15"
@@ -282,11 +277,6 @@ jobs:
             fi
           fi
 
-      - name: Switch
-        id: Switch
-        run: |
-          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
-
       - name: Build
         uses: docker/build-push-action@v3
         with:
@@ -296,6 +286,9 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: true
           tags: ${{ steps.prep.outputs.tags }}
+          build-args: |
+             ALPINE_VERSION=${{ env.RELEASE }}
+
   v3_14:
     env:
       RELEASE: "3.14"
@@ -403,7 +396,7 @@ jobs:
         id: prep
         run: |
           DOCKER_IMAGE=${GITHUB_REPOSITORY/docker-/}
-          set -x
+
           if [[ $GITHUB_REF == refs/heads/* ]]; then
              if [[ $GITHUB_REF == refs/heads/*/* ]] ; then
                BRANCH="${DOCKER_IMAGE}:$(echo $GITHUB_REF | sed "s|refs/heads/||g" | sed "s|/|-|g")"
@@ -473,11 +466,6 @@ jobs:
             fi
           fi
 
-      - name: Switch
-        id: Switch
-        run: |
-          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
-
       - name: Build
         uses: docker/build-push-action@v3
         with:
@@ -487,6 +475,9 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: true
           tags: ${{ steps.prep.outputs.tags }}
+          build-args: |
+             ALPINE_VERSION=${{ env.RELEASE }}
+
   v3_12:
     env:
       RELEASE: "3.12"
@@ -499,7 +490,7 @@ jobs:
         id: prep
         run: |
           DOCKER_IMAGE=${GITHUB_REPOSITORY/docker-/}
-          set -x
+
           if [[ $GITHUB_REF == refs/heads/* ]]; then
              if [[ $GITHUB_REF == refs/heads/*/* ]] ; then
                BRANCH="${DOCKER_IMAGE}:$(echo $GITHUB_REF | sed "s|refs/heads/||g" | sed "s|/|-|g")"
@@ -569,11 +560,6 @@ jobs:
             fi
           fi
 
-      - name: Switch
-        id: Switch
-        run: |
-          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
-
       - name: Build
         uses: docker/build-push-action@v3
         with:
@@ -583,6 +569,9 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: true
           tags: ${{ steps.prep.outputs.tags }}
+          build-args: |
+             ALPINE_VERSION=${{ env.RELEASE }}
+
   v3_11:
     env:
       RELEASE: "3.11"
@@ -595,7 +584,7 @@ jobs:
         id: prep
         run: |
           DOCKER_IMAGE=${GITHUB_REPOSITORY/docker-/}
-          set -x
+
           if [[ $GITHUB_REF == refs/heads/* ]]; then
              if [[ $GITHUB_REF == refs/heads/*/* ]] ; then
                BRANCH="${DOCKER_IMAGE}:$(echo $GITHUB_REF | sed "s|refs/heads/||g" | sed "s|/|-|g")"
@@ -665,11 +654,6 @@ jobs:
             fi
           fi
 
-      - name: Switch
-        id: Switch
-        run: |
-          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
-
       - name: Build
         uses: docker/build-push-action@v3
         with:
@@ -679,6 +663,9 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: true
           tags: ${{ steps.prep.outputs.tags }}
+          build-args: |
+             ALPINE_VERSION=${{ env.RELEASE }}
+
   v3_10:
     env:
       RELEASE: "3.10"
@@ -691,7 +678,7 @@ jobs:
         id: prep
         run: |
           DOCKER_IMAGE=${GITHUB_REPOSITORY/docker-/}
-          set -x
+
           if [[ $GITHUB_REF == refs/heads/* ]]; then
              if [[ $GITHUB_REF == refs/heads/*/* ]] ; then
                BRANCH="${DOCKER_IMAGE}:$(echo $GITHUB_REF | sed "s|refs/heads/||g" | sed "s|/|-|g")"
@@ -761,11 +748,6 @@ jobs:
             fi
           fi
 
-      - name: Switch
-        id: Switch
-        run: |
-          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
-
       - name: Build
         uses: docker/build-push-action@v3
         with:
@@ -775,6 +757,9 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: true
           tags: ${{ steps.prep.outputs.tags }}
+          build-args: |
+             ALPINE_VERSION=${{ env.RELEASE }}
+
   v3_9:
     env:
       RELEASE: "3.9"
@@ -787,7 +772,7 @@ jobs:
         id: prep
         run: |
           DOCKER_IMAGE=${GITHUB_REPOSITORY/docker-/}
-          set -x
+
           if [[ $GITHUB_REF == refs/heads/* ]]; then
              if [[ $GITHUB_REF == refs/heads/*/* ]] ; then
                BRANCH="${DOCKER_IMAGE}:$(echo $GITHUB_REF | sed "s|refs/heads/||g" | sed "s|/|-|g")"
@@ -857,11 +842,6 @@ jobs:
             fi
           fi
 
-      - name: Switch
-        id: Switch
-        run: |
-          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
-
       - name: Build
         uses: docker/build-push-action@v3
         with:
@@ -871,6 +851,9 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: true
           tags: ${{ steps.prep.outputs.tags }}
+          build-args: |
+             ALPINE_VERSION=${{ env.RELEASE }}
+
   v3_8:
     env:
       RELEASE: "3.8"
@@ -883,7 +866,7 @@ jobs:
         id: prep
         run: |
           DOCKER_IMAGE=${GITHUB_REPOSITORY/docker-/}
-          set -x
+
           if [[ $GITHUB_REF == refs/heads/* ]]; then
              if [[ $GITHUB_REF == refs/heads/*/* ]] ; then
                BRANCH="${DOCKER_IMAGE}:$(echo $GITHUB_REF | sed "s|refs/heads/||g" | sed "s|/|-|g")"
@@ -953,11 +936,6 @@ jobs:
             fi
           fi
 
-      - name: Switch
-        id: Switch
-        run: |
-          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
-
       - name: Build
         uses: docker/build-push-action@v3
         with:
@@ -967,6 +945,9 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: true
           tags: ${{ steps.prep.outputs.tags }}
+          build-args: |
+             ALPINE_VERSION=${{ env.RELEASE }}
+
   v3_7:
     env:
       RELEASE: "3.7"
@@ -979,7 +960,7 @@ jobs:
         id: prep
         run: |
           DOCKER_IMAGE=${GITHUB_REPOSITORY/docker-/}
-          set -x
+
           if [[ $GITHUB_REF == refs/heads/* ]]; then
              if [[ $GITHUB_REF == refs/heads/*/* ]] ; then
                BRANCH="${DOCKER_IMAGE}:$(echo $GITHUB_REF | sed "s|refs/heads/||g" | sed "s|/|-|g")"
@@ -1049,11 +1030,6 @@ jobs:
             fi
           fi
 
-      - name: Switch
-        id: Switch
-        run: |
-          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
-
       - name: Build
         uses: docker/build-push-action@v3
         with:
@@ -1063,6 +1039,9 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.prep.outputs.tags }}
+          build-args: |
+             ALPINE_VERSION=${{ env.RELEASE }}
+
   v3_6:
     env:
       RELEASE: "3.6"
@@ -1075,7 +1054,7 @@ jobs:
         id: prep
         run: |
           DOCKER_IMAGE=${GITHUB_REPOSITORY/docker-/}
-          set -x
+
           if [[ $GITHUB_REF == refs/heads/* ]]; then
              if [[ $GITHUB_REF == refs/heads/*/* ]] ; then
                BRANCH="${DOCKER_IMAGE}:$(echo $GITHUB_REF | sed "s|refs/heads/||g" | sed "s|/|-|g")"
@@ -1145,11 +1124,6 @@ jobs:
             fi
           fi
 
-      - name: Switch
-        id: Switch
-        run: |
-          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
-
       - name: Build
         uses: docker/build-push-action@v3
         with:
@@ -1159,6 +1133,9 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.prep.outputs.tags }}
+          build-args: |
+             ALPINE_VERSION=${{ env.RELEASE }}
+
   v3_5:
     env:
       RELEASE: "3.5"
@@ -1171,7 +1148,6 @@ jobs:
         id: prep
         run: |
           DOCKER_IMAGE=${GITHUB_REPOSITORY/docker-/}
-          set -x
           if [[ $GITHUB_REF == refs/heads/* ]]; then
              if [[ $GITHUB_REF == refs/heads/*/* ]] ; then
                BRANCH="${DOCKER_IMAGE}:$(echo $GITHUB_REF | sed "s|refs/heads/||g" | sed "s|/|-|g")"
@@ -1241,11 +1217,6 @@ jobs:
             fi
           fi
 
-      - name: Switch
-        id: Switch
-        run: |
-          sed -i "s|FROM docker.io/alpine:.*|FROM docker.io/alpine:${RELEASE}|g" Dockerfile
-
       - name: Build
         uses: docker/build-push-action@v3
         with:
@@ -1255,3 +1226,5 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ steps.prep.outputs.tags }}
+          build-args: |
+             ALPINE_VERSION=${{ env.RELEASE }}
