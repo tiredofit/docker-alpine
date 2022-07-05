@@ -7,6 +7,14 @@ prepare_service defaults single
 output_off
 check_container_initialized
 check_service_initialized init
+
+if var_true "${CONTAINER_ENABLE_SCHEDULING}" ; then
+    print_debug "[logship] Waiting for Cron to start"
+    counter=0
+    while ! pgrep crond > /dev/null ; do
+        sleep 1
+    done
+fi
 liftoff
 
 case "${CONTAINER_LOGSHIPPING_BACKEND,,}" in
@@ -30,7 +38,6 @@ case "${CONTAINER_LOGSHIPPING_BACKEND,,}" in
       if var_true "${LOGSHIPPING_AUTO_CONFIG_LOGROTATE}" ; then
         print_debug "[logship] Starting to parse logrotate files for log shipping"
         mkdir -p /tmp/.container/logship/
-        sed -i "s|//|/|g" /etc/logrotate.d/*
         if [ ! -f "/tmp/.container/logship/logrotate" ]; then
           for logrotate_file in /etc/logrotate.d/* ; do
             set -f
@@ -132,7 +139,7 @@ EOF
         fi
       fi
 
-      print_start "[logship] Starting fluent-bit ${FLUENTBIT_VERSION}"
-		  silent fluent-bit -c /etc/fluent-bit/fluent-bit.conf
+       print_start "[logship] Starting fluent-bit ${FLUENTBIT_VERSION}"
+       silent fluent-bit -c /etc/fluent-bit/fluent-bit.conf
     ;;
 esac

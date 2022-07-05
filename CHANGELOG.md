@@ -1,3 +1,9 @@
+## 7.6.18 2022-07-05 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix issues relating to Fluent-Bit not parsing files properly due to logrotate shift
+
+
 ## 7.6.17 2022-07-04 <dave at tiredofit dot ca>
 
    ### Changed

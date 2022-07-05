@@ -7,18 +7,20 @@ prepare_service
 output_off
 check_container_initialized
 check_service_initialized init
-liftoff
 output_on
 
 if var_true "${CONTAINER_ENABLE_LOGROTATE}" ; then
-    print_debug "Setting Logrotate retention days after all services have finished initializing"
+    print_debug "[logrotate] Setting Logrotate retention days after all services have finished initializing"
     mkdir -p /etc/logrotate.d
+    print_debug "[logrotate] Moving files from /assets/logrotate to /etc/logrotate.d"
     cp -R /assets/logrotate/* /etc/logrotate.d
     sed -i "s|rotate .*|rotate ${LOGROTATE_RETAIN_DAYS}|g" /etc/logrotate.d/*
     sed -i "s|//|/|g" /etc/logrotate.d/*
     chown -R root:root /etc/logrotate.d
     chmod -R 0644 /etc/logrotate.d
 fi
+
+liftoff
 
 case "${CONTAINER_SCHEDULING_BACKEND}" in
     "cron" )

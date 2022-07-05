@@ -16,8 +16,8 @@ check_container_initialized() {
     print_debug "Checking to see if container initialization scripts have completed"
     output_off
     while [ ! -f /tmp/.container/99-container-init ]; do
-      print_debug "Checking to see if container initialization scripts have completed"
-      sleep 1
+        print_debug "Checking to see if container initialization scripts have completed"
+        sleep 1
     done
     output_on
 }
@@ -56,8 +56,8 @@ check_service_initialized() {
 
     while [ ! -f /tmp/.container/"${service}"${service_suffix} ]
     do
-      sleep 1
-      print_debug "Looking for existence of /tmp/.container/${service}${service_suffix}"
+        sleep 1
+        print_debug "Looking for existence of /tmp/.container/${service}${service_suffix}"
     done
     unset csi_bypass
     output_on
@@ -231,9 +231,9 @@ db_ready() {
             if [ -n "${MARIA_NAME}" ] ; then maria_name=${MARIA_NAME} ; fi ;
             counter=0
             while ! (mysqladmin -u"${maria_user}" -P"${maria_port}" -h"${maria_host}" -p"${maria_pass}" status > /dev/null 2>&1) ; do
-              sleep 5
-              (( counter+=5 ))
-              print_warn "MySQL/MariaDB Server '${maria_host}' is not accessible, retrying.. (${counter} seconds so far)"
+                sleep 5
+                (( counter+=5 ))
+                print_warn "MySQL/MariaDB Server '${maria_host}' is not accessible, retrying.. (${counter} seconds so far)"
             done
         ;;
         "pgsql" | "psql" | "postgres" | "postgresql" )
@@ -319,14 +319,14 @@ file_env() {
         local def="${2:-}"
         local val="$def"
         if [ "${!fileVar:-}" ]; then
-        val="$(cat "${!fileVar}")"
-        elif [ "${!var:-}" ]; then
-        val="${!var}"
+            val="$(cat "${!fileVar}")"
+            elif [ "${!var:-}" ]; then
+            val="${!var}"
         fi
 
         if [ -z "${val}" ]; then
-        print_error "error: neither $var nor $fileVar are set but are required"
-        exit 1
+            print_error "error: neither $var nor $fileVar are set but are required"
+            exit 1
         fi
         export "$var"="$val"
         unset "$fileVar"
@@ -462,7 +462,7 @@ get_image_version() {
     if [ -n "${IMAGE_NAME}" ] ; then
         if [ -f "/assets/.changelogs/${IMAGE_NAME/\//_}.md" ] ; then
             image_version=$(head -n1 /assets/.changelogs/${IMAGE_NAME/\//_}.md | awk '{print $2}')
-        elif [ -f /assets/.changelogs/docker-${IMAGE_NAME/\//_}.md ] ; then
+            elif [ -f /assets/.changelogs/docker-${IMAGE_NAME/\//_}.md ] ; then
             image_version=$(head -n1 /assets/.changelogs/docker-${IMAGE_NAME/\//_}.md | awk '{print $2}')
         else
             if [ -f /assets/.changelogs/tiredofit_docker-${IMAGE_NAME/\//_}.md ] ; then
@@ -571,8 +571,8 @@ prepare_service() {
     if [ -n "$1" ] ; then
         case "$(dirname "$0")" in
             "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d" )
-                    get_defaults "$1"
-                    get_functions "$1"
+                get_defaults "$1"
+                get_functions "$1"
             ;;
             *)
                 case "$1" in
@@ -607,27 +607,27 @@ print_debug() {
     ### Text Coloration
     output_off
     case "${CONTAINER_LOG_LEVEL,,}" in
-            "debug" )
-                if [ "${DEBUG_MODE,,}" = "true" ] ; then
-                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                        echo -e "$(log_prefix)[DEBUG] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
-                    else
-                        echo -e "$(log_prefix)${bdm}[DEBUG]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
-                    fi
+        "debug" )
+            if [ "${DEBUG_MODE,,}" = "true" ] ; then
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[DEBUG] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                 else
-                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                        echo -e "$(log_prefix)[DEBUG] ** [${PROCESS_NAME}] $1"
-                    else
-                        echo -e "$(log_prefix)${bdm}[DEBUG]${boff} ** [${PROCESS_NAME}] $1"
-                    fi
+                    echo -e "$(log_prefix)${bdm}[DEBUG]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                 fi
-            ;;
+            else
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[DEBUG] ** [${PROCESS_NAME}] $1"
+                else
+                    echo -e "$(log_prefix)${bdm}[DEBUG]${boff} ** [${PROCESS_NAME}] $1"
+                fi
+            fi
+        ;;
     esac
 
     case "${CONTAINER_LOG_FILE_LEVEL,,}" in
-            "debug" )
-                echo -e "$(log_prefix)[DEBUG] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
-            ;;
+        "debug" )
+            echo -e "$(log_prefix)[DEBUG] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+        ;;
     esac
     output_on
 }
@@ -635,27 +635,27 @@ print_debug() {
 print_error() {
     output_off
     case "${CONTAINER_LOG_LEVEL,,}" in
-            "debug" | "notice" | "warn" | "error")
-                if [ "${DEBUG_MODE,,}" = "true" ] ; then
-                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                        echo -e "$(log_prefix)[ERROR] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
-                    else
-                        echo -e "$(log_prefix)${blr}[ERROR]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
-                    fi
+        "debug" | "notice" | "warn" | "error")
+            if [ "${DEBUG_MODE,,}" = "true" ] ; then
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[ERROR] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                 else
-                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                        echo -e "$(log_prefix)[ERROR] ** [${PROCESS_NAME}] $1"
-                    else
-                        echo -e "$(log_prefix)${blr}[ERROR]${boff} ** [${PROCESS_NAME}] $1"
-                    fi
+                    echo -e "$(log_prefix)${blr}[ERROR]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                 fi
-            ;;
+            else
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[ERROR] ** [${PROCESS_NAME}] $1"
+                else
+                    echo -e "$(log_prefix)${blr}[ERROR]${boff} ** [${PROCESS_NAME}] $1"
+                fi
+            fi
+        ;;
     esac
 
     case "${CONTAINER_LOG_FILE_LEVEL,,}" in
-            "debug" | "notice" | "warn" | "error")
-                echo -e "$(log_prefix)[ERROR] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
-            ;;
+        "debug" | "notice" | "warn" | "error")
+            echo -e "$(log_prefix)[ERROR] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+        ;;
     esac
     output_on
 }
@@ -683,27 +683,27 @@ print_info() {
 print_notice() {
     output_off
     case "${CONTAINER_LOG_LEVEL,,}" in
-            "debug" | "notice" )
-                if [ "${DEBUG_MODE,,}" = "true" ] ; then
-                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                        echo -e "$(log_prefix)[NOTICE] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
-                    else
-                        echo -e "$(log_prefix)${bdgy}[NOTICE]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
-                    fi
+        "debug" | "notice" )
+            if [ "${DEBUG_MODE,,}" = "true" ] ; then
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[NOTICE] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                 else
-                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                        echo -e "$(log_prefix)[NOTICE] ** [${PROCESS_NAME}] $1"
-                    else
-                        echo -e "$(log_prefix)${bdgy}[NOTICE]${boff} ** [${PROCESS_NAME}] $1"
-                    fi
+                    echo -e "$(log_prefix)${bdgy}[NOTICE]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                 fi
-            ;;
+            else
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[NOTICE] ** [${PROCESS_NAME}] $1"
+                else
+                    echo -e "$(log_prefix)${bdgy}[NOTICE]${boff} ** [${PROCESS_NAME}] $1"
+                fi
+            fi
+        ;;
     esac
 
     case "${CONTAINER_LOG_FILE_LEVEL,,}" in
-            "debug" | "notice" )
-                echo -e "$(log_prefix)[NOTICE] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
-            ;;
+        "debug" | "notice" )
+            echo -e "$(log_prefix)[NOTICE] $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+        ;;
     esac
     output_on
 }
@@ -720,7 +720,7 @@ print_start() {
         if [ -d "${CONTAINER_PROCESS_HELPER_PATH}" ]; then
             if [ -f "${CONTAINER_PROCESS_HELPER_PATH}"/$(basename "$0").sh ]; then
                 exec "${CONTAINER_PROCESS_HELPER_PATH}"/$(basename "$0").sh "${proc_help_arg}"
-            elif [ -f "${CONTAINER_PROCESS_HELPER_PATH}"/"${CONTAINER_PROCESS_HELPER_SCRIPT}".sh ] ; then
+                elif [ -f "${CONTAINER_PROCESS_HELPER_PATH}"/"${CONTAINER_PROCESS_HELPER_SCRIPT}".sh ] ; then
                 exec "${CONTAINER_PROCESS_HELPER_PATH}"/"${CONTAINER_PROCESS_HELPER_SCRIPT}".sh "${proc_help_arg}"
             fi
         fi
@@ -757,25 +757,25 @@ print_start() {
 print_warn() {
     output_off
     case "${CONTAINER_LOG_LEVEL,,}" in
-            "debug" | "notice" | "warn" )
-                if [ "${DEBUG_MODE,,}" = "true" ] ; then
-                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                        echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1"
-                    else
-                        echo -e "$(log_prefix)${bdb}[WARN]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
-                    fi
+        "debug" | "notice" | "warn" )
+            if [ "${DEBUG_MODE,,}" = "true" ] ; then
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1"
                 else
-                    if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
-                        echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1"
-                    else
-                        echo -e "$(log_prefix)${bdb}[WARN]${boff} ** [${PROCESS_NAME}] $1"
-                    fi
+                    echo -e "$(log_prefix)${bdb}[WARN]${boff} $SCRIPTPATH/$(basename "$0") ** [${PROCESS_NAME}] $1"
                 fi
+            else
+                if [ "${CONTAINER_COLORIZE_OUTPUT,,}" = "false" ] ; then
+                    echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1"
+                else
+                    echo -e "$(log_prefix)${bdb}[WARN]${boff} ** [${PROCESS_NAME}] $1"
+                fi
+            fi
     esac
 
     case "${CONTAINER_LOG_FILE_LEVEL,,}" in
-            "debug" | "notice" | "warn" )
-                echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
+        "debug" | "notice" | "warn" )
+            echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
     esac
     output_on
 }
@@ -965,9 +965,9 @@ set_timezone() {
     ## Timezone Setup
     if [ -f /usr/share/zoneinfo/"${TIMEZONE}" ]; then
         if [ "${TIMEZONE}" != "$(cat /etc/timezone)" ] ; then
-        print_notice "Timezone: Setting to '${TIMEZONE}' from '$(cat /etc/timezone)'"
-        cp -R /usr/share/zoneinfo/"${1}" /etc/localtime
-        echo "${1}" > /etc/timezone
+            print_notice "Timezone: Setting to '${TIMEZONE}' from '$(cat /etc/timezone)'"
+            cp -R /usr/share/zoneinfo/"${1}" /etc/localtime
+            echo "${1}" > /etc/timezone
         fi
     else
         print_warn "Timezone: ${TIMEZONE} does not exist - Using '$(cat /etc/timezone)'"
@@ -1002,35 +1002,35 @@ truefalse_yesno() {
     var=$(set | grep "${1}"= | sed "s/=.*//g")
 
     if [ "${value,,}" = "true" ] || [ "${value,,}" = "yes" ] ; then
-            print_debug "Converting Variable Name ${var} value to 'yes'"
-            unset "$1"
-            if [ -n "$2" ] ; then
-                case "${2,,}" in
-                    "uppercase" | "upper" | "uc" )
-                        export "$1=YES"
-                    ;;
-                    "lowercase" | "lower" | "lc" )
-                        export "$1=yes"
-                    ;;
-                esac
-            else
-                export "$1=yes"
-            fi
-    elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
-            print_debug "Converting Variable Name ${var} value to 'no'"
-            unset "$1"
-            if [ -n "$2" ] ; then
-                case "${2,,}" in
-                    "uppercase" | "upper" | "uc" )
-                        export "$1=NO"
-                    ;;
-                    "lowercase" | "lower" | "lc" )
-                        export "$1=no"
-                    ;;
-                esac
-            else
-                export "$1=no"
-            fi
+        print_debug "Converting Variable Name ${var} value to 'yes'"
+        unset "$1"
+        if [ -n "$2" ] ; then
+            case "${2,,}" in
+                "uppercase" | "upper" | "uc" )
+                    export "$1=YES"
+                ;;
+                "lowercase" | "lower" | "lc" )
+                    export "$1=yes"
+                ;;
+            esac
+        else
+            export "$1=yes"
+        fi
+        elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
+        print_debug "Converting Variable Name ${var} value to 'no'"
+        unset "$1"
+        if [ -n "$2" ] ; then
+            case "${2,,}" in
+                "uppercase" | "upper" | "uc" )
+                    export "$1=NO"
+                ;;
+                "lowercase" | "lower" | "lc" )
+                    export "$1=no"
+                ;;
+            esac
+        else
+            export "$1=no"
+        fi
     fi
 }
 
@@ -1043,35 +1043,35 @@ truefalse_onoff() {
     var=$(set | grep "${1}"= | sed "s/=.*//g")
 
     if [ "${value,,}" = "true" ] || [ "${value,,}" = "yes" ] ; then
-            print_debug "Converting Variable Name ${var} value to 'On'"
-            unset "$1"
-            if [ -n "$2" ] ; then
-                case "${2,,}" in
-                    "uppercase" | "upper" | "uc" )
-                        export "$1=ON"
-                    ;;
-                    "lowercase" | "lower" | "lc" )
-                        export "$1=on"
-                    ;;
-                esac
-            else
-                export "$1=ON"
-            fi
-    elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
-            print_debug "Converting Variable Name ${var} value to 'Off'"
-            unset "$1"
-            if [ -n "$2" ] ; then
-                case "${2,,}" in
-                    "uppercase" | "upper" | "uc" )
-                        export "$1=OFF"
-                    ;;
-                    "lowercase" | "lower" | "lc" )
-                        export "$1=off"
-                    ;;
-                esac
-            else
-                export "$1=off"
-            fi
+        print_debug "Converting Variable Name ${var} value to 'On'"
+        unset "$1"
+        if [ -n "$2" ] ; then
+            case "${2,,}" in
+                "uppercase" | "upper" | "uc" )
+                    export "$1=ON"
+                ;;
+                "lowercase" | "lower" | "lc" )
+                    export "$1=on"
+                ;;
+            esac
+        else
+            export "$1=ON"
+        fi
+        elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
+        print_debug "Converting Variable Name ${var} value to 'Off'"
+        unset "$1"
+        if [ -n "$2" ] ; then
+            case "${2,,}" in
+                "uppercase" | "upper" | "uc" )
+                    export "$1=OFF"
+                ;;
+                "lowercase" | "lower" | "lc" )
+                    export "$1=off"
+                ;;
+            esac
+        else
+            export "$1=off"
+        fi
     fi
 }
 
@@ -1083,13 +1083,13 @@ truefalse_onezero() {
     var=$(set | grep "${1}"= | sed "s/=.*//g")
 
     if [ "${value,,}" = "true" ] || [ "${value,,}" = "yes" ] ; then
-            print_debug "Converting Variable Name ${var} value to '1'"
-            unset "$1"
-            export "$1=1"
-    elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
-            print_debug "Converting Variable Name ${var} value to '0'"
-            unset "$1"
-            export "$1=0"
+        print_debug "Converting Variable Name ${var} value to '1'"
+        unset "$1"
+        export "$1=1"
+        elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
+        print_debug "Converting Variable Name ${var} value to '0'"
+        unset "$1"
+        export "$1=0"
     fi
 }
 
@@ -1116,7 +1116,7 @@ wait_for_directory() {
     ## Usage: wait_for_directory socketname
     print_debug "Looking for existence of directory: $1"
     while [ ! -d "${1}" ] ; do
-      sleep 1
+        sleep 1
     done
 }
 
@@ -1125,7 +1125,7 @@ wait_for_file() {
     ## Usage: wait_for_file filename
     print_debug "Looking for existence of file: $1"
     while [ ! -f "${1}" ] ; do
-      sleep 1
+        sleep 1
     done
 }
 
@@ -1135,9 +1135,9 @@ wait_for_port() {
     print_debug "Looking for existence of listening port on $1:$2"
     counter=0
     while ! (nc -z "${1}" "${2}") ; do
-            sleep 5
-            (( counter+=5 ))
-            print_warn "Host '${1}' is not listening on port '${2}', retrying.. ($counter seconds so far)"
+        sleep 5
+        (( counter+=5 ))
+        print_warn "Host '${1}' is not listening on port '${2}', retrying.. ($counter seconds so far)"
     done
 }
 
@@ -1146,7 +1146,7 @@ wait_for_socket() {
     ## Usage: wait_for_socket socketname
     print_debug "Looking for existence of socket: $1"
     while [ ! -S "${1}" ] ; do
-      sleep 1
+        sleep 1
     done
 }
 
@@ -1159,58 +1159,58 @@ yesno_truefalse() {
     var=$(set | grep "${1}"= | sed "s/=.*//g")
 
     if [ "${value,,}" = "true" ] || [ "${value,,}" = "yes" ] ; then
-            print_debug "Converting Variable Name ${var} value to 'yes'"
-            unset "$1"
-            if [ -n "$2" ] ; then
-                case "${2,,}" in
-                    "uppercase" | "upper" | "uc" )
-                        export "$1=TRUE"
-                    ;;
-                    "lowercase" | "lower" | "lc" )
-                        export "$1=true"
-                    ;;
-                esac
-            else
-                export "$1=TRUE"
-            fi
-    elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
-            print_debug "Converting Variable Name ${var} value to 'no'"
-            unset "$1"
-            if [ -n "$2" ] ; then
-                case "$2" in
-                    "uppercase" | "upper" | "uc" )
-                        export "$1=FALSE"
-                    ;;
-                    "lowercase" | "lower" | "lc" )
-                        export "$1=false"
-                    ;;
-                esac
-            else
-                export "$1=FALSE"
-            fi
+        print_debug "Converting Variable Name ${var} value to 'yes'"
+        unset "$1"
+        if [ -n "$2" ] ; then
+            case "${2,,}" in
+                "uppercase" | "upper" | "uc" )
+                    export "$1=TRUE"
+                ;;
+                "lowercase" | "lower" | "lc" )
+                    export "$1=true"
+                ;;
+            esac
+        else
+            export "$1=TRUE"
+        fi
+        elif [ "${value,,}" = "false" ] || [ "${value,,}" = "no" ] ; then
+        print_debug "Converting Variable Name ${var} value to 'no'"
+        unset "$1"
+        if [ -n "$2" ] ; then
+            case "$2" in
+                "uppercase" | "upper" | "uc" )
+                    export "$1=FALSE"
+                ;;
+                "lowercase" | "lower" | "lc" )
+                    export "$1=false"
+                ;;
+            esac
+        else
+            export "$1=FALSE"
+        fi
     fi
 }
 
 ## Keep this last
 case "${DEBUG_MODE}" in
-            "TRUE" | "true" | "YES" | "yes" | "ON" | "on" )
-                CONTAINER_LOG_LEVEL="DEBUG"
+    "TRUE" | "true" | "YES" | "yes" | "ON" | "on" )
+        CONTAINER_LOG_LEVEL="DEBUG"
+        set -x
+    ;;
+    "FALSE" | "false" | "NO" | "no" | "OFF" | "off" )
+        :
+    ;;
+    * )
+        if [ "$(dirname "$0")" = "/var/run/s6/etc/cont-init.d" ] || [ "$(dirname "$0")" = "/etc/cont-init.d" ]; then
+            if [ "${DEBUG_MODE}" = "$(basename \""$0"\")" ] ; then
+                print_notice "Enabling Debug mode for $(basename \""$0"\") scripts"
                 set -x
-            ;;
-            "FALSE" | "false" | "NO" | "no" | "OFF" | "off" )
-                :
-            ;;
-            * )
-                if [ "$(dirname "$0")" = "/var/run/s6/etc/cont-init.d" ] || [ "$(dirname "$0")" = "/etc/cont-init.d" ]; then
-                        if [ "${DEBUG_MODE}" = "$(basename \""$0"\")" ] ; then
-                            print_notice "Enabling Debug mode for $(basename \""$0"\") scripts"
-                            set -x
-                        fi
-                fi
-                if [ "${DEBUG_MODE}" = "$(basename "$PWD")" ] ; then
-                    print_notice "Enabling Debug mode for $(basename "$PWD") scripts"
-                    set -x
-                fi
+            fi
+        fi
+        if [ "${DEBUG_MODE}" = "$(basename "$PWD")" ] ; then
+            print_notice "Enabling Debug mode for $(basename "$PWD") scripts"
+            set -x
+        fi
 
-            ;;
+    ;;
 esac

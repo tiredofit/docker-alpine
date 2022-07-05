@@ -1,12 +1,13 @@
 ARG ALPINE_VERSION=3.16
+
+FROM docker.io/alpine:${ALPINE_VERSION}
+LABEL maintainer="Dave Conroy (github.com/tiredofit)"
+
 ARG GOLANG_VERSION=1.18.3
 ARG DOAS_VERSION
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
 ARG ZABBIX_VERSION
-
-FROM docker.io/alpine:${ALPINE_VERSION}
-LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ### Set defaults
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.9.5"} \

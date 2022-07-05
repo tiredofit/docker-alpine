@@ -5,7 +5,7 @@ PROCESS_NAME="timezone"
 
 ### Timezone setup
 if [ -n "${TIMEZONE}" ]; then
-  set_timezone "${TIMEZONE}"
+    set_timezone "${TIMEZONE}"
 fi
 
 liftoff

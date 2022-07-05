@@ -20,57 +20,57 @@ fi
 if var_false "${CONTAINER_ENABLE_LOGSHIPPING}" ;  then
     service_stop "$(basename "$0")"
 else
-  case "${CONTAINER_LOGSHIPPING_BACKEND,,}" in
-    "fluent-bit" | "fluentbit" )
-        os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
+    case "${CONTAINER_LOGSHIPPING_BACKEND,,}" in
+        "fluent-bit" | "fluentbit" )
+            os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
             case ${os,,} in
-              "alpine" )
-                archit="$(apk --print-arch)"
-                case "$archit" in
-                  x86_64)
-                    osver=$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 2)
-                    if [ "${osver}" -ge 11 ] || [ "$osver" = "edge" ] || [ "$osver" = "17*" ]; then
-                          :
-                    else
-                        print_error "Sorry this functionality is not available on < Alpine 3.11 releases"
-                        service_stop "$(basename "$0")"
-                        liftoff
-                        exit 0
-                    fi
-                  ;;
-                  *)
-                    print_error "Sorry this functionality is not available on ${archit} architecture"
-                    service_stop "$(basename "$0")"
-                    liftoff
-                    exit
-                  ;;
-                esac
-              ;;
-              "debian" | "ubuntu" )
-                archit=$(dpkg --print-architecture) && \
-                  case "$archit" in \
-                    amd64)
-                      :
-                    ;;
-		                *)
-                    print_error "Sorry this functionality is not available on ${archit} architecture"
-                    service_stop "$(basename "$0")"
-                    liftoff
-                    exit
-                  ;;
-                esac
-              ;;
-        esac
+                "alpine" )
+                    archit="$(apk --print-arch)"
+                    case "$archit" in
+                        x86_64)
+                            osver=$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 2)
+                            if [ "${osver}" -ge 11 ] || [ "$osver" = "edge" ] || [ "$osver" = "17*" ]; then
+                                :
+                            else
+                                print_error "Sorry this functionality is not available on < Alpine 3.11 releases"
+                                service_stop "$(basename "$0")"
+                                liftoff
+                                exit 0
+                            fi
+                        ;;
+                        *)
+                            print_error "Sorry this functionality is not available on ${archit} architecture"
+                            service_stop "$(basename "$0")"
+                            liftoff
+                            exit
+                        ;;
+                    esac
+                ;;
+                "debian" | "ubuntu" )
+                    archit=$(dpkg --print-architecture) && \
+                    case "$archit" in \
+                        amd64)
+                            :
+                        ;;
+                        *)
+                            print_error "Sorry this functionality is not available on ${archit} architecture"
+                            service_stop "$(basename "$0")"
+                            liftoff
+                            exit
+                        ;;
+                    esac
+                ;;
+            esac
 
-        if [ "${FLUENTBIT_SETUP_TYPE,,}" = "auto" ] ; then
-          print_debug "[logship] Configuring Fluent-bit agent"
-          truefalse_onoff FLUENTBIT_ENABLE_HTTP_SERVER
-          truefalse_onoff FLUENTBIT_ENABLE_STORAGE_METRICS
-          truefalse_onoff FLUENTBIT_STORAGE_CHECKSUM
-          mkdir -p "${FLUENTBIT_STORAGE_PATH}"
-          mkdir -p "${FLUENTBIT_LOG_PATH}"
-          mkdir -p /etc/fluent-bit/conf.d
-          cat <<EOF > /etc/fluent-bit/conf.d/do_not_delete.conf
+            if [ "${FLUENTBIT_SETUP_TYPE,,}" = "auto" ] ; then
+                print_debug "[logship] Configuring Fluent-bit agent"
+                truefalse_onoff FLUENTBIT_ENABLE_HTTP_SERVER
+                truefalse_onoff FLUENTBIT_ENABLE_STORAGE_METRICS
+                truefalse_onoff FLUENTBIT_STORAGE_CHECKSUM
+                mkdir -p "${FLUENTBIT_STORAGE_PATH}"
+                mkdir -p "${FLUENTBIT_LOG_PATH}"
+                mkdir -p /etc/fluent-bit/conf.d
+            cat <<EOF > /etc/fluent-bit/conf.d/do_not_delete.conf
 # Don't delete this configuration file otherwise execution of fluent-bit will fail. It will not affect operation of your system or impact resources
 [INPUT]
     Name   dummy
@@ -86,15 +86,19 @@ else
     Match  ignore
 EOF
 
-          for custom_parser in /etc/fluent-bit/parsers.d/*.conf ; do
-            print_debug "[logship] Found additional parser for '$(echo "${custom_parser,,}" | sed "s|.conf||g")'"
-            additional_parsers=$(echo "${additional_parsers}" ; cat<<EOF
+                if [ "$(ls -A /etc/fluent-bit/parsers.d/)" ]; then
+                    shopt -s nullglob
+                    for custom_parser in /etc/fluent-bit/parsers.d/*.conf ; do
+                        print_debug "[logship] Found additional parser for '$(echo "${custom_parser,,}" | sed "s|.conf||g")'"
+                    additional_parsers=$(echo "${additional_parsers}" ; cat<<EOF
     parsers_file ${custom_parser}
 EOF
-                                )
-          done
+                        )
+                        done
+                        shopt -u nullglob
+                    fi
 
-          cat <<EOF > /etc/fluent-bit/fluent-bit.conf
+            cat <<EOF > /etc/fluent-bit/fluent-bit.conf
 ## Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
 
 @INCLUDE conf.d/*.conf
@@ -117,56 +121,56 @@ EOF
 ${additional_parsers}
 EOF
 
-##### Input Plugins
-          case "${FLUENTBIT_MODE,,}" in
-            "normal" )
-              print_debug "[logship] Configuring Fluent-Bit for Normal/Client mode"
+                    ##### Input Plugins
+                    case "${FLUENTBIT_MODE,,}" in
+                        "normal" )
+                            print_debug "[logship] Configuring Fluent-Bit for Normal/Client mode"
 
-              ### Config Setup
-              if var_true "${FLUENTBIT_TAIL_KEY_PATH_ENABLE}" ; then
-                tail_key_path="    Path_Key          ${FLUENTBIT_TAIL_KEY_PATH}"
-              fi
+                            ### Config Setup
+                            if var_true "${FLUENTBIT_TAIL_KEY_PATH_ENABLE}" ; then
+                                tail_key_path="    Path_Key          ${FLUENTBIT_TAIL_KEY_PATH}"
+                            fi
 
-              if var_true "${FLUENTBIT_TAIL_KEY_OFFSET_ENABLE}" ; then
-                tail_key_offset="    Offset_Key        ${FLUENTBIT_TAIL_KEY_OFFSET}"
-              fi
+                            if var_true "${FLUENTBIT_TAIL_KEY_OFFSET_ENABLE}" ; then
+                                tail_key_offset="    Offset_Key        ${FLUENTBIT_TAIL_KEY_OFFSET}"
+                            fi
 
-              if [ -n "${FLUENTBIT_TAIL_IGNORE_OLDER}" ] ; then
-                tail_ignore_older="    Ignore_Older      ${FLUENTBIT_TAIL_IGNORE_OLDER}"
-              fi
+                            if [ -n "${FLUENTBIT_TAIL_IGNORE_OLDER}" ] ; then
+                                tail_ignore_older="    Ignore_Older      ${FLUENTBIT_TAIL_IGNORE_OLDER}"
+                            fi
 
-              truefalse_onoff FLUENTBIT_TAIL_SKIP_EMPTY_LINES
-              truefalse_onoff FLUENTBIT_TAIL_SKIP_LONG_LINES
+                            truefalse_onoff FLUENTBIT_TAIL_SKIP_EMPTY_LINES
+                            truefalse_onoff FLUENTBIT_TAIL_SKIP_LONG_LINES
 
-              #### Override by Environment Variables
-              logshipenv=$(mktemp)
-              set -o posix; set -f ; set | grep -E '^LOGSHIP_'| sed "s|LOGSHIP_||g" > "${logshipenv}"
-              while IFS= read -r logship_entry; do
-                logship_title="$(echo "${logship_entry}" | cut -d = -f1 | tr '[:upper:]' '[:lower:]' )"
-                logship_value="$(echo "${logship_entry}" | cut -d = -f2 )"
-                logship_value="$(echo "${logship_value:1:-1}")"
-                if var_false "${logship_value}" ; then
-                  print_debug "[logship] Disabling ${logship_title} Log Shipping"
-                  cat <<EOF > "/etc/fluent-bit/conf.d/in_tail_${logship_title,,}.conf"
+                            #### Override by Environment Variables
+                            logshipenv=$(mktemp)
+                            set -o posix; set -f ; set | grep -E '^LOGSHIP_'| sed "s|LOGSHIP_||g" > "${logshipenv}"
+                            while IFS= read -r logship_entry; do
+                                logship_title="$(echo "${logship_entry}" | cut -d = -f1 | tr '[:upper:]' '[:lower:]' )"
+                                logship_value="$(echo "${logship_entry}" | cut -d = -f2 )"
+                                logship_value="$(echo "${logship_value:1:-1}")"
+                                if var_false "${logship_value}" ; then
+                                    print_debug "[logship] Disabling ${logship_title} Log Shipping"
+                            cat <<EOF > "/etc/fluent-bit/conf.d/in_tail_${logship_title,,}.conf"
 # Nulled Log Monitoring of ${logship_title}  generated by Environment Variable defined in Image build, or Runtime argument
 # Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
 EOF
-                  if [ -f "/etc/logrotate.d/${logship_title,,}" ] ; then
-                    print_debug "[logship] Setting Logrotate value to skip for /etc/logrotate.d/${logship_title,,}"
-                    sed -i "# logship: .*|# logship: ignore"
-                  fi
-                else
-                  print_debug "[logship] Adding ${logship_title} with to be parsed by ${CONTAINER_LOGSHIPPING_BACKEND}"
-                  if var_true "${FLUENTBIT_TAIL_DB_ENABLE}" ; then
-                    tail_db=$(cat<<EOF
+                                    if [ -f "/etc/logrotate.d/${logship_title,,}" ] ; then
+                                        print_debug "[logship] Setting Logrotate value to skip for /etc/logrotate.d/${logship_title,,}"
+                                        sed -i "# logship: .*|# logship: ignore"
+                                    fi
+                                else
+                                    print_debug "[logship] Adding ${logship_title} with to be parsed by ${CONTAINER_LOGSHIPPING_BACKEND}"
+                                    if var_true "${FLUENTBIT_TAIL_DB_ENABLE}" ; then
+                                tail_db=$(cat<<EOF
     DB                $(dirname ${logship_value})/.$(basename ${logship_value}).db
     DB.sync           ${FLUENTBIT_TAIL_DB_SYNC}
     DB.locking        ${FLUENTBIT_TAIL_DB_LOCK}
     DB.journal_mode   ${FLUENTBIT_TAIL_DB_JOURNAL_MODE}
 EOF
-                    )
-                  fi
-                  cat <<EOF > "/etc/fluent-bit/conf.d/in_tail_${logship_title,,}.conf"
+                                        )
+                                        fi
+                        cat <<EOF > "/etc/fluent-bit/conf.d/in_tail_${logship_title,,}.conf"
 # Log File Monitoring created automatically generated by Environment Variable defined in Image build, or Runtime argument
 # Entered Value: ${logship_value}
 # Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
@@ -193,37 +197,37 @@ ${tail_key_offset}
     Record product ${logship_title,,}
 
 EOF
-                fi
-              done < "${logshipenv}"
-              rm -rf "$logshipenv"
-              set +f
-              unset logshipenv logship_entry logship_value logship_title db
-              unset "${!LOGSHIP_@}"
+                                    fi
+                                done < "${logshipenv}"
+                                rm -rf "$logshipenv"
+                                set +f
+                                unset logshipenv logship_entry logship_value logship_title db
+                                unset "${!LOGSHIP_@}"
 
-              ## Defaults
-              for d in /assets/defaults/* ; do
-                if [ "$d" != "/assets/defaults/00-container" ] ; then
-                      # shellcheck source=/assets/defaults/
-                      source "$d"
-                      logshipenv=$(mktemp)
-                      set -o posix; set -f ; set | grep -E '^LOGSHIP_'| sed "s|LOGSHIP_||g" > "${logshipenv}"
-                      while IFS= read -r logship_entry; do
-                        logship_title="$(echo "${logship_entry}" | cut -d = -f1 | tr '[:upper:]' '[:lower:]')"
-                        logship_value="$(echo "${logship_entry}" | cut -d = -f2 )"
-                        logship_value="$(echo "${logship_value:1:-1}")"
+                                ## Defaults
+                                for d in /assets/defaults/* ; do
+                                    if [ "$d" != "/assets/defaults/00-container" ] ; then
+                                        # shellcheck source=/assets/defaults/
+                                        source "$d"
+                                        logshipenv=$(mktemp)
+                                        set -o posix; set -f ; set | grep -E '^LOGSHIP_'| sed "s|LOGSHIP_||g" > "${logshipenv}"
+                                        while IFS= read -r logship_entry; do
+                                            logship_title="$(echo "${logship_entry}" | cut -d = -f1 | tr '[:upper:]' '[:lower:]')"
+                                            logship_value="$(echo "${logship_entry}" | cut -d = -f2 )"
+                                            logship_value="$(echo "${logship_value:1:-1}")"
 
-                        if var_true "${FLUENTBIT_TAIL_DB_ENABLE}" ; then
-                          tail_db=$(cat<<EOF
+                                            if var_true "${FLUENTBIT_TAIL_DB_ENABLE}" ; then
+                                    tail_db=$(cat<<EOF
     DB                $(dirname ${logship_value})/.$(basename ${logship_value}).db
     DB.sync           ${FLUENTBIT_TAIL_DB_SYNC}
     DB.locking        ${FLUENTBIT_TAIL_DB_LOCK}
     DB.journal_mode   ${FLUENTBIT_TAIL_DB_JOURNAL_MODE}
 EOF
-                          )
-                        fi
-                        if [ ! -f "/etc/fluent-bit/conf.d/in_tail_${logship_title,,}.conf" ] ; then
-                          print_debug "[logship] Adding ${logship_title} with to parsed by ${CONTAINER_LOGSHIPPING_BACKEND}"
-                          cat <<EOF > "/etc/fluent-bit/conf.d/in_tail_${logship_title,,}.conf"
+                                                )
+                                                fi
+                                                if [ ! -f "/etc/fluent-bit/conf.d/in_tail_${logship_title,,}.conf" ] ; then
+                                                    print_debug "[logship] Adding ${logship_title} with to parsed by ${CONTAINER_LOGSHIPPING_BACKEND}"
+                            cat <<EOF > "/etc/fluent-bit/conf.d/in_tail_${logship_title,,}.conf"
 # Log File Shipping created automatically generated by reading through defaults in /assets/defaults/*
 # Entered Value: ${logship_value}
 # Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
@@ -242,20 +246,20 @@ ${tail_db}
 ${tail_ignore_older}
 ${tail_key_offset}
 EOF
-                        else
-                          print_debug "[logship] Skipping adding ${logship_title} as it already exists"
-                        fi
-                      done < "${logshipenv}"
-                    rm -rf "$logshipenv"
-                    set +f
-                    unset logshipenv logship_entry logship_value logship_title
-                    unset "${!LOGSHIP_@}"
-                fi
-              done
-            ;;
-            "proxy" | "forward" )
-              print_debug "[logship] Configuring Fluent-Bit for Proxy/Forwarding Mode"
-              cat <<EOF > /etc/fluent-bit/conf.d/in_forward.conf
+                                                else
+                                                    print_debug "[logship] Skipping adding ${logship_title} as it already exists"
+                                                fi
+                                            done < "${logshipenv}"
+                                            rm -rf "$logshipenv"
+                                            set +f
+                                            unset logshipenv logship_entry logship_value logship_title
+                                            unset "${!LOGSHIP_@}"
+                                        fi
+                                    done
+                                ;;
+                                "proxy" | "forward" )
+                                    print_debug "[logship] Configuring Fluent-Bit for Proxy/Forwarding Mode"
+                cat <<EOF > /etc/fluent-bit/conf.d/in_forward.conf
 [INPUT]
     Name forward
     Listen 0.0.0.0
@@ -263,28 +267,28 @@ EOF
     Buffer_Chunk_Size ${FLUENTBIT_FORWARD_BUFFER_CHUNK_SIZE}
     Buffer_Max_Size   ${FLUENTBIT_FORWARD_BUFFER_MAX_SIZE}
 EOF
-            ;;
-          esac
+                                ;;
+                    esac
 
-##### Output Plugins
-          case "${FLUENTBIT_OUTPUT,,}" in
-            "loki" )
-              if [ -n "${FLUENTBIT_OUTPUT_LOKI_USER}" ] ; then
-                loki_user="    http_user              ${FLUENTBIT_OUTPUT_LOKI_USER}"
-              fi
+                    ##### Output Plugins
+                    case "${FLUENTBIT_OUTPUT,,}" in
+                        "loki" )
+                            if [ -n "${FLUENTBIT_OUTPUT_LOKI_USER}" ] ; then
+                                loki_user="    http_user              ${FLUENTBIT_OUTPUT_LOKI_USER}"
+                            fi
 
-              if [ -n "${FLUENTBIT_OUTPUT_LOKI_PASS}" ] ; then
-                loki_pass="    http_passwd            ${FLUENTBIT_OUTPUT_LOKI_PASS}"
-              fi
+                            if [ -n "${FLUENTBIT_OUTPUT_LOKI_PASS}" ] ; then
+                                loki_pass="    http_passwd            ${FLUENTBIT_OUTPUT_LOKI_PASS}"
+                            fi
 
-              if [ -n "${FLUENTBIT_OUTPUT_LOKI_TENANT_ID}" ] ; then
-                loki_tenant_id="    tenant_id              ${FLUENTBIT_OUTPUT_LOKI_TENANT_ID}"
-              fi
+                            if [ -n "${FLUENTBIT_OUTPUT_LOKI_TENANT_ID}" ] ; then
+                                loki_tenant_id="    tenant_id              ${FLUENTBIT_OUTPUT_LOKI_TENANT_ID}"
+                            fi
 
-              truefalse_onoff FLUENTBIT_OUTPUT_LOKI_TLS
-              truefalse_onoff FLUENTBIT_OUTPUT_LOKI_TLS_VERIFY
+                            truefalse_onoff FLUENTBIT_OUTPUT_LOKI_TLS
+                            truefalse_onoff FLUENTBIT_OUTPUT_LOKI_TLS_VERIFY
 
-              cat <<EOF > /etc/fluent-bit/conf.d/out_loki.conf
+                cat <<EOF > /etc/fluent-bit/conf.d/out_loki.conf
 ## Auto generated LOKI Output plugin for Fluent Bit
 ## Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
 
@@ -302,14 +306,14 @@ ${loki_pass}
 ${loki_tenant_id}
 
 EOF
-            ;;
-            "fluentd" | "forward" )
-              truefalse_onoff FLUENTBIT_OUTPUT_FORWARD_TLS
-              truefalse_onoff FLUENTBIT_OUTPUT_FORWARD_TLS_VERIFY
-              if [ ! -z "${FLUENTBIT_OUTPUT_FORWARD_SECRET}" ] ; then
-                forward_secret="    Shared_Key    ${FLUENTBIT_OUTPUT_FORWARD_SECRET}"
-              fi
-              cat <<EOF > /etc/fluent-bit/conf.d/out_forward.conf
+                        ;;
+                        "fluentd" | "forward" )
+                            truefalse_onoff FLUENTBIT_OUTPUT_FORWARD_TLS
+                            truefalse_onoff FLUENTBIT_OUTPUT_FORWARD_TLS_VERIFY
+                            if [ ! -z "${FLUENTBIT_OUTPUT_FORWARD_SECRET}" ] ; then
+                                forward_secret="    Shared_Key    ${FLUENTBIT_OUTPUT_FORWARD_SECRET}"
+                            fi
+                cat <<EOF > /etc/fluent-bit/conf.d/out_forward.conf
 ## Auto generated FluentD Forward Output plugin for Fluent Bit
 ## Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
 
@@ -323,9 +327,9 @@ EOF
     tls.verify    ${FLUENTBIT_OUTPUT_FORWARD_TLS_VERIFY,,}
 ${forward_secret}
 EOF
-            ;;
-            "null" )
-              cat <<EOF > /etc/fluent-bit/conf.d/out_null.conf
+                        ;;
+                        "null" )
+                cat <<EOF > /etc/fluent-bit/conf.d/out_null.conf
 ## Auto generated NULL Output plugin for Fluent Bit
 ## Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
 
@@ -333,31 +337,31 @@ EOF
     Name null
     Match *
 EOF
-            ;;
-          esac
-        else
-          print_notice "[logship] Not auto configuring Fluent-Bit. Drop configuration files in /etc/fluent-bit/conf.d"
-          cat <<EOF > /etc/fluent-bit/fluent-bit.conf
+                        ;;
+                    esac
+                else
+                    print_notice "[logship] Not auto configuring Fluent-Bit. Drop configuration files in /etc/fluent-bit/conf.d"
+            cat <<EOF > /etc/fluent-bit/fluent-bit.conf
 ## This configuration file allows you to put your own configuration in /etc/fluent-bit/conf.d - Don't delete or it will fail :)
 ## Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
 @INCLUDE conf.d/*.conf
 EOF
-        fi
-        create_logrotate fluentbit "${FLUENTBIT_LOG_PATH}"/"${FLUENTBIT_LOG_FILE}"
-        if var_true "${CONTAINER_ENABLE_MONITORING}" && [ "${CONTAINER_MONITORING_BACKEND,,}" = "zabbix" ]; then
+                fi
+                create_logrotate fluentbit "${FLUENTBIT_LOG_PATH}"/"${FLUENTBIT_LOG_FILE}"
+                if var_true "${CONTAINER_ENABLE_MONITORING}" && [ "${CONTAINER_MONITORING_BACKEND,,}" = "zabbix" ]; then
           cat <<EOF > "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}".d/tiredofit-fluentbit.conf
 # Zabbix Fluentbit Configuration - Automatically generated based on container startup options
 # Find Companion Zabbix Server Templates at https://github.com/tiredofit/docker-alpine or https://github.com/tiredofit/docker-debian
 # Autoregister=fluentbit
 EOF
-        fi
-        print_notice "Container configured to ship logs via '${CONTAINER_LOGSHIPPING_BACKEND}'"
-    ;;
-    *)
-      print_error "[logship] Unknown Log Shipping Backend"
-      exit 1
-    ;;
-  esac
+                fi
+                print_notice "Container configured to ship logs via '${CONTAINER_LOGSHIPPING_BACKEND}'"
+            ;;
+            *)
+                print_error "[logship] Unknown Log Shipping Backend"
+                exit 1
+            ;;
+    esac
 
 fi
 

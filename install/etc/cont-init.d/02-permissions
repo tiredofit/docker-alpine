@@ -7,71 +7,71 @@ PROCESS_NAME="permissions"
 output_off
 ## Legacy
 if var_true "${ENABLE_PERMISSIONS}" ; then
-  CONTAINER_ENABLE_PERMISSIONS=TRUE
-elif var_false "${ENABLE_PERMISSIONS}" ; then
-  CONTAINER_ENABLE_PERMISSIONS=FALSE
+    CONTAINER_ENABLE_PERMISSIONS=TRUE
+    elif var_false "${ENABLE_PERMISSIONS}" ; then
+    CONTAINER_ENABLE_PERMISSIONS=FALSE
 fi
 ##
 
 if var_true "$DEBUG_PERMISSIONS" ; then
-  CONTAINER_LOG_LEVEL="DEBUG"
+    CONTAINER_LOG_LEVEL="DEBUG"
 fi
 
 ### Enable or Disable permissions
 if var_true "${CONTAINER_ENABLE_PERMISSIONS}" ; then
-  print_debug "Enabling permissions features"
-  # change uid in /etc/passwd with the ones defined in Docker's environment settings
-  unames="$(set -o posix ; set | sort | grep -e '^USER_' | sed "s|^USER_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n') "
-  unames+="$(set -o posix ; set | sort | grep -e '^CONTAINER_USER_' | sed "s|^CONTAINER_USER_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n')"
+    print_debug "Enabling permissions features"
+    # change uid in /etc/passwd with the ones defined in Docker's environment settings
+    unames="$(set -o posix ; set | sort | grep -e '^USER_' | sed "s|^USER_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n') "
+    unames+="$(set -o posix ; set | sort | grep -e '^CONTAINER_USER_' | sed "s|^CONTAINER_USER_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n')"
 
-  for uname in $unames; do
-    u=$(echo $uname | cut -d = -f 1)
-    uid=$(echo $uname | cut -d = -f 2)
-    ouid=$(grep -e "^${u}" /etc/passwd | awk -F: '{print $3}')
+    for uname in $unames; do
+        u=$(echo $uname | cut -d = -f 1)
+        uid=$(echo $uname | cut -d = -f 2)
+        ouid=$(grep -e "^${u}" /etc/passwd | awk -F: '{print $3}')
 
-    print_debug "Changing user '${u}' to uid '${uid}' from '${ouid}'"
-    sed -i "s|${u}:x:${ouid}:|${u}:x:${uid}:|g" /etc/passwd
-  done
+        print_debug "Changing user '${u}' to uid '${uid}' from '${ouid}'"
+        sed -i "s|${u}:x:${ouid}:|${u}:x:${uid}:|g" /etc/passwd
+    done
 
-  # Change gid in /etc/group and /etc/passwd with the ones defined in Docker's environment settings
-  groups="$(set -o posix ; set | sort | grep -e '^GROUP_' | sed "s|^GROUP_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n' | sed '/add_.*/d' ) "
-  groups+="$(set -o posix ; set | sort | grep -e '^CONTAINER_GROUP_' | sed "s|^CONTAINER_GROUP_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n' | sed '/add_.*/d' ) "
+    # Change gid in /etc/group and /etc/passwd with the ones defined in Docker's environment settings
+    groups="$(set -o posix ; set | sort | grep -e '^GROUP_' | sed "s|^GROUP_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n' | sed '/add_.*/d' ) "
+    groups+="$(set -o posix ; set | sort | grep -e '^CONTAINER_GROUP_' | sed "s|^CONTAINER_GROUP_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n' | sed '/add_.*/d' ) "
 
-  g=$(echo $group | cut -d = -f 1)
-  for group in $groups; do
-    gid=$(echo $group | cut -d = -f 2)
-    opu=$(grep -e "^${g}" /etc/passwd | awk -F: '{print $1}')
-    opuid=$(grep -e "^${g}" /etc/passwd | awk -F: '{print $3}')
-    opgid=$(grep -e "^${g}" /etc/passwd | awk -F: '{print $4}')
-    og=$(grep -e "^${g}" /etc/group | awk -F: '{print $1}')
-    oggid=$(grep -e "^${g}" /etc/group | awk -F: '{print $3}')
+    g=$(echo $group | cut -d = -f 1)
+    for group in $groups; do
+        gid=$(echo $group | cut -d = -f 2)
+        opu=$(grep -e "^${g}" /etc/passwd | awk -F: '{print $1}')
+        opuid=$(grep -e "^${g}" /etc/passwd | awk -F: '{print $3}')
+        opgid=$(grep -e "^${g}" /etc/passwd | awk -F: '{print $4}')
+        og=$(grep -e "^${g}" /etc/group | awk -F: '{print $1}')
+        oggid=$(grep -e "^${g}" /etc/group | awk -F: '{print $3}')
 
-    print_debug "Changing group '${g}' to gid '${gid}' from '${oggid}'"
-    sed -i "s|${opu}:x:${opuid}:${opgid}:|${opu}:x:${opuid}:${gid}:|g" /etc/passwd
-    sed -i "s|${og}:x:${oggid}|${og}:x:${gid}|g" /etc/group
-  done
+        print_debug "Changing group '${g}' to gid '${gid}' from '${oggid}'"
+        sed -i "s|${opu}:x:${opuid}:${opgid}:|${opu}:x:${opuid}:${gid}:|g" /etc/passwd
+        sed -i "s|${og}:x:${oggid}|${og}:x:${gid}|g" /etc/group
+    done
 
-  # Add users defined in Docker's environment settings to groups in /etc/group
-  groupsadd="$(set -o posix ; set | sort | grep -e '^GROUP_ADD_' | sed 's|^GROUP_ADD_||g' | tr '[:upper:]' '[:lower:]' ) "
-  groupsadd+="$(set -o posix ; set | sort | grep -e '^CONTAINER_GROUP_ADD_' | sed 's|^CONTAINER_GROUP_ADD_||g' | tr '[:upper:]' '[:lower:]' )"
+    # Add users defined in Docker's environment settings to groups in /etc/group
+    groupsadd="$(set -o posix ; set | sort | grep -e '^GROUP_ADD_' | sed 's|^GROUP_ADD_||g' | tr '[:upper:]' '[:lower:]' ) "
+    groupsadd+="$(set -o posix ; set | sort | grep -e '^CONTAINER_GROUP_ADD_' | sed 's|^CONTAINER_GROUP_ADD_||g' | tr '[:upper:]' '[:lower:]' )"
 
-  for gau in $groupsadd; do
-    g=$(echo ${gau} | cut -d = -f1 )
-    uta=$(echo ${gau} | cut -d = -f2 | tr ',' '\n')
+    for gau in $groupsadd; do
+        g=$(echo ${gau} | cut -d = -f1 )
+        uta=$(echo ${gau} | cut -d = -f2 | tr ',' '\n')
 
-    for userstogroup in ${uta} ; do
-        print_debug "Adding user '${userstogroup}' to '${g}'"
-        os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
-        case ${os,,} in
-          "alpine" )
-            silent addgroup ${userstogroup} ${g}
-          ;;
-          "debian" | "ubuntu" )
-            silent usermod -a -G ${g} ${userstogroup}
-          ;;
-        esac
-      done
-  done
+        for userstogroup in ${uta} ; do
+            print_debug "Adding user '${userstogroup}' to '${g}'"
+            os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
+            case ${os,,} in
+                "alpine" )
+                    silent addgroup ${userstogroup} ${g}
+                ;;
+                "debian" | "ubuntu" )
+                    silent usermod -a -G ${g} ${userstogroup}
+                ;;
+            esac
+        done
+    done
 fi
 
 output_on
