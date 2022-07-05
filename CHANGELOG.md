@@ -1,3 +1,9 @@
+## 7.6.19 2022-07-05 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Add blank /etc/fluent-bit/parsers.d directory
+
+
 ## 7.6.18 2022-07-05 <dave at tiredofit dot ca>
 
    ### Changed
