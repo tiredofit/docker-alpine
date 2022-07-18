@@ -1,3 +1,9 @@
+## 7.6.22 2022-07-18 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Further refinements to version lookup routines
+
+
 ## 7.6.21 2022-07-18 <dave at tiredofit dot ca>
 
    ### Changed

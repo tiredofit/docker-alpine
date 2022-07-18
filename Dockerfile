@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.16
+ARG ALPINE_VERSION=edge
 
 FROM docker.io/alpine:${ALPINE_VERSION}
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
@@ -35,8 +35,8 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
         *) busybox_extras="busybox-extras" ;; \
     esac ; \
     \
-    case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2) | | cut -d _ -f 1)" in \
-        3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16 | 3.17* | edge ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ;; \
+    case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
+        3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16* | 3.17* | edge ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ;; \
         *) : ;; \
     esac ; \
     \

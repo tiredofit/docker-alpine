@@ -34,7 +34,7 @@ os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
 case ${os} in
     "alpine" )
         osver=$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 2 | cut -d _ -f 1)
-        if [ "${osver}" -ge 11 ] || [ "$osver" = "edge" ] || [ "$osver" = "17*" ]; then
+        if [ "${osver}" -ge 11 ] || [ "$osver" = "edge" ] ; then
             ZABBIX_AGENT_TYPE=${ZABBIX_AGENT_TYPE:-"modern"}
         else
             ZABBIX_AGENT_TYPE=${ZABBIX_AGENT_TYPE:-"classic"}
