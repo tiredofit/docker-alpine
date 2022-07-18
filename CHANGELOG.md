@@ -1,3 +1,9 @@
+## 7.6.21 2022-07-18 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Zabbix montioring defaults fix for Alpine Edge
+
+
 ## 7.6.20 2022-07-07 <dave at tiredofit dot ca>
 
    ### Added
