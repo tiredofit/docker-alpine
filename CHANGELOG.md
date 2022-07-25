@@ -1,3 +1,9 @@
+## 7.6.24 2022-07-25 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Bring to feature parity of tiredofit/debian
+
+
 ## 7.6.23 2022-07-25 <dave at tiredofit dot ca>
 
    ### Added
