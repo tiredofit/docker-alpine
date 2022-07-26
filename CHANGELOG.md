@@ -1,3 +1,9 @@
+## 7.6.25 2022-07-26 <dave at tiredofit dot ca>
+
+   ### Added
+      - Additional work related to 7.6.21
+
+
 ## 7.6.24 2022-07-25 <dave at tiredofit dot ca>
 
    ### Changed
