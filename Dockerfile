@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=edge
+ARG ALPINE_VERSION=3.16
 
 FROM docker.io/alpine:${ALPINE_VERSION}
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
