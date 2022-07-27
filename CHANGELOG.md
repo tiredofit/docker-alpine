@@ -1,3 +1,9 @@
+## 7.6.26 2022-07-27 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Quiet down dir_empty and dir_notempty functions
+
+
 ## 7.6.25 2022-07-26 <dave at tiredofit dot ca>
 
    ### Added
