@@ -301,11 +301,11 @@ db_ready() {
 }
 
 dir_empty() {
-    [ ! -n "$(ls -A $1)" ]
+    [ ! -n "$(ls -A $1 2>/dev/null)" ]
 }
 
 dir_notempty() {
-    [ -n "$(ls -A "$1")" ]
+    [ -n "$(ls -A $1 2>/dev/null)" ]
 }
 
 file_env() {
