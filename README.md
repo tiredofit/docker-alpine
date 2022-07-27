@@ -209,6 +209,7 @@ This image includes the capability of using agents inside the image to monitor m
 | ----------------------------- | -------------------------------------------- | -------- |
 | `CONTAINER_ENABLE_MONITORING` | Enable Monitoring of applications or metrics | `TRUE`   |
 | `CONTAINR_MONITORING_BACKEND` | What monitoring agent to use `zabbix`        | `zabbix` |
+
 ##### Zabbix Options
 
 This image comes with Zabbix Agent 1 (Classic or C compiled) and Zabbix Agent 2 (Modern, or Go compiled). See which variables work for each version and make your agent choice. Drop files in `/etc/zabbix/zabbix_agentd.conf.d` to setup your metrics. The environment variables below only affect the system end of the configuration. If you wish to use your own system configuration without these variables, change `ZABBIX_SETUP_TYPE` to `MANUAL`
@@ -363,14 +364,15 @@ e.g: `2021-07-01 23:01:04 04-scheduling 2 container`
 Use the values in your own bash script using the `$1` `$2` `$3` `$4` `$5` syntax.
 Change time and date and settings with these environment variables
 
-| Parameter                             | Description                                                  | Default                            |
-| ------------------------------------- | ------------------------------------------------------------ | ---------------------------------- |
-| `CONTAINER_PROCESS_HELPER_PATH`       | Path to file external helper scripts                         | `/assets/container/processhelper/` |
-| `CONTAINER_PROCESS_HELPER_SCRIPT`     | Default helper script name                                   | `processhelper.sh`                 |
-| `CONTAINER_PROCESS_HELPER_DATE_FMT`   | Date format passed to external script                        | `%Y-%m-%d`                         |
-| `CONTAINER_PROCESS_HELPER_TIME_FMT`   | Time format passed to external script                        | `%H:%M:%S`                         |
-| `CONTAINER_PROCESS_RUNAWAY_PROTECTOR` | Disables a service if executed more than (x) amount of times | `TRUE`                             |
-| `CONTAINER_PROCESS_RUNAWAY_LIMIT`     | Disables a service if executed more than (x) amount of times | `50`                               |
+| Parameter                                     | Description                                                     | Default                            |
+| --------------------------------------------- | --------------------------------------------------------------- | ---------------------------------- |
+| `CONTAINER_PROCESS_HELPER_PATH`               | Path to file external helper scripts                            | `/assets/container/processhelper/` |
+| `CONTAINER_PROCESS_HELPER_SCRIPT`             | Default helper script name                                      | `processhelper.sh`                 |
+| `CONTAINER_PROCESS_HELPER_DATE_FMT`           | Date format passed to external script                           | `%Y-%m-%d`                         |
+| `CONTAINER_PROCESS_HELPER_TIME_FMT`           | Time format passed to external script                           | `%H:%M:%S`                         |
+| `CONTAINER_PROCESS_RUNAWAY_PROTECTOR`         | Disables a service if executed more than (x) amount of times    | `TRUE`                             |
+| `CONTAINER_PROCESS_RUNAWAY_LIMIT`             | The amount of times it needs to restart before disabling        | `50`                               |
+| `CONTAINER_PROCESS_RUNAWAY_SHOW_OUTPUT_FINAL` | Show the program Output on the final execution before disabling | `TRUE`                             |
 
 ### Networking
 

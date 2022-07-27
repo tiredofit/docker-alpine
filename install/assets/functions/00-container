@@ -120,7 +120,7 @@ create_zabbix() {
         print_debug "Adding Zabbix Auto Register configuration for '$1'"
         if var_true "${CONTAINER_ENABLE_MONITORING}" && [ "${CONTAINER_MONITORING_BACKEND,,}" = "zabbix" ]; then
             source /assets/defaults/03-monitoring
-            cat <<EOF > "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}.d"/tiredofit_$1.conf
+            cat <<EOF > "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}.d"/tiredofit_"$1".conf
 # Zabbix $1 Configuration - Automatically Generated
 # Autoregister=$autoregister
 EOF
@@ -158,7 +158,7 @@ custom_scripts() {
     fi
 
     if [ -d "${ccustom_scripts_source}" ] && dir_notempty ; then
-        for ccustom_script in ${ccustom_scripts_source}/*.sh ; do
+        for ccustom_script in "${ccustom_scripts_source}"/*.sh ; do
             if [ -x "$ccustom_script" ] && [ ! -d "$ccustom_script" ] ; then
                 print_debug "Custom Script executing: '${ccustom_script}'"
                 exec ${ccustom_script}
@@ -301,11 +301,11 @@ db_ready() {
 }
 
 dir_empty() {
-    [ ! -n "$(ls -A $1 2>/dev/null)" ]
+    [ ! -n "$(ls -A "$1" 2>/dev/null)" ]
 }
 
 dir_notempty() {
-    [ -n "$(ls -A $1 2>/dev/null)" ]
+    [ -n "$(ls -A "$1" 2>/dev/null)" ]
 }
 
 file_env() {
@@ -728,6 +728,9 @@ print_start() {
         fi
 
         if [ "${CONTAINER_PROCESS_RUNAWAY_PROTECTOR,,}" = "true" ] ; then
+            if "${CONTAINER_PROCESS_RUNAWAY_SHOW_OUTPUT_FINAL,,}" = "true" ] ; then
+                if [ "${proc_start_count}" -eq "${CONTAINER_PROCESS_RUNAWAY_LIMIT}" ] ; then SHOW_OUTPUT=TRUE ; fi
+            fi
             if [ "${proc_start_count}" -gt "${CONTAINER_PROCESS_RUNAWAY_LIMIT}" ] ; then
                 print_error "POTENTIAL RUNWAY DETECTECTED: Disabling $(basename $PWD) service because it has tried restarting '${CONTAINER_PROCESS_RUNAWAY_LIMIT}' times"
                 s6-svc -d /var/run/s6/legacy-services/$(basename "$PWD")
@@ -989,8 +992,8 @@ showoff() {
         fi
     fi
     echo "H4sIAAAAAAAAA61RQRLEIAi78wpvXAq971t68CE8vgni2s7urWUGEyRBHVt7JTYzc+Ga4WD+T+Q/pm9jmQNbIZpNN9OOpGSqnA6I4jJlp1RZZ2OZUbrK3B9nxWw5VB9NiOFNCt5ta8s0kSD3suiBxOQDRh0WxSWQcbuYj9Mp4KuksKAoOVm3qlvRfq1Vl4Nj5fkvZnCsnEeFItgXAgAA" | base64 -d | gunzip
-    echo ${is}
-    echo ${ir}
+    echo "${is}"
+    echo "${ir}"
     echo "H4sIAAAAAAAAA1NQgAOfzOxUhdxKhfL8omx7hbDM4swShYySkoJiK3398vJyvZLMotSU/LTMEr3kRP3igvy84vwiLgD/c17OQAAAAA==" | base64 -d | gunzip
     echo ""
 }
