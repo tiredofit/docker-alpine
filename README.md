@@ -19,7 +19,8 @@ Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container im
 * [zabbix-agent](https://zabbix.org) (Classic and Modern) for individual container monitoring.
 * Scheduling via cron with other helpful tools (bash, curl, less, logrotate, nano, vim) for easier management.
 * Messaging ability via MSMTP enabled to send mail from container to external SMTP server.
-* Logshipping capabilities
+* Firewall included with capabilities of monitoring logs to block remote hosts via [Fail2ban](https://github.com/fail2ban/fail2ban)
+* Logshipping capabilities to remote log analysis servers via [Fluent-Bit](https://github.com/fluent/fluent-bit)
 * Ability to update User ID and Group ID permissions dynamically.
 
 ## Maintainer
@@ -117,8 +118,11 @@ The following directories are used for configuration and can be mapped for persi
 | `/etc/fluent-bit/conf.d/`           | Fluent-Bit custom configuration directory |
 | `/etc/fluent-bit/parsers.d/`        | Fluent-Bit custom parsers directory       |
 | `/etc/zabbix/zabbix_agentd.conf.d/` | Zabbix Agent configuration directory      |
+| `/etc/fail2ban/filter.d`            | Custom Fail2ban Filter configuration      |
+| `/etc/fail2ban/jail.d`              | Custom Fail2ban Jail configuration        |
 | `/var/log`                          | Container, Cron, Zabbix, other log files  |
 | `/assets/cron`                      | Drop custom crontabs here                 |
+| `/assets/iptables`                  | Drop custom IPTables rules here           |
 
 ### Environment Variables
 
@@ -327,6 +331,60 @@ Drop files in `/etc/fluent-bit/conf.d` to setup your inputs and outputs. The env
 | `FLUENTBIT_STORAGE_PATH`              | Absolute file system path to store filesystem data buffers                                       | `/tmp/fluentbit/storage` |
 | `FLUENTBIT_STORAGE_SYNC`              | Synchronization mode to store data in filesystem `normal` or `full`                              | `normal`                 |
 
+#### Firewall Options
+
+Included when proper capabilities are set on image is the capability to set up detailed block / allow rules via a firewall on container start. Presently only `iptables` is supported.
+You must use run your containers with the following capabilities added: `NET_ADMIN`, `NET_RAW`
+
+| Parameter                    | Description                                                 | Default             |
+| ---------------------------- | ----------------------------------------------------------- | ------------------- |
+| `CONTAINER_ENABLE_FIREWALL`  | Enable Firewall Functionality                               | `FALSE`             |
+| `CONTAINER_FIREWALL_BACKEND` | What Firewall backend to use `iptables`                     | `iptables`          |
+| `FIREWALL_RULE_00`           | Firewall rule to execute                                    |                     |
+| `FIREWALL_RULE_01`           | Next firewall rule to execute                               |                     |
+
+One can use the `FIREWALL_RULE_XX` environment variables to pass rules to the firewall. In this example I am going to block someone from being able to access a port except if from a specific IP address:
+
+````bash
+FIREWALL_RULE_00=-I INPUT -p tcp -m tcp -s 101.69.69.101 --dport 389 -j ACCEPT
+FIREWALL_RULE_01=-I INPUT -p tcp -m tcp -s 0.0.0.0/0 --dport 389 -j DROP
+````
+
+##### IPTables Options
+
+Instead of relying on environment variables one can put a `iptables-restore` compatible ruleset below and it will be imported on container start.
+
+| `IPTABLES_RULES_PATH`        | Path for IPTables Rules                                     | `/assets/iptables/` |
+| `IPTABLES_RULES_FILE`        | IPTables Rules File to restore if exists on container start | `iptables.rules`    |
+
+
+##### Fail2Ban Options
+
+The container also has the capability should `CONTAINER_ENABLE_FIREWALL=TRUE` be enabled to launch Fail2ban, a process which watches logs for patterns and then blocks the remote host from connecting for a period of time.
+Drop your custom jail configs as *.conf files in `/etc/fail2ban/jail.d/` and filters in `/etc/fail2ban/filter.d` for them to be parsed at startup.  Note the startup delay environment variable to avoid the process failing if no log files exist from a fresh install.
+
+| Parameter                   | Description                                                                        | Default                                        |
+| --------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `CONTAINER_ENABLE_FAIL2BAN` | Enable Firewall Functionality                                                      | `FALSE`                                        |
+| `FAIL2BAN_BACKEND`          | Backend                                                                            | `AUTO`                                         |
+| `FAIL2BAN_CONFIG_PATH`      | Fail2ban Configuration Path                                                        | `/etc/fail2ban/`                               |
+| `FAIL2BAN_DB_FILE`          | Persistent Database File                                                           | `fail2ban.sqlite3`                             |
+| `FAIL2BAN_DB_PATH`          | Persistent Database Path                                                           | `/data/fail2ban/`                              |
+| `FAIL2BAN_DB_PURGE_AGE`     | Purge entries after how many seconds                                               | `86400`                                        |
+| `FAIL2BAN_DB_TYPE`          | DB Type `NONE`, `MEMORY`, `FILE`                                                   | `MEMORY`                                       |
+| `FAIL2BAN_IGNORE_IP`        | Ignore these IPs or Ranges space seperated                                         | `127.0.0.1/8 ::1 172.16.0.0/12 192.168.0.0/24` |
+| `FAIL2BAN_IGNORE_SELF`      | Ignroe Self `TRUE` `FALSE`                                                         | `TRUE`                                         |
+| `FAIL2BAN_LOG_PATH`         | Fail2ban Log Path                                                                  | `/var/log/fail2ban/`                           |
+| `FAIL2BAN_LOG_FILE`         | Fail2ban Log File                                                                  | `fail2ban.log`                                 |
+| `FAIL2BAN_LOG_LEVEL`        | Log Level `CRITICAL` `ERROR` `WARNING` `NOTICE` `INFO` `DEBUG`                     | `INFO`                                         |
+| `FAIL2BAN_LOG_TYPE`         | Log to `FILE` or `CONSOLE`                                                         | `FILE`                                         |
+| `FAIL2BAN_MAX_RETRY`        | Max times to find pattern in log over `FAIL2BAN_TIME_FIND`                         | `5`                                            |
+| `FAIL2BAN_STARTUP_DELAY`    | Startup Delay to give a chance for monitored logs to exist or have data in seconds | `15`                                           |
+| `FAIL2BAN_TIME_BAN`         | Length of time to ban in default                                                   | `10m`                                          |
+| `FAIL2BAN_TIME_FIND`        | Window to base pattern matches against                                             | `10m`                                          |
+| `FAIL2BAN_USE_DNS`          | USE DNS for lookups `yes` `warn` `no` `raw`                                        | `warn`                                         |
+
+
 #### Permissions
 
 If you wish to change the internal id for users and groups you can set environment variables to do so.
@@ -380,6 +438,7 @@ The following ports are exposed.
 
 | Port    | Description  |
 | ------- | ------------ |
+| `2020`  | Fluent Bit   |
 | `10050` | Zabbix Agent |
 
 ## Developing / Overriding

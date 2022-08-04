@@ -60,13 +60,16 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     apk upgrade && \
     ### Add core utils
     apk add -t .base-rundeps \
+                acl \
                 bash \
                 bc \
                 ${busybox_extras} \
                 curl \
                 ${doas_package} \
+                fail2ban \
                 fts \
                 grep \
+                iptables \
                 iputils \
                 jq \
                 less \
@@ -119,7 +122,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     ## Quiet down sudo
     echo "Set disable_coredump false" > /etc/sudo.conf && \
     \
-### Build Doas
+    ### Build Doas
     if [ "$build_doas" = "true" ] ; then \
     mkdir -p /usr/src/doas ; \
     curl -sSL https://github.com/Duncaen/OpenDoas/archive/${DOAS_VERSION}.tar.gz | tar xfz - --strip 1 -C /usr/src/doas ; \
@@ -155,7 +158,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     chown --quiet -R zabbix:root /var/log/zabbix && \
     chmod -R 770 /var/lib/zabbix/run && \
     \
-### Zabbix compilation
+    #### Zabbix compilation
     mkdir -p /usr/src/zabbix && \
     curl -sSL https://github.com/zabbix/zabbix/archive/${ZABBIX_VERSION}.tar.gz | tar xfz - --strip 1 -C /usr/src/zabbix && \
     cd /usr/src/zabbix && \
@@ -258,6 +261,20 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     #go build -v -ldflags '-s -w' -o promtail ./clients/cmd/promtail && \
     #mv promtail /usr/sbin && \
     \
+    ### Fail2ban Configuration
+    addgroup -g 65550 fail2ban && \
+    addgroup zabbix fail2ban && \
+    rm -rf /var/run/fail2ban && \
+    mkdir -p /var/run/fail2ban && \
+    chown -R root:fail2ban /var/run/fail2ban && \
+    setfacl -d -m g:fail2ban:rwx /var/run/fail2ban && \
+    find /etc/fail2ban/action.d/ -type f -not -name 'iptables*.conf' -delete && \
+    rm -rf /etc/fail2ban/filter.d && \
+    mkdir -p /etc/fail2ban/filter.d && \
+    rm -rf /etc/fail2ban/fail2ban.d && \
+    rm -rf /etc/fail2ban/jail.d/* && \
+    rm -rf /etc/fail2ban/paths* && \
+    \
     ### Clean up
     mkdir -p /etc/logrotate.d && \
     mkdir -p /etc/doas.d && \
@@ -266,6 +283,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
             .golang-build-deps \
             .zabbix-build-deps \
             && \
+    rm -rf /etc/*.apk.new && \
     rm -rf /etc/logrotate.d/* && \
     rm -rf /etc/doas.conf /etc/doas.d/* && \
     rm -rf /root/.cache && \

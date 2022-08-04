@@ -994,7 +994,7 @@ showoff() {
     echo "H4sIAAAAAAAAA61RQRLEIAi78wpvXAq971t68CE8vgni2s7urWUGEyRBHVt7JTYzc+Ga4WD+T+Q/pm9jmQNbIZpNN9OOpGSqnA6I4jJlp1RZZ2OZUbrK3B9nxWw5VB9NiOFNCt5ta8s0kSD3suiBxOQDRh0WxSWQcbuYj9Mp4KuksKAoOVm3qlvRfq1Vl4Nj5fkvZnCsnEeFItgXAgAA" | base64 -d | gunzip
     echo "${is}"
     echo "${ir}"
-    echo "H4sIAAAAAAAAA1NQgAOfzOxUhdxKhfL8omx7hbDM4swShYySkoJiK3398vJyvZLMotSU/LTMEr3kRP3igvy84vwiLgD/c17OQAAAAA==" | base64 -d | gunzip
+    echo "H4sIAAAAAAAAA1NQgIPggvy84vwihdxUhTQglZJalpqTX5CbmleikJiXolBakJ2aWmClkFFSUlBspa9fXl6uV5JZlJqSn5ZZopecqF8M0c8FALKFIsRTAAAA" | base64 -d | gunzip
     echo ""
 }
 

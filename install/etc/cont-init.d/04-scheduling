@@ -17,7 +17,7 @@ fi
 # this is where we want to scan for every crontab env var and write it to its own file and leave a note where it came from or if it was part of system variables
 ## in the services available section is where we will parse the actual folder and then prepare the crontab right away. might need to update the bash alias to reload cron easy
 if var_false "${CONTAINER_ENABLE_SCHEDULING}" ; then
-    print_notice "Disabling Scheduling"
+    print_debug "Disabling Scheduling"
     service_stop "$(basename "$0")"
 else
     case "${CONTAINER_SCHEDULING_BACKEND,,}" in
