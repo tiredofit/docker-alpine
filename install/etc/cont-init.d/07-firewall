@@ -169,14 +169,14 @@ EOF
         fi
 
         if var_true "${CONTAINER_ENABLE_MONITORING}" && [ "${CONTAINER_MONITORING_BACKEND,,}" = "zabbix" ]; then
-            cat <<EOF > "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}".d/tiredofit-fluentbit.conf
+            cat <<EOF > "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}".d/tiredofit-fail2ban.conf
 # Zabbix Fail2ban Configuration - Automatically generated based on container startup options
 # Find Companion Zabbix Server Templates at https://github.com/tiredofit/docker-alpine or https://github.com/tiredofit/docker-debian
 # Autoregister=fail2ban
 
 UserParameter=fail2ban.status[*],fail2ban-client status '$1' | grep 'Currently banned:' | grep -E -o '[0-9]+'
 UserParameter=fail2ban.discovery,fail2ban-client status | grep 'Jail list:' | sed -e 's/^.*:\W\+//' -e 's/\(\(\w\|-\)\+\)/{"{#JAIL}":"\1"}/g' -e 's/.*/{"data":[\0]}/'
-
+UserParameter=fail2ban.version,fail2ban-server -V | head -n1 | awk '{print $2}' | sed "s|v||"
 EOF
         fi
     else
