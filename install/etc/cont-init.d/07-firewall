@@ -1,0 +1,190 @@
+#!/command/with-contenv bash
+
+source /assets/functions/00-container
+prepare_service
+# shellcheck disable=SC2034
+PROCESS_NAME="firewall"
+
+output_off
+firewall_command=$(which "${CONTAINER_FIREWALL_BACKEND,,}")
+
+if var_true "${CONTAINER_ENABLE_FIREWALL}" ; then
+    print_notice "Container configured for firewall with '${CONTAINER_FIREWALL_BACKEND}'"
+    case "${CONTAINER_FIREWALL_BACKEND,,}" in
+        "iptables" )
+            if [ -f "${IPTABLES_RULES_PATH}"/"${IPTABLES_RULES_FILE}" ]; then
+                print_notice "Found custom iptables.rules file"
+                silent iptables-restore "${IPTABLES_RULES_PATH}"/"${IPTABLES_RULES_FILE}"
+            fi
+        ;;
+        *)
+            print_error "Unknown firewall backend"
+            exit 1
+        ;;
+    esac
+
+    set -o posix
+    set -f
+    if printenv | grep -q "^FIREWALL_RULE" ; then
+        print_debug "Found existence of FIREWALL_RULE environment variables"
+        firewallenv=$(mktemp)
+        printenv | sort | grep '^FIREWALL_RULE_[0-9][0-9]*' | sed "s|FIREWALL_RULE_||g" > ${firewallenv}
+        cat ${firewallenv}
+        while IFS= read -r firewall_entry; do
+            rule_number="$(echo ${firewall_entry} | cut -d = -f1 )"
+            rule_value="$(echo ${firewall_entry} | cut -d = -f2 )"
+            print_debug "Adding Rule Number: ${rule_number} with to be parsed by ${CONTAINER_FIREWALL_BACKEND}"
+            silent "${firewall_command}" ${rule_value}
+        done < "${firewallenv}"
+        rm -rf "${firewallenv}"
+        set +f
+        unset rule_number rule_value
+        unset "${!FIREWALL_RULE_RULE_@}"
+    fi
+
+    if var_true "${CONTAINER_ENABLE_FAIL2BAN}" ; then
+  	    print_notice "Container configured to block hosts via 'fail2ban'"
+    	print_debug "Fail2ban: Configure Logging"
+        mkdir -p "${FAIL2BAN_LOG_PATH}"
+	    touch "${FAIL2BAN_LOG_PATH}"/"${FAIL2BAN_LOG_FILE}"
+
+        print_debug "Fail2ban: Configuring Filesystem"
+	    if [ "${FAIL2BAN_CONFIG_PATH}" != "/etc/fail2ban/" ]; then
+	     echo "not /etc/fail2ban"
+    	    print_debug "Fail2ban: Creating Config Dir"
+		    mkdir -p "${FAIL2BAN_CONFIG_PATH}"
+		    silent cp -R /etc/fail2ban/* "${FAIL2BAN_CONFIG_PATH}"
+    	    print_debug "Fail2ban: Linking Config to Persistent Storage"
+            rm -rf /etc/fail2ban
+	        ln -sf "${FAIL2BAN_CONFIG_PATH}" /etc/fail2ban
+	    fi
+
+        mkdir -p /etc/fail2ban/filter.d
+        mkdir -p /etc/fail2ban/jail.d
+
+        print_debug "Fail2ban: Creating Data Dir"
+	    case "${FAIL2BAN_DB_TYPE,,}" in
+            file )
+                fail2ban_db="${FAIL2BAN_DB_PATH}/${FAIL2BAN_DB_FILE}"
+                mkdir -p "${FAIL2BAN_DB_PATH}"
+            ;;
+            memory )
+                fail2ban_db=":memory:"
+            ;;
+            none )
+                fail2ban_db="None"
+            ;;
+        esac
+
+	    case "${FAIL2BAN_LOG_TYPE,,}" in
+            file )
+                print_debug "Fail2ban: Creating Log Directory"
+                mkdir -p "${FAIL2BAN_LOG_PATH}"
+                touch "${FAIL2BAN_LOG_PATH}"/"${FAIL2BAN_LOG_FILE}"
+                create_logrotate fail2ban "${FAIL2BAN_LOG_PATH}"/"${FAIL2BAN_LOG_FILE}" none
+            ;;
+        	console )
+			    FAIL2BAN_LOG_FILE="STDOUT"
+            ;;
+        esac
+
+		print_debug "Fail2Ban: Creating Default Jail Configuration"
+		cat <<EOF > "${FAIL2BAN_CONFIG_PATH}"/jail.conf
+## Custom Generated Fail2ban jail.conf Configuration! Do not edit, instead set ENV Vars
+## Last Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
+
+[DEFAULT]
+ignorself = ${FAIL2BAN_IGNORE_SELF}
+ignoreip = ${FAIL2BAN_IGNORE_IP}
+ignorecommand =
+bantime  = ${FAIL2BAN_TIME_BAN}
+findtime  = ${FAIL2BAN_TIME_FIND}
+maxretry = ${FAIL2BAN_MAX_RETRY}
+backend = ${FAIL2BAN_BACKEND}
+
+# "usedns" specifies if jails should trust hostnames in logs,
+#   warn when DNS lookups are performed, or ignore all hostnames in logs
+#
+# yes:   if a hostname is encountered, a DNS lookup will be performed.
+# warn:  if a hostname is encountered, a DNS lookup will be performed,
+#        but it will be logged as a warning.
+# no:    if a hostname is encountered, will not be used for banning,
+#        but it will be logged as info.
+# raw:   use raw value (no hostname), allow use it for no-host filters/actions (example user)
+usedns = ${FAIL2BAN_USE_DNS}
+
+logencoding = auto
+enabled = false
+mode = normal
+filter = %(__name__)s[mode=%(mode)s]
+destemail = root@localhost
+sender = root@<fq-hostname>
+mta = sendmail
+protocol = tcp
+chain = <known/chain>
+port = 0:65535
+fail2ban_agent = Fail2Ban/%(fail2ban_version)s
+banaction = iptables-multiport
+banaction_allports = iptables-allports
+action_ = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+action_mw = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+            %(mta)s-whois[name=%(__name__)s, sender="%(sender)s", dest="%(destemail)s", protocol="%(protocol)s", chain="%(chain)s"]
+action_mwl = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+             %(mta)s-whois-lines[name=%(__name__)s, sender="%(sender)s", dest="%(destemail)s", logpath=%(logpath)s, chain="%(chain)s"]
+action_xarf = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+             xarf-login-attack[service=%(__name__)s, sender="%(sender)s", logpath=%(logpath)s, port="%(port)s"]
+action_cf_mwl = cloudflare[cfuser="%(cfemail)s", cftoken="%(cfapikey)s"]
+                %(mta)s-whois-lines[name=%(__name__)s, sender="%(sender)s", dest="%(destemail)s", logpath=%(logpath)s, chain="%(chain)s"]
+action_blocklist_de  = blocklist_de[email="%(sender)s", service=%(filter)s, apikey="%(blocklist_de_apikey)s", agent="%(fail2ban_agent)s"]
+action_badips = badips.py[category="%(__name__)s", banaction="%(banaction)s", agent="%(fail2ban_agent)s"]
+action_badips_report = badips[category="%(__name__)s", agent="%(fail2ban_agent)s"]
+action_abuseipdb = abuseipdb
+action = %(action_)s
+EOF
+
+	    print_debug "Fail2ban: Configuring main config file"
+		cat <<EOF > "${FAIL2BAN_CONFIG_PATH}"/fail2ban.conf
+## Custom Generated fail2ban.conf Configuration! Do not edit, instead set ENV Vars
+## Last Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
+
+[Definition]
+loglevel = ${FAIL2BAN_LOG_LEVEL}
+logtarget = ${FAIL2BAN_LOG_PATH}/${FAIL2BAN_LOG_FILE}
+syslogsocket = auto
+socket = /var/run/fail2ban/fail2ban.sock
+pidfile = /var/run/fail2ban/fail2ban.pid
+dbfile = ${fail2ban_db}
+dbpurgeage = ${FAIL2BAN_DB_PURGE_AGE}
+EOF
+
+        if [ -d "${FAIL2BAN_CONFIG_PATH}"/jail.d ] && dir_notempty ; then
+            for fail2ban_file in "${FAIL2BAN_CONFIG_PATH}"/jail.d/*.conf ; do
+                if [ ! -d "$fail2ban_file" ] ; then
+                    print_debug "Substituting Environment Variables for: '${fail2ban_file}'"
+                    fail2ban_tmpfile=$(mktemp)
+                    cp --attributes-only --preserve "${fail2ban_file}" "${fail2ban_tmpfile}"
+                    cat "$fail2ban_file}" | envsubst > "${fail2ban_tmpfile}" && mv "${fail2ban_tmpfile}" "${fail2ban_file}"
+                fi
+            done
+        fi
+
+        if var_true "${CONTAINER_ENABLE_MONITORING}" && [ "${CONTAINER_MONITORING_BACKEND,,}" = "zabbix" ]; then
+            cat <<EOF > "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}".d/tiredofit-fail2ban.conf
+# Zabbix Fail2ban Configuration - Automatically generated based on container startup options
+# Find Companion Zabbix Server Templates at https://github.com/tiredofit/docker-alpine or https://github.com/tiredofit/docker-debian
+# Autoregister=fail2ban
+
+UserParameter=fail2ban.status[*],fail2ban-client status '$1' | grep 'Currently banned:' | grep -E -o '[0-9]+'
+UserParameter=fail2ban.discovery,fail2ban-client status | grep 'Jail list:' | sed -e 's/^.*:\W\+//' -e 's/\(\(\w\|-\)\+\)/{"{#JAIL}":"\1"}/g' -e 's/.*/{"data":[\0]}/'
+UserParameter=fail2ban.version,fail2ban-server -V | head -n1 | awk '{print $2}' | sed "s|v||"
+EOF
+        fi
+    else
+        service_stop "$(basename "$0")"
+    fi
+else
+    service_stop "$(basename "$0")"
+fi
+
+output_on
+liftoff

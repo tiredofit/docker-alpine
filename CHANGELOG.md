@@ -1,3 +1,11 @@
+## 7.7.0 2022-08-05 <dave at tiredofit dot ca>
+
+   ### Added
+      - Firewall Support - Now have the capability of either loading an iptables.rules file or using environment variables to set individual IPTables rules inside the container
+      - Fail2Ban Support - Along with above, embed fail2ban within the container rather than having it maintained downstream in many images. Drop your jails and filters in /etc/fail2ban/filters.d and /etc/fail2ban/jails.d
+      - Go 1.19.0 build chain
+
+
 ## 7.6.27 2022-07-27 <dave at tiredofit dot ca>
 
    ### Added

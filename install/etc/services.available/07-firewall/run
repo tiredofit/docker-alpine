@@ -1,0 +1,22 @@
+#!/command/with-contenv bash
+
+source /assets/functions/00-container
+PROCESS_NAME="firewall"
+prepare_service defaults single
+
+output_off
+check_container_initialized
+check_service_initialized init
+
+liftoff
+
+print_debug "Sleeping for '${FAIL2BAN_STARTUP_DELAY}' seconds before starting Fail2ban to make sure logs are popualated"
+sleep ${FAIL2BAN_STARTUP_DELAY}
+
+print_start "Starting Fail2ban"
+
+if [ "${FAIL2BAN_LOG_TYPE,,}" = "file" ] ; then
+    silent fail2ban-server -f
+else
+    fail2ban-server -f
+fi

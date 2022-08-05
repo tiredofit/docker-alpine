@@ -47,6 +47,14 @@ case "${CONTAINER_MONITORING_BACKEND}" in
 
         chown -R "${ZABBIX_USER}":root "${ZABBIX_CONFIG_PATH}"
         chmod -R 0755 "${ZABBIX_CONFIG_PATH}"
+
+        if var_true "${CONTAINER_ENABLE_FIREWALL}" && var_true "${CONTAINER_ENABLE_FAIL2BAN}" ; then
+            while [ ! -S "/var/run/fail2ban/fail2ban.sock" ] ; do
+                sleep 1
+            done
+             setfacl -m g:fail2ban:rwx /var/run/fail2ban/fail2ban.sock
+        fi
+
         print_start "Starting Zabbix Agent (${zabbix_agent_type}) ${ZABBIX_VERSION}"
         silent s6-setuidgid "${ZABBIX_USER}" ${zabbix_command}  -c "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}" -f
     ;;
