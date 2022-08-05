@@ -1,3 +1,9 @@
+## 7.7.1 2022-08-05 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix CONTAINER_POST_INIT_COMMAND feature
+
+
 ## 7.7.0 2022-08-05 <dave at tiredofit dot ca>
 
    ### Added
