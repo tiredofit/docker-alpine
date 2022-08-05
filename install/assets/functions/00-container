@@ -157,7 +157,7 @@ custom_scripts() {
         ccustom_scripts_source="${CONTAINER_CUSTOM_SCRIPTS_PATH}"
     fi
 
-    if [ -d "${ccustom_scripts_source}" ] && dir_notempty ; then
+    if [ -d "${ccustom_scripts_source}" ] && dir_notempty "${ccustom_scripts_source}" ; then
         for ccustom_script in "${ccustom_scripts_source}"/*.sh ; do
             if [ -x "$ccustom_script" ] && [ ! -d "$ccustom_script" ] ; then
                 print_debug "Custom Script executing: '${ccustom_script}'"
@@ -1082,7 +1082,7 @@ truefalse_onoff() {
 
 truefalse_onezero() {
     ## Convert TRUE or FALSE statements to either 1 or 0
-    ## Usage: 'truefalse_yesno varname'
+    ## Usage: 'truefalse_onezero varname'
     ## Don't prefix it with a $
     value=$(set | grep "${1}"= | cut -d '=' -f2)
     var=$(set | grep "${1}"= | sed "s/=.*//g")
