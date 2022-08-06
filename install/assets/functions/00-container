@@ -149,9 +149,9 @@ custom_files() {
         cp -aR "${ccustom_files_source}"/* "${ccustom_files_destination}"/
     fi
 
-    if [ -n "${3}" ] ; then permbuilder=${3} ; fi
+    if [ -n "${3}" ] ; then permbuilder="${3}" ; fi
     if [ -n "${4}" ] ; then permbuilder="${3}:${4}" ; fi
-    if [ -n "${permbuilder}"] ; then chown -R "${permbuilder}" "${2}" ; fi
+    if [ -n "${permbuilder}" ] ; then chown -R "${permbuilder}" "${2}" ; fi
 }
 
 custom_scripts() {
