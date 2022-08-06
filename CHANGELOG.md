@@ -1,3 +1,9 @@
+## 7.7.4 2022-08-06 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add third and fourth argument to custom_files function to change ownership post copy
+
+
 ## 7.7.3 2022-08-06 <dave at tiredofit dot ca>
 
    ### Changed

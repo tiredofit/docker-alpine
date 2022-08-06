@@ -132,6 +132,7 @@ custom_files() {
     ## Copy files from one lcoation to somewhere else on the file system
     ## eg. Copy all files in /assets/custom (Default ENV CONTAINER_CUSTOM_PATH) to /www/html  'custom_files /www/html'
     ## Add another parameter if you want to move any source folder to a destination ie `custom_files /assets/customfolder2/ /destination`
+    ## The third and fourth parameters if exist will change ownership to the user:group
     if [ -n "${2}" ] ; then
         ccustom_files_source="${1}"
         ccustom_files_destination="${2}"
@@ -145,8 +146,12 @@ custom_files() {
         if [ -d "${ccustom_files-destination}" ] ; then
             mkdir -p "${ccustom_files-destination}"
         fi
-        cp -a "${ccustom_files_source}"/* "${ccustom_files_destination}"/
+        cp -aR "${ccustom_files_source}"/* "${ccustom_files_destination}"/
     fi
+
+    if [ -n "${3}" ] ; then permbuilder=${3} ; fi
+    if [ -n "${4}" ] ; then permbuilder="${3}:${4}" ; fi
+    if [ -n "${permbuilder}"] ; then chown -R "${permbuilder}" "${2}" ; fi
 }
 
 custom_scripts() {
