@@ -161,7 +161,7 @@ custom_scripts() {
         for ccustom_script in "${ccustom_scripts_source}"/*.sh ; do
             if [ -x "$ccustom_script" ] && [ ! -d "$ccustom_script" ] ; then
                 print_debug "Custom Script executing: '${ccustom_script}'"
-                exec ${ccustom_script}
+                ${ccustom_script}
             fi
         done
     fi

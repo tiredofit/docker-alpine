@@ -1,3 +1,9 @@
+## 7.7.3 2022-08-06 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Additional fix to custom_scripts function
+
+
 ## 7.7.2 2022-08-05 <dave at tiredofit dot ca>
 
    ### Changed
