@@ -88,13 +88,7 @@ create_logrotate() {
             cat <<EOF > /assets/logrotate/"${1}"
 ${lrlsparser}
 $2 {
-    daily
-    ifempty
-    rotate ${LOGROTATE_RETAIN_DAYS}
     missingok
-    compress
-    dateext
-    copytruncate
 ${lruser}
 }
 EOF

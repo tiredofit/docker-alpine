@@ -54,6 +54,10 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
         "3.5" | "3.6" | "3.7" | "3.8" ) build_doas=true ;; \
         *) doas_package="doas" ;; \
     esac ; \
+    case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
+        "3.5" ) zstd_packge="" ;; \
+        *) zstd_package=zstd ;; \
+    esac ; \
     ##
     set -ex && \
     apk update && \
@@ -85,6 +89,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
                 tzdata \
                 vim \
                 yaml \
+                ${zstd_package} \
                 && \
     \
     apk add -t .golang-build-deps \

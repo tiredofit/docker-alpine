@@ -259,12 +259,15 @@ This image supports autoregistering configuration as an Active Agent to a Zabbix
 
 This is work in progress for a larger logging solution. Presently there is functionality to rotate logs on a daily basis, however as this section matures there will be the capability to also ship the logs to an external data warehouse like Loki, or Elastic Search. At present Log shipping is only supported by `fluent-bit` and x86_64 only.
 
-| Parameter                       | Description                              | Default      |
-| ------------------------------- | ---------------------------------------- | ------------ |
-| `CONTAINER_ENABLE_LOGROTATE`    | Enable Logrotate (if scheduling enabled) | `TRUE`       |
-| `CONTAINER_ENABLE_LOGSHIPPING`  | Enable Log Shipping                      | `FALSE`      |
-| `CONTAINER_LOGSHIPPING_BACKEND` | Log shipping backend `fluent-bit`        | `fluent-bit` |
-| `LOGROTATE_RETAIN_DAYS`         | Rotate and retain logs for x days        | `7`          |
+| Parameter                                | Description                                                 | Default      |
+| ---------------------------------------- | ----------------------------------------------------------- | ------------ |
+| `CONTAINER_ENABLE_LOGROTATE`             | Enable Logrotate (if scheduling enabled)                    | `TRUE`       |
+| `CONTAINER_ENABLE_LOGSHIPPING`           | Enable Log Shipping                                         | `FALSE`      |
+| `CONTAINER_LOGSHIPPING_BACKEND`          | Log shipping backend `fluent-bit`                           | `fluent-bit` |
+| `LOGROTATE_COMPRESSION_TYPE`             | Logfile compression algorithm `NONE` `BZIP2` `GZIP` `ZSTD`  | `ZSTD`       |
+| `LOGROTATE_COMPRESSION_VALUE`            | What level of compression to use                            | `8`          |
+| `LOGROTATE_COMPRESSION_EXTRA_PARAMETERS` | Pass extra parameters to the compression command (optional) |              |
+| `LOGROTATE_RETAIN_DAYS`                  | Rotate and retain logs for x days                           | `7`          |
 
 ##### Log Shipping Parsing
 
@@ -336,12 +339,12 @@ Drop files in `/etc/fluent-bit/conf.d` to setup your inputs and outputs. The env
 Included when proper capabilities are set on image is the capability to set up detailed block / allow rules via a firewall on container start. Presently only `iptables` is supported.
 You must use run your containers with the following capabilities added: `NET_ADMIN`, `NET_RAW`
 
-| Parameter                    | Description                                                 | Default             |
-| ---------------------------- | ----------------------------------------------------------- | ------------------- |
-| `CONTAINER_ENABLE_FIREWALL`  | Enable Firewall Functionality                               | `FALSE`             |
-| `CONTAINER_FIREWALL_BACKEND` | What Firewall backend to use `iptables`                     | `iptables`          |
-| `FIREWALL_RULE_00`           | Firewall rule to execute                                    |                     |
-| `FIREWALL_RULE_01`           | Next firewall rule to execute                               |                     |
+| Parameter                    | Description                             | Default    |
+| ---------------------------- | --------------------------------------- | ---------- |
+| `CONTAINER_ENABLE_FIREWALL`  | Enable Firewall Functionality           | `FALSE`    |
+| `CONTAINER_FIREWALL_BACKEND` | What Firewall backend to use `iptables` | `iptables` |
+| `FIREWALL_RULE_00`           | Firewall rule to execute                |            |
+| `FIREWALL_RULE_01`           | Next firewall rule to execute           |            |
 
 One can use the `FIREWALL_RULE_XX` environment variables to pass rules to the firewall. In this example I am going to block someone from being able to access a port except if from a specific IP address:
 

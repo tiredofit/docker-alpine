@@ -70,6 +70,22 @@ fi
 
 echo "export PS1=\"${bash_prompt/  /}\"" >> /root/.bashrc
 
+cat <<EOF >> /root/.bashrc
+
+zcat () {
+    if [ -f "\$@" ] ; then
+        case "\$@" in
+            *.zst* )      $(which zstdcat) "\$@" ;;
+            *.bz*)       $(which zcat) "\$@" ;;
+            *.gz*)       $(which zcat) "\$@" ;;
+            *.xz)        $(which zcat) "\$@" ;;
+        esac
+    else
+        echo "'\$@' is not a valid file!"
+    fi
+}
+EOF
+
 ## Add Support to list all Changelogs known of all base images
 if [ -d "/assets/.changelogs" ] ; then
     echo "image_version() { for clname in /assets/.changelogs/* ; do version=\$(head -n 1 \$clname | awk '{print \$2}') ; echo \"Image: $(basename \$clname) \$version\" ; done ;}" >> /root/.bashrc

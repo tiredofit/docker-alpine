@@ -34,6 +34,7 @@ else
             ## Docker Build and Runtime overrides
             cronenv=$(mktemp)
             set -o posix; set -f ; set | grep -E '^CRON_'| sed "s|CRON_||g" > ${cronenv}
+            sed -i "/^PERIOD/d" "${cronenv}"
             while IFS= read -r cron_entry; do
                 schedule_title="$(echo ${cron_entry} | cut -d = -f1 | tr '[:upper:]' '[:lower:]' )"
                 schedule_value="$(echo ${cron_entry} | cut -d = -f2 )"
@@ -67,12 +68,12 @@ EOF
                     # shellcheck source=/assets/defaults/
                     source $d
                     cronenv=$(mktemp)
-                    set -o posix; set -f ; set | grep -E '^CRON_'| sed "s|CRON_||g" > ${cronenv}
+                    set -o posix; set -f ; set | grep -E '^CRON_'| sed "s|CRON_||g" > "${cronenv}"
+                    sed -i "/^PERIOD/d" "${cronenv}"
                     while IFS= read -r cron_entry; do
                         schedule_title="$(echo ${cron_entry} | cut -d = -f1 | tr '[:upper:]' '[:lower:]')"
                         schedule_value="$(echo ${cron_entry} | cut -d = -f2 )"
                         schedule_value="$(echo ${schedule_value:1:-1})"
-
                         if [ ! -f "${CONTAINER_SCHEDULING_LOCATION}/${schedule_title,,}" ] ; then
                             print_debug "Adding $schedule_title with value $schedule_value to crontab"
                       cat <<EOF > "${CONTAINER_SCHEDULING_LOCATION}/${schedule_title,,}"

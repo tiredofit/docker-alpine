@@ -1,3 +1,14 @@
+## 7.7.5 2022-08-11 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 1.9.7
+      - Customizable compssion types for logrotate, now defaults to using zstd
+      - Function for zcat to handle bz/xz/gz/zst
+
+   ### Changed
+      - Fix error when CRON_PERIOD exists as a default or environment variable
+
+
 ## 7.7.4 2022-08-06 <dave at tiredofit dot ca>
 
    ### Added
