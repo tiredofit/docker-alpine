@@ -55,7 +55,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
         *) doas_package="doas" ;; \
     esac ; \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
-        "3.5" ) zstd_packge="" ;; \
+        "3.5" | "3.8" ) zstd_packge="" ;; \
         *) zstd_package=zstd ;; \
     esac ; \
     ##
