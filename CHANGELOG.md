@@ -1,3 +1,9 @@
+## 7.7.6 2022-08-12 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Make logrotate use /etc/logrotate.conf as master configuration
+
+
 ## 7.7.5 2022-08-11 <dave at tiredofit dot ca>
 
    ### Added
