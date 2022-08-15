@@ -267,7 +267,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     #mv promtail /usr/sbin && \
     \
     ### Fail2ban Configuration
-    addgroup -g 65550 fail2ban && \
+    addgroup -g 65500 fail2ban && \
     addgroup zabbix fail2ban && \
     rm -rf /var/run/fail2ban && \
     mkdir -p /var/run/fail2ban && \
