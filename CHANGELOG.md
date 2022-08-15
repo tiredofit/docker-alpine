@@ -1,3 +1,9 @@
+## 7.7.7 2022-08-15 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change to Fail2ban Group ID due to original gid not able to be used with LXC (credit: MariaWitch@github)
+
+
 ## 7.7.6 2022-08-12 <dave at tiredofit dot ca>
 
    ### Changed
