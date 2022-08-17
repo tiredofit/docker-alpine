@@ -1,3 +1,9 @@
+## 7.7.8 2022-08-17 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Start taking over pid process of services.available scripts
+
+
 ## 7.7.7 2022-08-15 <dave at tiredofit dot ca>
 
    ### Changed

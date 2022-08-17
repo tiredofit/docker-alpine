@@ -56,6 +56,6 @@ case "${CONTAINER_MONITORING_BACKEND}" in
         fi
 
         print_start "Starting Zabbix Agent (${zabbix_agent_type}) ${ZABBIX_VERSION}"
-        silent s6-setuidgid "${ZABBIX_USER}" ${zabbix_command}  -c "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}" -f
+        silent exec s6-setuidgid "${ZABBIX_USER}" ${zabbix_command}  -c "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}" -f
     ;;
 esac

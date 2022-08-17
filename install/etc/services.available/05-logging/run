@@ -140,6 +140,6 @@ EOF
       fi
 
        print_start "[logship] Starting fluent-bit ${FLUENTBIT_VERSION}"
-       silent fluent-bit -c /etc/fluent-bit/fluent-bit.conf
+       silent exec fluent-bit -c /etc/fluent-bit/fluent-bit.conf
     ;;
 esac

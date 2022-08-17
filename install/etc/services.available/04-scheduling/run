@@ -40,10 +40,10 @@ case "${CONTAINER_SCHEDULING_BACKEND}" in
       os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
       case ${os} in
         "alpine" )
-          silent /usr/sbin/crond -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
+          silent exec /usr/sbin/crond -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
         ;;
         "debian" | "ubuntu" )
-          silent /usr/sbin/crond -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
+          silent exec /usr/sbin/crond -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
         ;;
         esac
     ;;

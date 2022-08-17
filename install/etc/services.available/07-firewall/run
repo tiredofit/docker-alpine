@@ -16,7 +16,7 @@ sleep ${FAIL2BAN_STARTUP_DELAY}
 print_start "Starting Fail2ban"
 
 if [ "${FAIL2BAN_LOG_TYPE,,}" = "file" ] ; then
-    silent fail2ban-server -f
+    silent exec fail2ban-server -f
 else
-    fail2ban-server -f
+    exec fail2ban-server -f
 fi
