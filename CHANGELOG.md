@@ -1,3 +1,10 @@
+## 7.7.9 2022-08-30 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 6.2.2
+      - S6 Overlay 3.1.2.1
+
+
 ## 7.7.8 2022-08-17 <dave at tiredofit dot ca>
 
    ### Changed
