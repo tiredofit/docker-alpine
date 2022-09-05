@@ -1,3 +1,9 @@
+## 7.7.10 2022-09-05 <terryzwt@github>
+
+   ### Fixed
+      - MSMTP Configuration doesn't like all caps letters
+
+
 ## 7.7.9 2022-08-30 <dave at tiredofit dot ca>
 
    ### Added
