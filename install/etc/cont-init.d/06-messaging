@@ -20,9 +20,9 @@ if var_true "${CONTAINER_ENABLE_MESSAGING}" ; then
         "msmtp" )
             rm -f /usr/sbin/sendmail
             ln -s /usr/bin/msmtp /usr/sbin/sendmail
-            truefalse_onoff SMTP_TLS
-            truefalse_onoff SMTP_STARTTLS
-            truefalse_onoff SMTP_TLSCERTCHECK
+            truefalse_onoff SMTP_TLS lower
+            truefalse_onoff SMTP_STARTTLS lower
+            truefalse_onoff SMTP_TLSCERTCHECK lower
 
             echo "### Automatically generated on container start. See documentation on how to set!" > /etc/msmtprc
             {
