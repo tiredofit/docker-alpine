@@ -1,3 +1,9 @@
+## 7.7.11 2022-09-11 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 1.9.8
+
+
 ## 7.7.10 2022-09-05 <terryzwt@github>
 
    ### Fixed
