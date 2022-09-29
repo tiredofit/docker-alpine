@@ -1,3 +1,11 @@
+## 7.7.14 2022-09-29 <dave at tiredofit dot ca>
+
+   ### Added
+      - Introduce clone_git_repo function for bandwidth and space saving purposes
+      - Introduce install_template function for copying files with correct permissions
+      - Introduce update_template to update tags in template files - Create templates tags like {{VALUE}} in your files to update
+
+
 ## 7.7.13 2022-09-29 <dave at tiredofit dot ca>
 
    ### Added
