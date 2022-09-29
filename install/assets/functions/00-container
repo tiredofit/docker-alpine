@@ -68,8 +68,13 @@ clone_git_repo() {
     ## Usage: clone_git_repo https://github.com/maintainer/repo <branch/tag/commit>
     ## It will automatically create a folder in /usr/src/<repo name> eg repo and also expose a variable called GIT_REPO_SRC and GIT_REPO_SRC_<REPONAME> in caps
     ## Any special characters get removed other than numbers and letters
+    if ! [ -x "$(command -v git)" ]; then
+        echo '[clone_git_repo] Git is not installed'
+        exit 1
+    fi
+
     if [ -n "$1" ] ; then
-        repo=$(echo ${1,,} | sed "s|\.git||g" | awk -F/ '{print $NF}' | sed 's/[^a-zA-Z0-9]//g'${1}])
+        repo=$(echo ${1,,} | sed "s|\.git||g" | awk -F/ '{print $NF}' | sed 's/[^a-zA-Z0-9]//g')
         export GIT_REPO_SRC=${GIT_REPO_SRC:-"/usr/src/${repo}"}
         export GIT_REPO_SRC_${repo^^}="/usr/src/${repo}"
         if [ -d /usr/src/"${repo}" ] ; then
