@@ -1,3 +1,9 @@
+## 7.7.16 2022-09-29 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add gettext package
+
+
 ## 7.7.15.1 2022-09-29 <dave at tiredofit dot ca>
 
    ### Changed

@@ -1100,7 +1100,7 @@ update_template() {
     shift
     [[ ! -f "${template_file}" ]] && return 1
 
-    local template_variables=($@)
+    local template_variables="$@"
     local template_user=$(stat -c %U "${template_file}")
     local tmp_template_file=$(mktemp)
     cp -a "${template_file}" "${tmp_template_file}"

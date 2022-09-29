@@ -127,6 +127,8 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
                 yaml-dev \
                 && \
     \
+    apk add gettext && \
+    mv /usr/bin/envsubst /usr/local/bin/envsubst && \
     cp -R /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
     echo "${TIMEZONE}" > /etc/timezone && \
     \
@@ -293,6 +295,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
             .fluentbit-build-deps \
             .golang-build-deps \
             .zabbix-build-deps \
+            gettext \
             && \
     rm -rf /etc/*.apk.new && \
     rm -rf /etc/logrotate.d/* && \
