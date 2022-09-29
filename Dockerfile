@@ -1,4 +1,5 @@
-ARG ALPINE_VERSION=3.16
+#ARG ALPINE_VERSION=3.16
+ARG ALPINE_VERSION=edge
 
 FROM docker.io/alpine:${ALPINE_VERSION}
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
@@ -35,8 +36,14 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
         *) busybox_extras="busybox-extras" ;; \
     esac ; \
     \
-    case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2)" in \
-        3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16* | 3.17* | edge ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ;; \
+    case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2 | cut -d _ -f 1)" in \
+        3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16* | 3.17* | edge ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ; echo "** Building Zabbix Agent 2" ; echo "** Building Fluent Bit" ;; \
+        *) : ;; \
+    esac ; \
+    \
+    case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2 | cut -d _ -f 1)" in \
+        3.5 | 3.6 | 3.7 | 3.8 | 3.9 | 3.10 | 3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16 ) fts=fts-dev ;; \
+        3.17 ) fts=musl-fts-dev ;; \
         *) : ;; \
     esac ; \
     \
@@ -108,7 +115,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
                 make \
                 pcre-dev \
                 zlib-dev \
-                ${additional_packages}\
+                ${additional_packages} \ 
                 ${upx} \
                 && \
     \
@@ -116,7 +123,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
                 bison \
                 cmake \
                 flex \
-                fts-dev \
+                ${fts} \
                 openssl-dev \
                 yaml-dev \
                 && \

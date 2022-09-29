@@ -1,3 +1,9 @@
+## 7.7.15.1 2022-09-29 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for Alpine Edge not building
+
+
 ## 7.7.14 2022-09-29 <dave at tiredofit dot ca>
 
    ### Added
