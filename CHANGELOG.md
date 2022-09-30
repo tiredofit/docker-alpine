@@ -1,3 +1,12 @@
+## 7.7.18 2022-09-29 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add bash to be default interpreter when building descendent images
+
+   ### Changed
+      - Refine clone_git_repo function
+
+
 ## 7.7.17 2022-09-29 <dave at tiredofit dot ca>
 
    ### Changed
