@@ -94,6 +94,7 @@ clone_git_repo() {
             echo "[clone_git_repo] Cloning Git Repo ${1} ${2}"
             git fetch --depth 1 origin ${2}
             git -c advice.detachedHead=false checkout FETCH_HEAD
+            git submodule update --init
         fi
     else
         echo "[clone_git_repo] You tried to call the function but there's no arguments"
