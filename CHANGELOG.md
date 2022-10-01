@@ -1,3 +1,9 @@
+## 7.7.19 2022-10-01 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Tweak to update_templates function to allow wildcards
+
+
 ## 7.7.18 2022-09-29 <dave at tiredofit dot ca>
 
    ### Added

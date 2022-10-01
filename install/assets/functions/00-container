@@ -1103,28 +1103,33 @@ update_template() {
     ## Replace placeholders with values
     ## Usage: 'update_template <filename> <varname>
     ## Can have multiple varnames - Don't prefix the varname with $
-    local template_file="${1?missing argument}"
+    ## You can use wildcards if you Quote the first argument eg "*.template"
+    template_files=${1}
+    templates=$(echo "${template_files}" | tr " " "\n")
     shift
-    [[ ! -f "${template_file}" ]] && return 1
+    for template_file in $templates; do
 
-    local template_variables="$@"
-    local template_user=$(stat -c %U "${template_file}")
-    local tmp_template_file=$(mktemp)
-    cp -a "${template_file}" "${tmp_template_file}"
+        [[ ! -f "${template_file}" ]] && return 1
 
-    local variable
-    for variable in ${template_variables[@]}; do
+        template_variables=($@)
+        template_user=$(stat -c %U "${template_file}")
+        template_tmp_file=$(mktemp)
+        cp -a "${template_file}" "${template_tmp_file}"
+
+        for template_variable in ${template_variables[@]}; do
         # Keep the compatibilty: {{VAR}} => ${VAR}
-        sed -ri "s/[{]{2}$variable[}]{2}/\${$variable}/g" "${tmp_template_file}"
-        print_debug "[update_template] Template: '${template_file}' updating field '${variable}'"
-    done
+            sed -ri "s/[{]{2}$template_variable[}]{2}/\${$template_variable}/g" "${template_tmp_file}"
+            print_debug "[update_template] Template: '${template_file}' updating field '${template_variable}'"
+        done
 
-    # Replace placeholders
-    (
-        export ${template_variables[@]}
-        local IFS=":"; sudo -HEu ${template_user} envsubst "${template_variables[*]/#/$}" < "${tmp_template_file}" > "${template_file}"
-    )
-    rm -f "${tmp_templatefile}"
+        # Replace placeholders
+        (
+            export ${template_variables[@]}
+            local IFS=":"; sudo -HEu ${template_user} envsubst "${template_variables[*]/#/$}" < "${template_tmp_file}" > "${template_file}"
+        )
+
+        rm -f "${template_tmp_file}"
+    done
 }
 
 truefalse_onoff() {
