@@ -65,7 +65,7 @@ check_service_initialized() {
 
 clone_git_repo() {
     ## Cut down on the space and size required to clone a repository if you are pulling a specific tag or branch
-    ## Usage: clone_git_repo https://github.com/maintainer/repo <branch/tag/commit>
+    ## Usage: clone_git_repo https://github.com/maintainer/repo <branch/tag/commit> <custom_dest>
     ## It will automatically create a folder in /usr/src/<repo name> eg repo and also expose a variable called GIT_REPO_SRC and GIT_REPO_SRC_<REPONAME> in caps
     ## Any special characters get removed other than numbers and letters
     if ! [ -x "$(command -v git)" ]; then
@@ -76,18 +76,24 @@ clone_git_repo() {
     fi
 
     if [ -n "$1" ] ; then
+        if [ -n "${3}"] ; then
+            repo_path="${3}/"
+        else
+            repo_path="/usr/src/"
+        fi
         repo=$(echo ${1,,} | sed -e "s|-|_|g" -e "s|\.git||g" | awk -F/ '{print $NF}' | sed 's/[^a-zA-Z0-9_]//g')
-        export GIT_REPO_SRC=${GIT_REPO_SRC:-"/usr/src/${repo}"}
-        export GIT_REPO_SRC_${repo^^}="/usr/src/${repo}"
+        export GIT_REPO_SRC=${GIT_REPO_SRC:-"${repo_path}${repo}"}
+        export GIT_REPO_SRC_${repo^^}="${repo_path}${repo}"
         if [ -d /usr/src/"${repo}" ] ; then
-            print_error "[clone_git_repo] Directory /usr/src/${repo} already exists. Cannot clone"
+            print_error "[clone_git_repo] Directory ${repo_path}${repo} already exists. Cannot clone"
             exit 1
         else
             if [[ $1 != *".git" ]] ; then
                 append_git_prefix=".git"
             fi
-            mkdir -p /usr/src/"${repo}"
-            cd /usr/src/"${repo}"
+
+            mkdir -p "${repo_path}""${repo}"
+            cd "${repo_path}""${repo}"
             git init .
             git remote add origin "${1}"${append_git_prefix}
             if [ -n "${2}" ] ; then repo_commit="${2}" ; fi

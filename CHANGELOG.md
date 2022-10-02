@@ -1,3 +1,9 @@
+## 7.7.21 2022-10-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add custom_dir functionality for clone_git_repo
+
+
 ## 7.7.20 2022-10-01 <dave at tiredofit dot ca>
 
    ### Changed
