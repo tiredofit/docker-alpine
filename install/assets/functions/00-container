@@ -76,15 +76,16 @@ clone_git_repo() {
     fi
 
     if [ -n "$1" ] ; then
-        if [ -n "${3}"] ; then
-            repo_path="${3}/"
+        if [ -n "${3}" ] ; then
+            repo="${3}/"
+            repo_text="to '${3}'"
         else
-            repo_path="/usr/src/"
+            repo="/usr/src/$(echo ${1,,} | sed -e "s|-|_|g" -e "s|\.git||g" | awk -F/ '{print $NF}' | sed 's/[^a-zA-Z0-9_]//g')"
         fi
-        repo=$(echo ${1,,} | sed -e "s|-|_|g" -e "s|\.git||g" | awk -F/ '{print $NF}' | sed 's/[^a-zA-Z0-9_]//g')
+
         export GIT_REPO_SRC=${GIT_REPO_SRC:-"${repo_path}${repo}"}
         export GIT_REPO_SRC_${repo^^}="${repo_path}${repo}"
-        if [ -d /usr/src/"${repo}" ] ; then
+        if [ -d "${repo}" ] ; then
             print_error "[clone_git_repo] Directory ${repo_path}${repo} already exists. Cannot clone"
             exit 1
         else
@@ -92,12 +93,12 @@ clone_git_repo() {
                 append_git_prefix=".git"
             fi
 
-            mkdir -p "${repo_path}""${repo}"
-            cd "${repo_path}""${repo}"
+            mkdir -p "${repo}"
+            cd "${repo}"
             git init .
             git remote add origin "${1}"${append_git_prefix}
             if [ -n "${2}" ] ; then repo_commit="${2}" ; fi
-            echo "[clone_git_repo] Cloning Git Repo ${1} ${2}"
+            echo "[clone_git_repo] Cloning Git Repo '${1}' '${2}' ${repo_text}"
             git fetch --depth 1 origin ${2}
             git -c advice.detachedHead=false checkout FETCH_HEAD
             git submodule update --init
@@ -778,8 +779,8 @@ print_notice() {
 print_start() {
     output_off
     if [ "${CONTAINER_ENABLE_PROCESS_COUNTER,,}" = "true" ] ; then
-        if [ -f /tmp/.container/$(basename "$PWD") ]; then
-            proc_start_count="$(cat /tmp/.container/$(basename "$PWD") | wc -l)"
+        if [ -f /tmp/.container/"$(basename $PWD)" ]; then
+            proc_start_count=$(cat /tmp/.container/"$(basename $PWD)" | wc -l)
             proc_start_wrapper="[${proc_start_count}] "
         fi
 
@@ -787,15 +788,15 @@ print_start() {
 
         proc_help_arg="$(date +"${CONTAINER_PROCESS_HELPER_DATE_FMT}") $(date +"${CONTAINER_PROCESS_HELPER_TIME_FMT}") $(basename "$(pwd)") ${proc_start_count} $(cat /etc/hostname)"
         if [ -d "${CONTAINER_PROCESS_HELPER_PATH}" ]; then
-            if [ -f "${CONTAINER_PROCESS_HELPER_PATH}"/$(basename "$0").sh ]; then
-                exec "${CONTAINER_PROCESS_HELPER_PATH}"/$(basename "$0").sh "${proc_help_arg}"
+            if [ -f "${CONTAINER_PROCESS_HELPER_PATH}"/"$(basename $0)".sh ]; then
+                exec "${CONTAINER_PROCESS_HELPER_PATH}"/"$(basename $0)".sh "${proc_help_arg}"
                 elif [ -f "${CONTAINER_PROCESS_HELPER_PATH}"/"${CONTAINER_PROCESS_HELPER_SCRIPT}".sh ] ; then
                 exec "${CONTAINER_PROCESS_HELPER_PATH}"/"${CONTAINER_PROCESS_HELPER_SCRIPT}".sh "${proc_help_arg}"
             fi
         fi
 
         if [ "${CONTAINER_PROCESS_RUNAWAY_PROTECTOR,,}" = "true" ] ; then
-            if "${CONTAINER_PROCESS_RUNAWAY_SHOW_OUTPUT_FINAL,,}" = "true" ] ; then
+            if [ "${CONTAINER_PROCESS_RUNAWAY_SHOW_OUTPUT_FINAL,,}" = "true" ] ; then
                 if [ "${proc_start_count}" -eq "${CONTAINER_PROCESS_RUNAWAY_LIMIT}" ] ; then SHOW_OUTPUT=TRUE ; fi
             fi
             if [ "${proc_start_count}" -gt "${CONTAINER_PROCESS_RUNAWAY_LIMIT}" ] ; then

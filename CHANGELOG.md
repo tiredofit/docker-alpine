@@ -1,3 +1,9 @@
+## 7.7.22 2022-10-03 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Additional changes to clone_git_repo function
+
+
 ## 7.7.21 2022-10-01 <dave at tiredofit dot ca>
 
    ### Added
