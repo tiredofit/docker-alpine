@@ -1,3 +1,9 @@
+## 7.7.23 2022-10-03 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Final clone_git_repo modifications
+
+
 ## 7.7.22 2022-10-03 <dave at tiredofit dot ca>
 
    ### Changed

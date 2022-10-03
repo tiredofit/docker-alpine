@@ -79,12 +79,14 @@ clone_git_repo() {
         if [ -n "${3}" ] ; then
             repo="${3}/"
             repo_text="to '${3}'"
+            repo_name="$(echo ${1,,} | sed -e "s|-|_|g" -e "s|\.git||g" | awk -F/ '{print $NF}' | sed 's/[^a-zA-Z0-9_]//g')"
         else
             repo="/usr/src/$(echo ${1,,} | sed -e "s|-|_|g" -e "s|\.git||g" | awk -F/ '{print $NF}' | sed 's/[^a-zA-Z0-9_]//g')"
+            repo_name="$(echo ${1,,} | sed -e "s|-|_|g" -e "s|\.git||g" | awk -F/ '{print $NF}' | sed 's/[^a-zA-Z0-9_]//g')"
         fi
 
-        export GIT_REPO_SRC=${GIT_REPO_SRC:-"${repo_path}${repo}"}
-        export GIT_REPO_SRC_${repo^^}="${repo_path}${repo}"
+        export GIT_REPO_SRC=${GIT_REPO_SRC:-"${repo}"}
+        export GIT_REPO_SRC_${repo_name^^}="${repo}"
         if [ -d "${repo}" ] ; then
             print_error "[clone_git_repo] Directory ${repo_path}${repo} already exists. Cannot clone"
             exit 1
