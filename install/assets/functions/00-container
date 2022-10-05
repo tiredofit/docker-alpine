@@ -91,7 +91,7 @@ clone_git_repo() {
             print_error "[clone_git_repo] Directory ${repo_path}${repo} already exists. Cannot clone"
             exit 1
         else
-            if [[ $1 != *".git" ]] ; then
+            if [[ $1 == *".git" ]] ; then
                 append_git_prefix=".git"
             fi
 
