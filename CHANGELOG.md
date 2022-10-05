@@ -1,3 +1,9 @@
+## 7.7.25 2022-10-04 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Death by if statements
+
+
 ## 7.7.24 2022-10-04 <dave at tiredofit dot ca>
 
    ### Changed
