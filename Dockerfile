@@ -3,14 +3,14 @@ ARG ALPINE_VERSION=3.16
 FROM docker.io/alpine:${ALPINE_VERSION}
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
-ARG GOLANG_VERSION=1.19.1
+ARG GOLANG_VERSION=1.19.2
 ARG DOAS_VERSION
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
 ARG ZABBIX_VERSION
 
 ### Set defaults
-ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"1.9.9"} \
+ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"2.0.0"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.2.1"} \
     ZABBIX_VERSION=${ZABBIX_VERSION:-"6.2.3"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
@@ -115,7 +115,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
                 make \
                 pcre-dev \
                 zlib-dev \
-                ${additional_packages} \ 
+                ${additional_packages} \
                 ${upx} \
                 && \
     \

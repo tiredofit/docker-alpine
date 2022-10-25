@@ -1,3 +1,10 @@
+## 7.7.26 2022-10-25 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 2.0.0
+      - Golang build environment 1.19.2
+
+
 ## 7.7.25 2022-10-04 <dave at tiredofit dot ca>
 
    ### Changed
