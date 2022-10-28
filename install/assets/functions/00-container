@@ -1052,6 +1052,7 @@ set_timezone() {
 }
 
 showoff() {
+    output_off
     if [ -n "${IMAGE_NAME}" ] ; then
         iv=$(get_image_version)
         is="$(echo 'H4sIAAAAAAAAA/PMTUxPtVLgAgDj9n4BCAAAAA==' | base64 -d | gunzip) ${IMAGE_NAME}"
@@ -1068,6 +1069,7 @@ showoff() {
     echo "${ir}"
     echo "H4sIAAAAAAAAA1NQgIPggvy84vwihdxUhTQglZJalpqTX5CbmleikJiXolBakJ2aWmClkFFSUlBspa9fXl6uV5JZlJqSn5ZZopecqF8M0c8FALKFIsRTAAAA" | base64 -d | gunzip
     echo ""
+    output_on
 }
 
 truefalse_yesno() {

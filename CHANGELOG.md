@@ -1,3 +1,9 @@
+## 7.7.27 2022-10-27 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 2.0.2
+
+
 ## 7.7.26 2022-10-25 <dave at tiredofit dot ca>
 
    ### Added
