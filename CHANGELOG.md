@@ -1,3 +1,10 @@
+## 7.7.31 2022-11-11 <dave at tiredofit dot ca>
+
+   ### Added
+      - Golang build 1.19.3
+      - Fluent-bit 2.0.5
+
+
 ## 7.7.30 2022-11-08 <dave at tiredofit dot ca>
 
    ### Added
