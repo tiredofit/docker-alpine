@@ -1,3 +1,9 @@
+## 7.7.32 2022-11-22 <dave at tiredofit dot ca>
+
+   ### Added
+      - Introduce Alpine 3.17 Using OpenSSL instead of LibreSSL
+
+
 ## 7.7.31 2022-11-11 <dave at tiredofit dot ca>
 
    ### Added
