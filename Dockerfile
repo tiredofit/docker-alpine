@@ -50,7 +50,6 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
         3.17* | 3.18* ) alpine_ssl=openssl ;; \
         *) : ;; \
     esac ; \
-
     \
     apkArch="$(apk --print-arch)" ; \
     case "$apkArch" in \
