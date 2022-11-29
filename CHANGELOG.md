@@ -1,3 +1,9 @@
+## 7.7.34 2022-11-29 <dave at tiredofit dot ca>
+
+   ### Added
+      - Introduce "package" function
+
+
 ## 7.7.33 2022-11-25 <dave at tiredofit dot ca>
 
    ### Added

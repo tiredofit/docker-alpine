@@ -634,6 +634,91 @@ output_on() {
     fi
 }
 
+package() {
+    cleanup() {
+        case "${distro}" in
+            "alpine" )
+                rm -rf /var/cache/apk/*
+            ;;
+            "debian" | "ubuntu" )
+                apt-get clean -y
+                rm -rf /var/lib/apt/lists/*
+            ;;
+        esac
+    }
+
+    install() {
+        case "${distro}" in
+            "alpine" )
+                if [[ "${1}" =~ ^\..* ]] ; then
+                    local dependencies="-t"
+                fi
+                apk add ${dependencies} "$@"
+            ;;
+            "debian" | "ubuntu" )
+                if [[ "${1}" =~ ^\..* ]] ; then
+                    shift
+                fi
+                apt-get install -y --no-install-recommends "$@"
+            ;;
+        esac
+    }
+
+    remove() {
+        case "${distro}" in
+            "alpine" )
+                apk del "$@"
+            ;;
+            "debian" | "ubuntu" )
+                apt-get purge -y "$@"
+                apt-get autoremove -y
+            ;;
+        esac
+    }
+
+    update() {
+        case "${distro}" in
+            "alpine" )
+                apk update
+            ;;
+            "debian" | "ubuntu" )
+                apt-get update
+            ;;
+        esac
+    }
+
+    upgrade() {
+        case "${distro}" in
+            "alpine" )
+                apk upgrade
+            ;;
+            "debian" | "ubuntu" )
+                apt-get upgrade -y
+            ;;
+        esac
+    }
+
+    local distro
+    distro=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
+    local action="${1}"
+    shift
+    local arguments=$@
+
+    case "${action}" in
+        add | install )
+            action=install
+            "${action}" "${arguments}"
+        ;;
+        delete | remove | uninstall )
+            action=remove
+            "${action}" "${arguments}"
+        ;;
+        * )
+            "${action}" "${arguments}"
+        ;;
+    esac
+}
+
 prepare_service() {
     ## Prepare Service by loading defaults and functions
     ## Relies on get_defaults and get_functions above in script
