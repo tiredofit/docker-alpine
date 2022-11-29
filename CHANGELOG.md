@@ -1,3 +1,9 @@
+## 7.7.36 2022-11-29 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Quiet down package function
+
+
 ## 7.7.35 2022-11-29 <dave at tiredofit dot ca>
 
    ### Changed
