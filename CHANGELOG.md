@@ -1,3 +1,9 @@
+## 7.7.35 2022-11-29 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Handle better dependencies with package remove
+
+
 ## 7.7.34 2022-11-29 <dave at tiredofit dot ca>
 
    ### Added

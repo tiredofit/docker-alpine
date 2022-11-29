@@ -670,7 +670,11 @@ package() {
                 apk del "$@"
             ;;
             "debian" | "ubuntu" )
-                apt-get purge -y "$@"
+                local packages="$@"
+                if [[ "${packages}" =~ \..* ]] ; then
+                    packages=$(echo "${packages}" | sed "s|\..* ||g")
+                fi
+                apt-get purge -y "${packages}"
                 apt-get autoremove -y
             ;;
         esac
