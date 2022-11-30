@@ -667,7 +667,7 @@ package() {
     remove() {
         case "${distro}" in
             "alpine" )
-                apk del "$@"
+                apk del $@
             ;;
             "debian" | "ubuntu" )
                 local packages="$@"

@@ -1,3 +1,9 @@
+## 7.7.37 2022-11-30 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix quoting issue with package remove
+
+
 ## 7.7.36 2022-11-29 <dave at tiredofit dot ca>
 
    ### Changed
