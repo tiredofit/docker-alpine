@@ -20,6 +20,7 @@ fi
 ### Enable or Disable permissions
 if var_true "${CONTAINER_ENABLE_PERMISSIONS}" ; then
     print_debug "Enabling permissions features"
+
     # change uid in /etc/passwd with the ones defined in Docker's environment settings
     unames="$(set -o posix ; set | sort | grep -e '^USER_' | sed "s|^USER_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n') "
     unames+="$(set -o posix ; set | sort | grep -e '^CONTAINER_USER_' | sed "s|^CONTAINER_USER_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n')"
@@ -37,7 +38,7 @@ if var_true "${CONTAINER_ENABLE_PERMISSIONS}" ; then
     groups="$(set -o posix ; set | sort | grep -e '^GROUP_' | sed "s|^GROUP_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n' | sed '/add_.*/d' ) "
     groups+="$(set -o posix ; set | sort | grep -e '^CONTAINER_GROUP_' | sed "s|^CONTAINER_GROUP_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n' | sed '/add_.*/d' ) "
 
-    g=$(echo $group | cut -d = -f 1)
+    g=$(echo $groups | cut -d = -f 1)
     for group in $groups; do
         gid=$(echo $group | cut -d = -f 2)
         opu=$(grep -e "^${g}" /etc/passwd | awk -F: '{print $1}')
