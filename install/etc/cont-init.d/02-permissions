@@ -13,7 +13,7 @@ if var_true "${ENABLE_PERMISSIONS}" ; then
 fi
 ##
 
-if var_true "$DEBUG_PERMISSIONS" ; then
+if var_true "${DEBUG_PERMISSIONS}" ; then
     CONTAINER_LOG_LEVEL="DEBUG"
 fi
 

@@ -1,3 +1,9 @@
+## 7.7.38 2022-12-05 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for Zabbix volatile data permissions
+
+
 ## 7.7.37 2022-11-30 <dave at tiredofit dot ca>
 
    ### Changed
