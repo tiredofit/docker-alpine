@@ -1,3 +1,12 @@
+## 7.7.40 2022-12-12 <dave at tiredofit dot ca>
+
+   ### Added
+      - Golang building 1.19.4
+
+   ### Changed
+      - Allow clone_git_repo to shallow clone and still perform git describe on tags
+
+
 ## 7.7.39 2022-12-11 <dave at tiredofit dot ca>
 
    ### Added
