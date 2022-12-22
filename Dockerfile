@@ -169,7 +169,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     git checkout ${YQ_VERSION} && \
     go build && \
     cp -R yq /usr/local/bin && \
-    fi ; \
+    fi && \
     \
     ### Zabbix installation
     addgroup -g 10050 zabbix && \
