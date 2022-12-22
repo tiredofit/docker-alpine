@@ -162,7 +162,6 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     ./make.bash 1>/dev/null ; \
     export GOROOT=/usr/src/golang/ ; \
     export PATH="/usr/src/golang/bin:$PATH" ; \
-    fi ; \
     \
     ### YQ compilation and install
     git clone https://github.com/mikefarah/yq /usr/src/yq && \
@@ -170,6 +169,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     git checkout ${YQ_VERSION} && \
     go build && \
     cp -R yq /usr/local/bin && \
+    fi ; \
     \
     ### Zabbix installation
     addgroup -g 10050 zabbix && \

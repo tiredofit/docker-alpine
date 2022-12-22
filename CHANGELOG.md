@@ -1,3 +1,9 @@
+## 7.7.42 2022-12-22 <dave at tiredofit dot ca>
+
+   ### Changed
+      - No need to even think about building yq for <3.10
+
+
 ## 7.7.41 2022-12-22 <dave at tiredofit dot ca>
 
    ### Added
