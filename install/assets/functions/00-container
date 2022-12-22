@@ -738,8 +738,10 @@ prepare_service() {
     if [ -n "$1" ] ; then
         case "$(dirname "$0")" in
             "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d" )
+                set -a
                 get_defaults "$1"
                 get_functions "$1"
+                set +a
             ;;
             *)
                 case "$1" in
@@ -759,8 +761,10 @@ prepare_service() {
     else
         case "$(dirname "$0")" in
             "/var/run/s6/etc/cont-init.d" | "/etc/cont-init.d")
+                set -a
                 get_defaults
                 get_functions
+                set +a
             ;;
             *)
                 get_defaults

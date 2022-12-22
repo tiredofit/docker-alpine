@@ -1,3 +1,10 @@
+## 7.7.41 2022-12-22 <dave at tiredofit dot ca>
+
+   ### Added
+      - Start building yq package for variants that support building zabbix-agent2 - Warning, 'jq' will be removed in a future release
+      - prepare_service on cont-init.d folders ingests variables differently
+
+
 ## 7.7.40 2022-12-12 <dave at tiredofit dot ca>
 
    ### Added

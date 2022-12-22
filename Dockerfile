@@ -7,11 +7,13 @@ ARG GOLANG_VERSION=1.19.4
 ARG DOAS_VERSION
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
+ARG YQ_VERSION
 ARG ZABBIX_VERSION
 
 ### Set defaults
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"2.0.6"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.2.1"} \
+    YQ_VERSION=${YQ_VERSION:-"v4.30.6"} \
     ZABBIX_VERSION=${ZABBIX_VERSION:-"6.2.6"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
@@ -36,7 +38,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     esac ; \
     \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2 | cut -d _ -f 1)" in \
-        3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16 | 3.17* | 3.18* | edge ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ; echo "** Building Zabbix Agent 2" ; echo "** Building Fluent Bit" ;; \
+        3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16 | 3.17* | 3.18* | edge ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ; echo "** Building Zabbix Agent 2" ; echo "** Building Fluent Bit" ; echo "** Building yq" ;; \
         *) : ;; \
     esac ; \
     \
@@ -161,6 +163,13 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     export GOROOT=/usr/src/golang/ ; \
     export PATH="/usr/src/golang/bin:$PATH" ; \
     fi ; \
+    \
+    ### YQ compilation and install
+    git clone https://github.com/mikefarah/yq /usr/src/yq && \
+    cd /usr/src/yq && \
+    git checkout ${YQ_VERSION} && \
+    go build && \
+    cp -R yq /usr/local/bin && \
     \
     ### Zabbix installation
     addgroup -g 10050 zabbix && \
