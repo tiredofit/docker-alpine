@@ -164,12 +164,12 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     export PATH="/usr/src/golang/bin:$PATH" ; \
     \
     ### YQ compilation and install
-    git clone https://github.com/mikefarah/yq /usr/src/yq && \
-    cd /usr/src/yq && \
-    git checkout ${YQ_VERSION} && \
-    go build && \
-    cp -R yq /usr/local/bin && \
-    fi && \
+    git clone https://github.com/mikefarah/yq /usr/src/yq ;\
+    cd /usr/src/yq ;\
+    git checkout ${YQ_VERSION} ;\
+    go build ; \
+    cp -R yq /usr/local/bin ; \
+    fi ; \
     \
     ### Zabbix installation
     addgroup -g 10050 zabbix && \
