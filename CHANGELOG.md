@@ -1,3 +1,10 @@
+## 7.7.44 2022-12-31 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change to `service_` commands - New addition `service_list` and also `service_reset` to reset watchdog status to avoid having to restart container after triggered
+      - `service_down` and `service_up` also take `all` argument to bring up or down all services
+
+
 ## 7.7.43 2022-12-23 <dave at tiredofit dot ca>
 
    ### Added

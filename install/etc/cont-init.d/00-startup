@@ -28,9 +28,69 @@ else
 fi
 
 print_debug "Adding shortcuts to .bashrc"
-echo "alias env='with-contenv env | sort'" >> /root/.bashrc
-echo 'service_down() { echo "** Disabling s6 Service $1" ; s6-svc -d /var/run/s6/legacy-services/$1 ;} '>> /root/.bashrc
-echo 'service_up() { echo "** Enabling s6 Service $1" ; s6-svc -u /var/run/s6/legacy-services/$1 ;} ' >> /root/.bashrc
+cat <<EOF >> /root/.bashrc
+alias env='with-contenv env | sort'
+
+service_down() {
+    case "\${1}" in
+        all )
+            echo "** Disabling all services"
+            for service in /var/run/s6/legacy-services/* ; do
+                echo "** Disabling s6 service '\$(basename \${service})'"
+                s6-svc -d /var/run/s6/legacy-services/\$(basename \${service})
+            done
+        ;;
+        * )
+            if [ -d "/var/run/s6/legacy-services/\$1" ] ; then
+                echo "** Disabling s6 service '\$1'"
+                s6-svc -d /var/run/s6/legacy-services/\$1
+            fi
+        ;;
+    esac
+}
+
+service_list() {
+    ls -1 /var/run/s6/legacy-services
+}
+
+service_reset() {
+    case "\${1}" in
+        all )
+            echo "** Resetting all services"
+            for service in /var/run/s6/legacy-services/* ; do
+                echo "** Reset s6 service '\$(basename \${service})'"
+                rm -rf /tmp/.container/\$(basename \${service})
+                #s6-svc -u /var/run/s6/legacy-services/\$(basename \${service})
+            done
+        ;;
+        * )
+            if [ -d "/var/run/s6/legacy-services/\$1" ] ; then
+                echo "** Reset s6 service '\$1'"
+                rm -rf /tmp/.container/\$1
+            fi
+        ;;
+    esac
+}
+
+service_up() {
+    case "\${1}" in
+        all )
+            echo "** Enabling all services"
+            for service in /var/run/s6/legacy-services/* ; do
+                echo "** Enabling s6 service '\$(basename \${service})'"
+                s6-svc -u /var/run/s6/legacy-services/\$(basename \${service})
+            done
+        ;;
+        * )
+            if [ -d "/var/run/s6/legacy-services/\$1" ] ; then
+                echo "** Enabling s6 service '\$1'"
+                s6-svc -u /var/run/s6/legacy-services/\$1
+            fi
+        ;;
+    esac
+}
+
+EOF
 
 ## Show last changelog version and details of current running image
 if [ -f "/assets/.changelogs/${IMAGE_NAME/\//_}.md" ] ; then
@@ -48,6 +108,19 @@ else
     fi
 fi
 
+## Add Support to list all Changelogs known of all base images
+if [ -d "/assets/.changelogs" ] ; then
+    cat <<EOF >> /root/.bashrc
+image_version() {
+    for clname in /assets/.changelogs/* ; do
+        version=\$(head -n 1 \$clname | awk '{print \$2}')
+        echo \"Image: $(basename \$clname) \$version\"
+    done
+}
+
+EOF
+fi
+
 if [ -z "${changelogname// }" ] ; then
     print_debug "Not adding 'changelog' command to .bashrc as I can't detect what changelog it is"
     echo "image_changelog() { echo '** Sorry - I do not know what image this is. Check if there are changelogs in /assets/.changelogs';}" >> /root/.bashrc
@@ -61,7 +134,6 @@ if [ -n "${CONTAINER_CUSTOM_BASH_PROMPT}" ] ; then
     bash_prompt=${CONTAINER_CUSTOM_BASH_PROMPT}
 else
     image_version=$(get_image_version)
-
     if [ ! -z "${image_version// }" ] ; then
         bash_ver=":${image_version}"
     fi
@@ -70,8 +142,8 @@ fi
 
 echo "export PS1=\"${bash_prompt/  /}\"" >> /root/.bashrc
 
+## Add helper for reading compressed files
 cat <<EOF >> /root/.bashrc
-
 zcat () {
     if [ -f "\$@" ] ; then
         case "\$@" in
@@ -86,9 +158,6 @@ zcat () {
 }
 EOF
 
-## Add Support to list all Changelogs known of all base images
-if [ -d "/assets/.changelogs" ] ; then
-    echo "image_version() { for clname in /assets/.changelogs/* ; do version=\$(head -n 1 \$clname | awk '{print \$2}') ; echo \"Image: $(basename \$clname) \$version\" ; done ;}" >> /root/.bashrc
-fi
+
 
 liftoff
