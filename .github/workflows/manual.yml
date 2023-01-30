@@ -129,7 +129,7 @@ jobs:
           readme-filepath: ./README.md
 
 ###
-  3_17:
+  v3_17:
     env:
       DISTRO_VARIANT: "3.17"
       build_file: Dockerfile
@@ -247,7 +247,7 @@ jobs:
           readme-filepath: ./README.md
 
 ###
-  3_16:
+  v3_16:
     env:
       DISTRO_VARIANT: "3.16"
       build_file: Dockerfile
@@ -365,7 +365,7 @@ jobs:
           readme-filepath: ./README.md
 
 ###
-  3_15:
+  v3_15:
     env:
       DISTRO_VARIANT: "3.15"
       build_file: Dockerfile
@@ -483,7 +483,7 @@ jobs:
           readme-filepath: ./README.md
 
 ###
-  3_14:
+  v3_14:
     env:
       DISTRO_VARIANT: "3.14"
       build_file: Dockerfile
@@ -601,7 +601,7 @@ jobs:
           readme-filepath: ./README.md
 
 ###
-  3_13:
+  v3_13:
     env:
       DISTRO_VARIANT: "3.13"
       build_file: Dockerfile
@@ -719,7 +719,7 @@ jobs:
           readme-filepath: ./README.md
 
 ###
-  3_12:
+  v3_12:
     env:
       DISTRO_VARIANT: "3.12"
       build_file: Dockerfile
@@ -837,7 +837,7 @@ jobs:
           readme-filepath: ./README.md
 
 ###
-  3_11:
+  v3_11:
     env:
       DISTRO_VARIANT: "3.11"
       build_file: Dockerfile
@@ -955,7 +955,7 @@ jobs:
           readme-filepath: ./README.md
 
 ###
-  3_10:
+  v3_10:
     env:
       DISTRO_VARIANT: "3.10"
       build_file: Dockerfile
@@ -1073,7 +1073,7 @@ jobs:
           readme-filepath: ./README.md
 
 ###
-  3_9:
+  v3_9:
     env:
       DISTRO_VARIANT: "3.9"
       build_file: Dockerfile
@@ -1191,7 +1191,7 @@ jobs:
           readme-filepath: ./README.md
 
 ###
-  3_8:
+  v3_8:
     env:
       DISTRO_VARIANT: "3.8"
       build_file: Dockerfile
@@ -1309,7 +1309,7 @@ jobs:
           readme-filepath: ./README.md
 
 ###
-  3_7:
+  v3_7:
     env:
       DISTRO_VARIANT: "3.7"
       build_file: Dockerfile
@@ -1427,7 +1427,7 @@ jobs:
           readme-filepath: ./README.md
 
 ###
-  3_6:
+  v3_6:
     env:
       DISTRO_VARIANT: "3.6"
       build_file: Dockerfile
@@ -1546,7 +1546,7 @@ jobs:
 
 
 ###
-  3_5:
+  v3_5:
     env:
       DISTRO_VARIANT: "3.5"
       build_file: Dockerfile
