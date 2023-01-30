@@ -82,7 +82,7 @@ docker pull docker.io/tiredofdit/alpine:(imagetag)
 Builds of the image are also available on the [Github Container Registry](https://github.com/tiredofit/docker-alpine/pkgs/container/docker-alpine) 
  
 ```
-docker pull ghcr.io/tiredofit/docker-alpine/pkgs/container/docker-alpine):(imagetag)
+docker pull ghcr.io/tiredofit/docker-alpine:(imagetag)
 ``` 
 
 The following image tags are available along with their tagged release based on what's written in the [Changelog](CHANGELOG.md):
