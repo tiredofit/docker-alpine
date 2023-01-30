@@ -1,15 +1,15 @@
 ### Top Level Base Image (Alpine)
-### Dave Conroy <github.com/tiredofit>>
+### Dave Conroy <github.com/tiredofit>
 
-name: 'build'
+name: "manual_build_image"
 
 on:
-  schedule:
-    - cron: 1 23 * * 5
-  push:
-    paths:
-    - '**'
-    - '!README.md'
+  workflow_dispatch:
+    inputs:
+      Manual Build:
+        description: 'Manual Build'
+        required: false
+
 jobs:
   edge:
     env:
