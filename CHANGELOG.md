@@ -1,3 +1,12 @@
+## 7.7.45 2023-02-06 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 2.0.9
+      - Zabbix Agent 6.2.7
+      - YQ 4.30.8
+      - Go 1.20 build environment
+
+
 ## 7.7.44 2022-12-31 <dave at tiredofit dot ca>
 
    ### Changed

@@ -3,7 +3,7 @@ ARG ALPINE_VERSION=3.17
 FROM docker.io/alpine:${ALPINE_VERSION}
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
-ARG GOLANG_VERSION=1.19.4
+ARG GOLANG_VERSION=1.20
 ARG DOAS_VERSION
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
@@ -11,10 +11,10 @@ ARG YQ_VERSION
 ARG ZABBIX_VERSION
 
 ### Set defaults
-ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"2.0.8"} \
-    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.2.1"} \
-    YQ_VERSION=${YQ_VERSION:-"v4.30.6"} \
-    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.2.6"} \
+ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"2.0.9"} \
+    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.3.0"} \
+    YQ_VERSION=${YQ_VERSION:-"v4.30.8"} \
+    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.2.7"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
@@ -131,6 +131,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
                 cmake \
                 flex \
                 ${fts}-dev \
+                linux-headers \
                 openssl-dev \
                 yaml-dev \
                 && \
@@ -340,10 +341,10 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     chown -R 0755 /etc/cont-init.d && \
     chown -R 0755 /etc/cont-finish.d && \
     chmod -R 0755 /etc/services.d && \
-    sed -i "s|echo|# echo |g" /package/admin/s6-overlay/etc/s6-rc/scripts/cont-init && \
-    sed -i "s|echo|# echo |g" /package/admin/s6-overlay/etc/s6-rc/scripts/cont-finish && \
-    sed -i "s|echo ' (no readiness notification)'|# echo ' (no readiness notification)'|g" /package/admin/s6-overlay/etc/s6-rc/scripts/services-up && \
-    sed -i "s|s6-echo -n|# s6-echo -n|g" /package/admin/s6-overlay/etc/s6-rc/scripts/services-up && \
+    sed -i "s|echo|: # echo |g" /package/admin/s6-overlay/etc/s6-rc/scripts/cont-init && \
+    sed -i "s|echo|: # echo |g" /package/admin/s6-overlay/etc/s6-rc/scripts/cont-finish && \
+    sed -i "s|echo ' (no readiness notification)'|: # echo ' (no readiness notification)'|g" /package/admin/s6-overlay/etc/s6-rc/scripts/services-up && \
+    sed -i "s|s6-echo -n|: # s6-echo -n|g" /package/admin/s6-overlay/etc/s6-rc/scripts/services-up && \
     sed -i "s|v=2|v=1|g" /package/admin/s6-overlay/etc/s6-linux-init/skel/rc.init && \
     sed -i "s|v=2|v=1|g" /package/admin/s6-overlay/etc/s6-linux-init/skel/rc.shutdown
 
