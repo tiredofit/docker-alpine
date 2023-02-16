@@ -118,16 +118,6 @@ jobs:
           build-args: |
              ALPINE_VERSION=${{ env.DISTRO_VARIANT }}
 
-      - name: Update Docker Hub Information
-        if: github.event_name != 'pull_request'
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{ env.dockerhub_repo }}
-          short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./README.md
-
 ###
   v3_17:
     env:
@@ -235,16 +225,6 @@ jobs:
           tags: ${{ steps.prep.outputs.container_images }}
           build-args: |
              ALPINE_VERSION=${{ env.DISTRO_VARIANT }}
-
-      - name: Update Docker Hub Information
-        if: github.event_name != 'pull_request'
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{ env.dockerhub_repo }}
-          short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./README.md
 
 ###
   v3_16:
@@ -354,16 +334,6 @@ jobs:
           build-args: |
              ALPINE_VERSION=${{ env.DISTRO_VARIANT }}
 
-      - name: Update Docker Hub Information
-        if: github.event_name != 'pull_request'
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{ env.dockerhub_repo }}
-          short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./README.md
-
 ###
   v3_15:
     env:
@@ -471,16 +441,6 @@ jobs:
           tags: ${{ steps.prep.outputs.container_images }}
           build-args: |
              ALPINE_VERSION=${{ env.DISTRO_VARIANT }}
-
-      - name: Update Docker Hub Information
-        if: github.event_name != 'pull_request'
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{ env.dockerhub_repo }}
-          short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./README.md
 
 ###
   v3_14:
@@ -590,16 +550,6 @@ jobs:
           build-args: |
              ALPINE_VERSION=${{ env.DISTRO_VARIANT }}
 
-      - name: Update Docker Hub Information
-        if: github.event_name != 'pull_request'
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{ env.dockerhub_repo }}
-          short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./README.md
-
 ###
   v3_13:
     env:
@@ -707,16 +657,6 @@ jobs:
           tags: ${{ steps.prep.outputs.container_images }}
           build-args: |
              ALPINE_VERSION=${{ env.DISTRO_VARIANT }}
-
-      - name: Update Docker Hub Information
-        if: github.event_name != 'pull_request'
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{ env.dockerhub_repo }}
-          short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./README.md
 
 ###
   v3_12:
@@ -826,16 +766,6 @@ jobs:
           build-args: |
              ALPINE_VERSION=${{ env.DISTRO_VARIANT }}
 
-      - name: Update Docker Hub Information
-        if: github.event_name != 'pull_request'
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{ env.dockerhub_repo }}
-          short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./README.md
-
 ###
   v3_11:
     env:
@@ -943,16 +873,6 @@ jobs:
           tags: ${{ steps.prep.outputs.container_images }}
           build-args: |
              ALPINE_VERSION=${{ env.DISTRO_VARIANT }}
-
-      - name: Update Docker Hub Information
-        if: github.event_name != 'pull_request'
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{ env.dockerhub_repo }}
-          short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./README.md
 
 ###
   v3_10:
@@ -1062,16 +982,6 @@ jobs:
           build-args: |
              ALPINE_VERSION=${{ env.DISTRO_VARIANT }}
 
-      - name: Update Docker Hub Information
-        if: github.event_name != 'pull_request'
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{ env.dockerhub_repo }}
-          short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./README.md
-
 ###
   v3_9:
     env:
@@ -1179,16 +1089,6 @@ jobs:
           tags: ${{ steps.prep.outputs.container_images }}
           build-args: |
              ALPINE_VERSION=${{ env.DISTRO_VARIANT }}
-
-      - name: Update Docker Hub Information
-        if: github.event_name != 'pull_request'
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{ env.dockerhub_repo }}
-          short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./README.md
 
 ###
   v3_8:
@@ -1298,16 +1198,6 @@ jobs:
           build-args: |
              ALPINE_VERSION=${{ env.DISTRO_VARIANT }}
 
-      - name: Update Docker Hub Information
-        if: github.event_name != 'pull_request'
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{ env.dockerhub_repo }}
-          short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./README.md
-
 ###
   v3_7:
     env:
@@ -1415,16 +1305,6 @@ jobs:
           tags: ${{ steps.prep.outputs.container_images }}
           build-args: |
              ALPINE_VERSION=${{ env.DISTRO_VARIANT }}
-
-      - name: Update Docker Hub Information
-        if: github.event_name != 'pull_request'
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{ env.dockerhub_repo }}
-          short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./README.md
 
 ###
   v3_6:
@@ -1534,16 +1414,6 @@ jobs:
           build-args: |
              ALPINE_VERSION=${{ env.DISTRO_VARIANT }}
 
-      - name: Update Docker Hub Information
-        if: github.event_name != 'pull_request'
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{ env.dockerhub_repo }}
-          short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./README.md
-
 
 ###
   v3_5:
@@ -1652,14 +1522,3 @@ jobs:
           tags: ${{ steps.prep.outputs.container_images }}
           build-args: |
              ALPINE_VERSION=${{ env.DISTRO_VARIANT }}
-
-      - name: Update Docker Hub Information
-        if: github.event_name != 'pull_request'
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{ env.dockerhub_repo }}
-          short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./README.md
-
