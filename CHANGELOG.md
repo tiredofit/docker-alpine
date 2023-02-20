@@ -1,3 +1,9 @@
+## 7.7.50 2023-02-20 <dave at tiredofit dot ca>
+
+   ### Added
+      - YQ 4.31.1
+
+
 ## 7.7.49 2023-02-17 <dave at tiredofit dot ca>
 
    ### Added
