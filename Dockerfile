@@ -13,7 +13,7 @@ ARG ZABBIX_VERSION
 ### Set defaults
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"2.0.9"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.4.1"} \
-    YQ_VERSION=${YQ_VERSION:-"v4.31.1"} \
+    YQ_VERSION=${YQ_VERSION:-"v4.31.2"} \
     ZABBIX_VERSION=${ZABBIX_VERSION:-"6.2.7"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
@@ -101,7 +101,6 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
                 s6 \
                 sudo \
                 tzdata \
-                vim \
                 yaml \
                 ${zstd_package} \
                 && \

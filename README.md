@@ -17,7 +17,7 @@ Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container im
 * Currently tracking 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12, 3.13, 3.14, 3.15, 3.16, 3.17 and edge.
 * [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 init capabilities.
 * [zabbix-agent](https://zabbix.org) (Classic and Modern) for individual container monitoring.
-* Scheduling via cron with other helpful tools (bash, curl, less, logrotate, nano, vim) for easier management.
+* Scheduling via cron with other helpful tools (bash, curl, less, logrotate, nano, vi) for easier management.
 * Messaging ability via MSMTP enabled to send mail from container to external SMTP server.
 * Firewall included with capabilities of monitoring logs to block remote hosts via [Fail2ban](https://github.com/fail2ban/fail2ban)
 * Logshipping capabilities to remote log analysis servers via [Fluent-Bit](https://github.com/fluent/fluent-bit)
