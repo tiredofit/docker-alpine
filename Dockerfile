@@ -14,7 +14,7 @@ ARG ZABBIX_VERSION
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"2.0.9"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.4.1"} \
     YQ_VERSION=${YQ_VERSION:-"v4.31.2"} \
-    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.2.7"} \
+    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.4.0"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
@@ -44,7 +44,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2 | cut -d _ -f 1)" in \
         3.5 | 3.6 | 3.7 | 3.8 | 3.9 | 3.10 | 3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16 ) fts=fts ;; \
-        3.17 ) fts=musl-fts ;; \
+        3.17 | 3.18* ) fts=musl-fts ;; \
         *) : ;; \
     esac ; \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2 | cut -d _ -f 1)" in \

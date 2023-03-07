@@ -1,3 +1,14 @@
+## 7.7.52 2023-03-07 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 6.4.0
+      - Support upcoming Alpine 3.18
+      - Remove .gitconfig from /root/ during package cleanup
+
+   ### Changed
+      - Drop vim and rely on busybox vi
+
+
 ## 7.7.51 2023-02-21 <dave at tiredofit dot ca>
 
    ### Added

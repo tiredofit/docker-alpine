@@ -643,10 +643,13 @@ package() {
     cleanup() {
         case "${distro}" in
             "alpine" )
+                rm -rf /root/.gitconfig
                 rm -rf /var/cache/apk/*
+
             ;;
             "debian" | "ubuntu" )
                 apt-get clean -y
+                rm -rf /root/.gitconfig
                 rm -rf /var/lib/apt/lists/*
             ;;
         esac
