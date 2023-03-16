@@ -1,3 +1,10 @@
+## 7.7.53 2023-03-16 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 2.0.10
+      - Use Golang 1.20.1 for building again
+
+
 ## 7.7.52 2023-03-07 <dave at tiredofit dot ca>
 
    ### Added

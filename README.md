@@ -364,6 +364,8 @@ FIREWALL_RULE_01=-I INPUT -p tcp -m tcp -s 0.0.0.0/0 --dport 389 -j DROP
 
 Instead of relying on environment variables one can put a `iptables-restore` compatible ruleset below and it will be imported on container start.
 
+| Parameter                   | Description                                                                        | Default                                        |
+| --------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------- |
 | `IPTABLES_RULES_PATH`        | Path for IPTables Rules                                     | `/assets/iptables/` |
 | `IPTABLES_RULES_FILE`        | IPTables Rules File to restore if exists on container start | `iptables.rules`    |
 
