@@ -1,3 +1,9 @@
+## 7.7.54 2023-03-26 <dave at tiredofit dot ca>
+
+   ### Added
+      - YQ v4.33.1
+
+
 ## 7.7.53 2023-03-16 <dave at tiredofit dot ca>
 
    ### Added
