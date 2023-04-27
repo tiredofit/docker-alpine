@@ -1,11 +1,11 @@
 #!/command/with-contenv bash
 
 source /assets/functions/00-container
+output_off
 prepare_service
 # shellcheck disable=SC2034
 PROCESS_NAME="firewall"
 
-output_off
 firewall_command=$(which "${CONTAINER_FIREWALL_BACKEND,,}")
 
 if var_true "${CONTAINER_ENABLE_FIREWALL}" ; then
@@ -186,5 +186,5 @@ else
     service_stop "$(basename "$0")"
 fi
 
-output_on
 liftoff
+output_on

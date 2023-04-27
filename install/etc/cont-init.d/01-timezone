@@ -1,6 +1,7 @@
 #!/command/with-contenv bash
 
 source /assets/functions/00-container
+output_off
 PROCESS_NAME="timezone"
 
 ### Timezone setup
@@ -9,3 +10,4 @@ if [ -n "${TIMEZONE}" ]; then
 fi
 
 liftoff
+output_on

@@ -118,7 +118,7 @@ clone_git_repo() {
 }
 
 create_logrotate() {
-    ## Usage <Logrotate Config Name> <path> (optional logship parser) (optional user) (optional group) (optional logship parser)
+    ## Usage <Logrotate Config Name> <path> (optional logship parser) (optional user) (optional group)
     ## e.g. create_logrotate cron /var/log/cron/cron.log cron root root
     ## If you dont have a parser just use 'none'
     ## If you are passing wilcard characters ie /logs/*.log make sure you 'set -f' before the function and 'set +f' afterwards.
@@ -226,10 +226,14 @@ db_ready() {
     print_debug "Checking to see if Database Type $1 is ready"
     case "$1" in
         "couch" | "couchdb" )
+            transform_file_var DB_PORT
             if [ -n "${DB_PORT}" ] ; then couch_port=${DB_PORT} ; fi ;
+            transform_file_var COUCHDB_PORT
             if [ -n "${COUCHDB_PORT}" ] ; then couch_port=${COUCHDB_PORT} ; fi ;
             couch_port=${couch_port:-5984}
+            transform_file_var DB_HOST
             if [ -n "${DB_HOST}" ] ; then couch_host=${DB_HOST} ; fi ;
+            transform_file_var COUCHDB_HOST
             if [ -n "${COUCHDB_HOST}" ] ; then couch_host=${COUCHDB_HOST} ; fi ;
             counter=0
             # shellcheck disable=SC2086
@@ -240,10 +244,14 @@ db_ready() {
             done
         ;;
         "influx" | "influxdb" )
+            transform_file_var DB_PORT
             if [ -n "${DB_PORT}" ] ; then influx_port=${DB_PORT} ; fi ;
+            transform_file_var INFLUXDB_PORT
             if [ -n "${INFLUXDB_PORT}" ] ; then influx_port=${INFLUXDB_PORT} ; fi ;
             influx_port=${influx_port:-8088}
+            transform_file_var DB_HOST
             if [ -n "${DB_HOST}" ] ; then influx_host=${DB_HOST} ; fi ;
+            transform_file_var INFLUXDB_HOST
             if [ -n "${INFLUXDB_HOST}" ] ; then influx_host=${INFLUXDB_HOST} ; fi ;
             counter=0
             while ! (nc -z "${influx_host}" "${influx_port}") ; do
@@ -253,10 +261,14 @@ db_ready() {
             done
         ;;
         "mongo" | "mongodb" )
+            transform_file_var DB_PORT
             if [ -n "${DB_PORT}" ] ; then mongo_port=${DB_PORT} ; fi ;
+            transform_file_var MONGO_PORT
             if [ -n "${MONGO_PORT}" ] ; then mongo_port=${MONGO_PORT} ; fi ;
             mongo_port=${mongo_port:-27017}
+            transform_file_var DB_HOST
             if [ -n "${DB_HOST}" ] ; then mongo_host=${DB_HOST} ; fi ;
+            transform_file_var MONGO_HOST
             if [ -n "${MONGO_HOST}" ] ; then mongo_host=${MONGO_HOST} ; fi ;
             counter=0
             while ! (nc -z "${mongo_host}" "${mongo_port}") ; do
@@ -266,21 +278,36 @@ db_ready() {
             done
         ;;
         "mysql" | "mariadb" | "MARIADB" | "MYSQL" )
+            transform_file_var DB_PORT
             if [ -n "${DB_PORT}" ] ; then maria_port=${DB_PORT} ; fi ;
+            transform_file_var MYSQL_PORT
             if [ -n "${MYSQL_PORT}" ] ; then maria_port=${MYSQL_PORT} ; fi ;
+            transform_file_var MARIA_PORT
             if [ -n "${MARIA_PORT}" ] ; then maria_port=${MARIA_PORT} ; fi ;
             maria_port=${maria_port:-3306}
+            transform_file_var DB_HOST
             if [ -n "${DB_HOST}" ] ; then maria_host=${DB_HOST} ; fi ;
+            transform_file_var MYSQL_PORT
             if [ -n "${MYSQL_HOST}" ] ; then maria_host=${MYSQL_HOST} ; fi ;
+            transform_file_var MARIA_PORT
             if [ -n "${MARIA_HOST}" ] ; then maria_host=${MARIA_HOST} ; fi ;
+            transform_file_var DB_USER
             if [ -n "${DB_USER}" ] ; then maria_user=${DB_USER} ; fi ;
+            transform_file_var MYSQL_USER
             if [ -n "${MYSQL_USER}" ] ; then maria_user=${MYSQL_USER} ; fi ;
+            transform_file_var MARIA_USER
             if [ -n "${MARIA_USER}" ] ; then maria_user=${MARIA_USER} ; fi ;
+            transform_file_var DB_PASS
             if [ -n "${DB_PASS}" ] ; then maria_pass=${DB_PASS} ; fi ;
+            transform_file_var MYSQL_PASS
             if [ -n "${MYSQL_PASS}" ] ; then maria_pass=${MYSQL_PASS} ; fi ;
+            transform_file_var MARIA_PASS
             if [ -n "${MARIA_PASS}" ] ; then maria_pass=${MARIA_PASS} ; fi ;
+            transform_file_var DB_NAME
             if [ -n "${DB_NAME}" ] ; then maria_name=${DB_NAME} ; fi ;
+            transform_file_var MYSQL_NAME
             if [ -n "${MYSQL_NAME}" ] ; then maria_name=${MYSQL_NAME} ; fi ;
+            transform_file_var MARIA_NAME
             if [ -n "${MARIA_NAME}" ] ; then maria_name=${MARIA_NAME} ; fi ;
             counter=0
             while ! (mysqladmin -u"${maria_user}" -P"${maria_port}" -h"${maria_host}" -p"${maria_pass}" status > /dev/null 2>&1) ; do
@@ -290,16 +317,26 @@ db_ready() {
             done
         ;;
         "pgsql" | "psql" | "postgres" | "postgresql" )
+            transform_file_var DB_PORT
             if [ -n "${DB_PORT}" ] ; then postgres_port=${DB_PORT} ; fi ;
+            transform_file_var POSTGRES_HOST
             if [ -n "${POSTGRES_PORT}" ] ; then postgres_port=${POSTGRES_PORT} ; fi ;
             postgres_port=${postgres_port:-5432}
+            transform_file_var DB_HOST
             if [ -n "${DB_HOST}" ] ; then postgres_host=${DB_HOST} ; fi ;
+            transform_file_var POSTGRES_HOST
             if [ -n "${POSTGRES_HOST}" ] ; then postgres_host=${POSTGRES_HOST} ; fi ;
+            transform_file_var DB_USER
             if [ -n "${DB_USER}" ] ; then postgres_user=${DB_USER} ; fi ;
+            transform_file_var POSTGRES_USER
             if [ -n "${POSTGRES_USER}" ] ; then postgres_user=${POSTGRES_USER} ; fi ;
+            transform_file_var DB_PASS
             if [ -n "${DB_PASS}" ] ; then postgres_pass=${DB_PASS} ; fi ;
+            transform_file_var PGPASSWORD
             if [ -n "${PGPASSWORD}" ] ; then postgres_pass=${PGPASSWORD} ; fi ;
+            transform_file_var DB_NAME
             if [ -n "${DB_NAME}" ] ; then postgres_name=${DB_NAME} ; fi ;
+            transform_file_var POSTGRES_NAME
             if [ -n "${POSTGRES_NAME}" ] ; then postgres_name=${POSTGRES_NAME} ; fi ;
             counter=0
             export PGPASSWORD=${postgres_pass}
@@ -311,10 +348,14 @@ db_ready() {
             done
         ;;
         "rabbit" | "rabbitmq" )
+            transform_file_var DB_PORT
             if [ -n "${DB_PORT}" ] ; then rabbit_port=${DB_PORT} ; fi ;
+            transform_file_var RABBIT_PORT
             if [ -n "${RABBIT_PORT}" ] ; then rabbit_port=${RABBIT_PORT} ; fi ;
             rabbit_port=${rabbit_port:-5672}
+            transform_file_var DB_HOST
             if [ -n "${DB_HOST}" ] ; then rabbit_host=${DB_HOST} ; fi ;
+            transform_file_var RABBIT_HOST
             if [ -n "${RABBIT_HOST}" ] ; then rabbit_host=${RABBIT_HOST} ; fi ;
             counter=0
             while ! (nc -z "${rabbit_host}" "${rabbit_port}") ; do
@@ -324,7 +365,9 @@ db_ready() {
             done
         ;;
         "redis" )
+            transform_file_var DB_PORT
             if [ -n "${DB_PORT}" ] ; then redis_port=${DB_PORT} ; fi ;
+            if [ -n "${DB_PORT_FILE}" ] ; then couch_port="$(cat "${DB_PORT_FILE}")" ; fi ;
             if [ -n "${REDIS_PORT}" ] ; then redis_port=${REDIS_PORT} ; fi ;
             redis_port=${redis_port:-6379}
             if [ -n "${DB_HOST}" ] ; then redis_host=${DB_HOST} ; fi ;
@@ -337,7 +380,9 @@ db_ready() {
             done
         ;;
         "rethink" )
+            transform_file_var DB_PORT
             if [ -n "${DB_PORT}" ] ; then rethink_port=${DB_PORT} ; fi ;
+            if [ -n "${DB_PORT_FILE}" ] ; then couch_port="$(cat "${DB_PORT_FILE}")" ; fi ;
             if [ -n "${RETHINK_PORT}" ] ; then rethink_port=${RETHINK_PORT} ; fi ;
             rethink_port=${rethink_port:-28015}
             if [ -n "${DB_HOST}" ] ; then rethink_host=${DB_HOST} ; fi ;
@@ -397,9 +442,18 @@ get_defaults() {
         case "${1,,}" in
             "all" )
                 for d in /assets/defaults/* ; do
-                    print_debug "Container: Getting defaults for '${d}'"
+                    print_debug "Container: Getting defaults for '${d}' ALL"
                     # shellcheck source=/assets/defaults/
-                    source "$d"
+                    case "$(basename "${d}")" in
+                        0*-* | 99-* )
+                            output_off
+                            source "${d}"
+                            output_on
+                        ;;
+                        * )
+                            source "${d}"
+                        ;;
+                    esac
                 done
             ;;
             "app" | "single" )
@@ -408,7 +462,16 @@ get_defaults() {
                         if [ -f "/assets/defaults/$(basename "$0")" ] ; then
                             print_debug "Container: Getting defaults for '$(basename "$0")'"
                             # shellcheck source=/assets/defaults/
-                            source /assets/defaults/"$(basename "$0")"
+                            case "$(basename "$0")" in
+                                0*-* | 99-* )
+                                    output_off
+                                    source /assets/defaults/"$(basename "$0")"
+                                    output_on
+                                ;;
+                                * )
+                                    source /assets/defaults/"$(basename "$0")"
+                                ;;
+                            esac
                         else
                             print_debug "Container: No defaults available for '$(basename "$0")'"
                         fi
@@ -417,7 +480,16 @@ get_defaults() {
                         if [ -f "/assets/defaults/$(basename "$PWD")" ] ; then
                             print_debug "Container: Getting defaults for '$(basename "$PWD")'"
                             # shellcheck source=/assets/defaults/
-                            source /assets/defaults/"$(basename "$PWD")"
+                            case "$(basename "$PWD")" in
+                                0*-* | 99-* )
+                                    output_off
+                                    source /assets/defaults/"$(basename "$PWD")"
+                                    output_on
+                                ;;
+                                * )
+                                    source /assets/defaults/"$(basename "$PWD")"
+                                ;;
+                            esac
                         else
                             print_debug "Container: No defaults available for $(basename "$PWD")"
                         fi
@@ -430,9 +502,18 @@ get_defaults() {
                     if [ -f "/assets/defaults/${d}" ] ; then
                         print_debug "Container: Getting defaults for $d"
                         # shellcheck source=/assets/defaults/
-                        source /assets/defaults/"${d}"
+                        case "${d}" in
+                            0*-* | 99-* )
+                                output_off
+                                source /assets/defaults/"${d}"
+                                output_on
+                            ;;
+                            * )
+                                source /assets/defaults/"${d}"
+                            ;;
+                        esac
                     else
-                        print_debug "Container: No defaults available for '$d'"
+                        print_debug "Container: No defaults available for '${d}'"
                     fi
                 done
             ;;
@@ -441,9 +522,18 @@ get_defaults() {
         for d in /assets/defaults/* ; do
             print_debug "Container: Getting defaults for $d"
             # shellcheck source=/assets/defaults/
-            source /assets/defaults/00-container
-            source "${d}"
-
+            case "$(basename "${d}")" in
+                0*-* | 99-* )
+                    output_off
+                    source /assets/defaults/00-container
+                    source "${d}"
+                    output_on
+                ;;
+                * )
+                    source /assets/defaults/00-container
+                    source "${d}"
+                ;;
+            esac
         done
     fi
 }
@@ -512,6 +602,7 @@ get_functions() {
 }
 
 get_image_version() {
+    output_off
     if [ -n "${IMAGE_NAME}" ] ; then
         if [ -f "/assets/.changelogs/${IMAGE_NAME/\//_}.md" ] ; then
             image_version=$(head -n1 /assets/.changelogs/${IMAGE_NAME/\//_}.md | awk '{print $2}')
@@ -536,11 +627,13 @@ get_image_version() {
             echo "${image_version}"
         fi
     fi
+    output_on
 }
 
 grant_doas() {
     ## Grant doas priveleges to a user
     ## grant_doas (username) (command) | If no command set will be ALL
+    output_off
     if [ -n "$1" ] ; then
         print_debug "Adding Doas privileges to '$1'"
         if [ -n "$2" ] ; then
@@ -554,12 +647,14 @@ grant_doas() {
         chown root:root /etc/doas.conf
         chmod 0400 -R /etc/doas.conf
     fi
+    output_on
 }
 
 grant_sudo() {
     ## 2022-02-07 Will be deprecated in future releases. Use "grant_doas" instead
     ## Grant sudo priveleges to a user
     ## grant_sudo (username) (command) | If no command set will be ALL
+    output_off
     if [ -n "$1" ] ; then
         if [ -n "$2" ] ; then
             sudo_command="$2"
@@ -569,6 +664,7 @@ grant_sudo() {
         print_debug "Adding Sudo privileges to '$1' for '${sudo_command}' command"
         echo "%$1 ALL=(ALL) NOPASSWD:${sudo_command}" >> /etc/sudoers
     fi
+    output_on
 }
 
 install_template() {
@@ -635,7 +731,24 @@ output_off() {
 
 output_on() {
     if [ "${DEBUG_MODE,,}" = "true" ] ; then
-        set -x
+        case "$(basename "$0")" in
+            0*-* | 99-* )
+                :
+            ;;
+            run )
+                case "$PWD" in
+                    */0*-* | 99-* )
+                        :
+                    ;;
+                    * )
+                        set -x
+                    ;;
+                esac
+            ;;
+            * )
+                set -x
+            ;;
+        esac
     fi
 }
 
@@ -645,7 +758,6 @@ package() {
             "alpine" )
                 rm -rf /root/.gitconfig
                 rm -rf /var/cache/apk/*
-
             ;;
             "debian" | "ubuntu" )
                 apt-get clean -y
@@ -710,7 +822,7 @@ package() {
         esac
     }
 
-    set +x
+    output_off
     local distro
     distro=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
     local action="${1}"
@@ -730,7 +842,7 @@ package() {
             "${action}" "${arguments}"
         ;;
     esac
-    set -x
+    output_on
 }
 
 prepare_service() {
@@ -957,6 +1069,7 @@ print_warn() {
         "debug" | "notice" | "warn" )
             echo -e "$(log_prefix)[WARN] ** [${PROCESS_NAME}] $1" >> "${CONTAINER_LOG_FILE_PATH}"/"${CONTAINER_LOG_FILE_NAME}"
     esac
+
     output_on
 }
 
@@ -978,7 +1091,9 @@ sanity_db() {
         case "${1,,}" in
             "couch" | "couchdb" )
                 print_debug "Checking Couch DB Parameters"
+                transform_file_var DB_HOST
                 if [ -n "${DB_HOST}" ] ; then couch_host=${DB_HOST} ; fi ;
+                transform_file_var COUCH_HOST
                 if [ -n "${COUCH_HOST}" ] ; then couch_host=${COUCH_HOST} ; fi ;
                 if [ -z "${couch_host}" ] ; then
                     print_error "No Couch Database Host Entered! - Set '\$DB_HOST' or '\$COUCH_HOST'"
@@ -988,7 +1103,9 @@ sanity_db() {
             "influx" | "influxdb")
                 print_debug "Checking Influx DB Parameters"
                 if [ -n "${DB_HOST}" ] ; then influx_host=${DB_HOST} ; fi ;
+                transform_file_var DB_HOST
                 if [ -n "${INFLUX_HOST}" ] ; then influx_host=${INFLUX_HOST} ; fi ;
+                transform_file_var INFLUX_HOST
                 if [ -z "${influx_host}" ] ; then
                     print_error "No Influx Database Host Entered! - Set '\$DB_HOST' or '\$INFLUX_HOST'"
                     exit 1
@@ -997,7 +1114,9 @@ sanity_db() {
             "mongo" | "mongodb" )
                 print_debug "Checking Mongo DB Parameters"
                 if [ -n "${DB_HOST}" ] ; then mongo_host=${DB_HOST} ; fi ;
+                transform_file_var DB_HOST
                 if [ -n "${MONGO_HOST}" ] ; then mongo_host=${MONGO_HOST} ; fi ;
+                transform_file_var MONGO_HOST
                 if [ -z "${mongo_host}" ] ; then
                     print_error "No Mongo Database Host Entered! - Set '\$DB_HOST' or '\$MONGO_HOST'"
                     exit 1
@@ -1005,17 +1124,29 @@ sanity_db() {
             ;;
             "mysql" | "mariadb" )
                 print_debug "Checking MariaDB DB Parameters"
+                transform_file_var DB_HOST
                 if [ -n "${DB_HOST}" ] ; then maria_host=${DB_HOST} ; fi ;
+                transform_file_var MYSQL_HOST
                 if [ -n "${MYSQL_HOST}" ] ; then maria_host=${MYSQL_HOST} ; fi ;
+                transform_file_var MARIA_HOST
                 if [ -n "${MARIA_HOST}" ] ; then maria_host=${MARIA_HOST} ; fi ;
+                transform_file_var DB_USER
                 if [ -n "${DB_USER}" ] ; then maria_user=${DB_USER} ; fi ;
+                transform_file_var MYSQL_USER
                 if [ -n "${MYSQL_USER}" ] ; then maria_user=${MYSQL_USER} ; fi ;
+                transform_file_var MARIA_USER
                 if [ -n "${MARIA_USER}" ] ; then maria_user=${MARIA_USER} ; fi ;
+                transform_file_var DB_PASS
                 if [ -n "${DB_PASS}" ] ; then maria_pass=${DB_PASS} ; fi ;
+                transform_file_var MYSQL_PASS
                 if [ -n "${MYSQL_PASS}" ] ; then maria_pass=${MYSQL_PASS} ; fi ;
+                transform_file_var MARIA_PASS
                 if [ -n "${MARIA_PASS}" ] ; then maria_pass=${MARIA_PASS} ; fi ;
+                transform_file_var DB_NAME
                 if [ -n "${DB_NAME}" ] ; then maria_name=${DB_NAME} ; fi ;
+                transform_file_var MYSQL_NAME
                 if [ -n "${MYSQL_NAME}" ] ; then maria_name=${MYSQL_NAME} ; fi ;
+                transform_file_var MARIA_NAME
                 if [ -n "${MARIA_NAME}" ] ; then maria_name=${MARIA_NAME} ; fi ;
                 if [ -z "${maria_host}" ] ; then
                     print_error "No MariaDB Database Host Entered! - Set '\$DB_HOST' or '\$MARIA_HOST'"
@@ -1036,13 +1167,21 @@ sanity_db() {
             ;;
             "pgsql" | "psql" | "postgres" | "postgresql" )
                 print_debug "Checking Postgres DB Parameters"
+                transform_file_var DB_HOST
                 if [ -n "${DB_HOST}" ] ; then postgres_host=${DB_HOST} ; fi ;
+                transform_file_var POSTGRES_HOST
                 if [ -n "${POSTGRES_HOST}" ] ; then postgres_host=${POSTGRES_HOST} ; fi ;
+                transform_file_var DB_USER
                 if [ -n "${DB_USER}" ] ; then postgres_user=${DB_USER} ; fi ;
+                transform_file_var POSTGRES_USER
                 if [ -n "${POSTGRES_USER}" ] ; then postgres_user=${POSTGRES_USER} ; fi ;
+                transform_file_var DB_PASS
                 if [ -n "${DB_PASS}" ] ; then postgres_pass=${DB_PASS} ; fi ;
+                transform_file_var PGPASSWORD
                 if [ -n "${PGPASSWORD}" ] ; then postgres_pass=${PGPASSWORD} ; fi ;
+                transform_file_var DB_NAME
                 if [ -n "${DB_NAME}" ] ; then postgres_name=${DB_NAME} ; fi ;
+                transform_file_var POSTGRES_NAME
                 if [ -n "${POSTGRES_NAME}" ] ; then postgres_name=${POSTGRES_NAME} ; fi ;
                 if [ -z "${postgres_host}" ] ; then
                     print_error "No PostgreSQL Database Host Entered! - Set '\$DB_HOST' or '\$POSTGRES_HOST'"
@@ -1062,17 +1201,22 @@ sanity_db() {
                 fi
             ;;
             "rabbit" | "rabbitmq" )
+                transform_file_var DB_HOST
                 if [ -n "${DB_HOST}" ] ; then rabbit_host=${DB_HOST} ; fi ;
+                transform_file_var RABBIT_HOST
                 if [ -n "${RABBIT_HOST}" ] ; then rabbit_host=${RABBIT_HOST} ; fi ;
+                transform_file_var RABBITMQ_HOST
                 if [ -n "${RABBITMQ_HOST}" ] ; then rabbit_host=${RABBITMQ_HOST} ; fi ;
-                if [ -z "${rethink_host}" ] ; then
+                if [ -z "${rabbit_host}" ] ; then
                     print_error "No RabbitMQ Database Host Entered! - Set '\$DB_HOST' or '\$RABBIT_HOST'"
                     exit 1
                 fi
             ;;
             "redis" )
                 print_debug "Checking Redis DB Parameters"
+                transform_file_var DB_HOST
                 if [ -n "${DB_HOST}" ] ; then redis_host=${DB_HOST} ; fi ;
+                transform_file_var REDIS_HOST
                 if [ -n "${REDIS_HOST}" ] ; then redis_host=${REDIS_HOST} ; fi ;
                 if [ -z "${redis_host}" ] ; then
                     print_error "No Redis Database Host Entered! - Set '\$DB_HOST' or '\$REDIS_HOST'"
@@ -1081,7 +1225,9 @@ sanity_db() {
             ;;
             "rethink" )
                 print_debug "Checking RethinkDB DB Parameters"
+                transform_file_var DB_HOST
                 if [ -n "${DB_HOST}" ] ; then rethink_host=${DB_HOST} ; fi ;
+                transform_file_var RETHINK_HOST
                 if [ -n "${RETHINK_HOST}" ] ; then rethink_host=${RETHINK_HOST} ; fi ;
                 if [ -z "${rethink_host}" ] ; then
                     print_error "No Rethink Database Host Entered! - Set '\$DB_HOST' or '\$RETHINK_HOST'"
@@ -1094,21 +1240,25 @@ sanity_db() {
         ## Legacy This will eventually be removed and replaced with this warning
         #print_debug "Skipping DB Checking because it is missing DB_TYPE argument"
         print_debug "Using Legacy db_ready command - please upgrade"
+        transform_file_var DB_HOST
         if [ -z "${DB_HOST}" ]; then
             print_error "No Database Host Entered! - Set '\$DB_HOST'"
             exit 1
         fi
 
+        transform_file_var DB_NAME
         if [ -z "${DB_NAME}" ]; then
             print_error "No Database Name Entered! - Set '\$DB_NAME'"
             exit 1
         fi
 
+        transform_file_var DB_USER
         if [ -z "${DB_USER}" ]; then
             print_error "No Database User Entered! - Set '\$DB_USER'"
             exit 1
         fi
 
+        transform_file_var DB_PASS
         if [ -z "${DB_PASS}" ]; then
             print_error "No Database Password Entered! - Set '\$DB_PASS'"
             exit 1
@@ -1164,13 +1314,14 @@ showoff() {
         fi
         is="${is}"
         if [ -n "${IMAGE_REPO_URL}" ] ; then
-            ir="$(echo 'H4sIAAAAAAAAAwtKLcgvzizJL6rU9ywuLk0t1g8uLSjILyqxUuACAPHokJMcAAAA' | base64 -d | gunzip) ${IMAGE_REPO_URL}"
+            ir="$(echo 'H4sIAAAAAAAAAwtKLcgvzizJL6rUd8lPLs1NzStJLMnMz7PiAgAxTVbtGgAAAA==' | base64 -d | gunzip) ${IMAGE_REPO_URL}"
         fi
     fi
     echo "H4sIAAAAAAAAA61RQRLEIAi78wpvXAq971t68CE8vgni2s7urWUGEyRBHVt7JTYzc+Ga4WD+T+Q/pm9jmQNbIZpNN9OOpGSqnA6I4jJlp1RZZ2OZUbrK3B9nxWw5VB9NiOFNCt5ta8s0kSD3suiBxOQDRh0WxSWQcbuYj9Mp4KuksKAoOVm3qlvRfq1Vl4Nj5fkvZnCsnEeFItgXAgAA" | base64 -d | gunzip
     echo "${is}"
     echo "${ir}"
-    echo "H4sIAAAAAAAAA1NQgIPggvy84vwihdxUhTQglZJalpqTX5CbmleikJiXolBakJ2aWmClkFFSUlBspa9fXl6uV5JZlJqSn5ZZopecqF8M0c8FALKFIsRTAAAA" | base64 -d | gunzip
+    echo ""
+    echo "H4sIAAAAAAAAA22MsRXCMAwF+0zxB4DQ01JRMISIZdDDtowkJy/bkwG46t4Vd8+Itzik0ovRTVdJ 7Nh1YKUyGDjjps2PavB+mJq0F+qOTe2DrIZFW0gbnDAlXrlor9zihJDKZcfoiYL9BGoJmSmGMYy/ gz18Pu61si1CBT56VwvQSlLoWXieJvzhocfh3rJegXdE9+vlsm3bHGKcNEvMC00/MF6uwtoAAAA=" | base64 -d | gunzip
     echo ""
     output_on
 }
@@ -1247,6 +1398,25 @@ update_template() {
 
         rm -f "${template_tmp_file}"
     done
+}
+
+transform_file_var() {
+    ## Docker Secrets Support
+    ## usage: transform_file_var VAR
+    ##    ie: transform_file_var 'XYZ_DB_PASSWORD' 'example'
+    ##        (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
+    local variables
+    variables=$(echo "${1}" | tr " " "\n")
+    for variable in $variables; do
+        if [ -v "${variable}"_FILE ] ; then
+            if [ ! -f "${variable}"_FILE ] ; then
+                print_error "[transform_file_var] ${variable}_FILE set as environment variable, however file doesn't exist"
+                return 1
+            fi
+            export "${variable}"="$(cat "${variable}"_FILE)"
+        fi
+    done
+    unset variables
 }
 
 truefalse_onoff() {

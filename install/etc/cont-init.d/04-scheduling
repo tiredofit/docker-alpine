@@ -1,10 +1,11 @@
 #!/command/with-contenv bash
 
 source /assets/functions/00-container
+output_off
 prepare_service single
 PROCESS_NAME="scheduling"
 
-output_off
+
 
 ## Legacy
 if var_false "${ENABLE_CRON}" ; then CONTAINER_ENABLE_SCHEDULING=FALSE ; fi
@@ -66,7 +67,9 @@ EOF
             for d in /assets/defaults/* ; do
                 if [ "$d" != "/assets/defaults/00-container" ] ; then
                     # shellcheck source=/assets/defaults/
+                    output_off
                     source $d
+                    output_on
                     cronenv=$(mktemp)
                     set -o posix; set -f ; set | grep -E '^CRON_'| sed "s|CRON_||g" > "${cronenv}"
                     sed -i "/^PERIOD/d" "${cronenv}"
@@ -102,5 +105,5 @@ EOF
     esac
 fi
 
-output_on
 liftoff
+output_on

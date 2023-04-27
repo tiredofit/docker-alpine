@@ -1,6 +1,7 @@
 #!/command/with-contenv bash
 
 source /assets/functions/00-container
+output_off
 prepare_service single
 # shellcheck disable=SC2034
 PROCESS_NAME="messaging"
@@ -23,6 +24,11 @@ if var_true "${CONTAINER_ENABLE_MESSAGING}" ; then
             truefalse_onoff SMTP_TLS lower
             truefalse_onoff SMTP_STARTTLS lower
             truefalse_onoff SMTP_TLSCERTCHECK lower
+            transform_file_var \
+                            SMTP_HOST \
+                            SMTP_PORT \
+                            SMTP_USER \
+                            SMTP_PASS
 
             echo "### Automatically generated on container start. See documentation on how to set!" > /etc/msmtprc
             {
@@ -53,5 +59,6 @@ else
     :
 fi
 
-output_on
 liftoff
+
+output_on

@@ -11,10 +11,10 @@ ARG YQ_VERSION
 ARG ZABBIX_VERSION
 
 ### Set defaults
-ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"2.1.1"} \
+ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"2.1.2"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.4.2"} \
     YQ_VERSION=${YQ_VERSION:-"v4.33.3"} \
-    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.4.1"} \
+    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.4.2"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
@@ -39,6 +39,10 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2 | cut -d _ -f 1)" in \
         3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16 | 3.17* | 3.18* | edge ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ; echo "** Building Zabbix Agent 2" ; echo "** Building Fluent Bit" ; echo "** Building yq" ;; \
+        *) : ;; \
+    esac ; \
+    case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2 | cut -d _ -f 1)" in \
+        3.11 | 3.12 | 3.13 | 3.14 ) export GOLANG_VERSION=1.19.3 ;; \
         *) : ;; \
     esac ; \
     \
