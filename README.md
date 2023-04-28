@@ -234,7 +234,7 @@ This image includes the capability of using agents inside the image to monitor m
 This image comes with Zabbix Agent 1 (Classic or C compiled) and Zabbix Agent 2 (Modern, or Go compiled). See which variables work for each version and make your agent choice. Drop files in `/etc/zabbix/zabbix_agentd.conf.d` to setup your metrics. The environment variables below only affect the system end of the configuration. If you wish to use your own system configuration without these variables, change `ZABBIX_SETUP_TYPE` to `MANUAL`
 
 | Parameter | Description | Default | 1   | 2   | `_FILE` |
-| --------- | ----------- | ------- | --- | --- | ------- ||
+| --------- | ----------- | ------- | --- | --- | ------- |
 | `ZABBIX_SETUP_TYPE`                  | Automatically generate configuration based on these variables `AUTO` or `MANUAL`              | `AUTO`                   | x   | x   | |
 | `ZABBIX_AGENT_TYPE`                  | Which version of Zabbix Agent to load `1` or `2`                                              | 1                        | N/A | N/A | |
 | `ZABBIX_AGENT_LOG_PATH`              | Log File Path                                                                                 | `/var/log/zabbix/agent/` | x   | x   | |
