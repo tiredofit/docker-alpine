@@ -1,10 +1,10 @@
 #!/command/with-contenv bash
 
 source /assets/functions/00-container
+output_off
 prepare_service
 PROCESS_NAME="logging"
 
-output_off
 
 if var_true "${CONTAINER_ENABLE_LOGROTATE}" ; then
     print_debug "Enabling log rotation"
@@ -318,6 +318,13 @@ EOF
                     ##### Output Plugins
                     case "${FLUENTBIT_OUTPUT,,}" in
                         "loki" )
+                            transform_file_var \
+                                            FLUENTBIT_OUTPUT_LOKI_HOST \
+                                            FLUENTBIT_OUTPUT_LOKI_PORT \
+                                            FLUENTBIT_OUTPUT_LOKI_USER \
+                                            FLUENTBIT_OUTPUT_LOKI_PASS \
+                                            FLUENTBIT_OUTPUT_LOKI_TENANT_ID
+
                             if [ -n "${FLUENTBIT_OUTPUT_LOKI_USER}" ] ; then
                                 loki_user="    http_user              ${FLUENTBIT_OUTPUT_LOKI_USER}"
                             fi
@@ -333,7 +340,7 @@ EOF
                             truefalse_onoff FLUENTBIT_OUTPUT_LOKI_TLS
                             truefalse_onoff FLUENTBIT_OUTPUT_LOKI_TLS_VERIFY
 
-                cat <<EOF > /etc/fluent-bit/conf.d/out_loki.conf
+                            cat <<EOF > /etc/fluent-bit/conf.d/out_loki.conf
 ## Auto generated LOKI Output plugin for Fluent Bit
 ## Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
 
@@ -358,6 +365,7 @@ EOF
                             if [ ! -z "${FLUENTBIT_OUTPUT_FORWARD_SECRET}" ] ; then
                                 forward_secret="    Shared_Key    ${FLUENTBIT_OUTPUT_FORWARD_SECRET}"
                             fi
+                transform_file_var FLUENTBIT_OUTPUT_FORWARD_HOST
                 cat <<EOF > /etc/fluent-bit/conf.d/out_forward.conf
 ## Auto generated FluentD Forward Output plugin for Fluent Bit
 ## Generated on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')
@@ -410,5 +418,5 @@ EOF
 
 fi
 
-output_on
 liftoff
+output_on

@@ -7,7 +7,6 @@ prepare_service defaults single
 check_container_initialized
 check_service_initialized init
 liftoff
-output_on
 
 case "${CONTAINER_MONITORING_BACKEND}" in
     "zabbix" )
@@ -56,6 +55,7 @@ case "${CONTAINER_MONITORING_BACKEND}" in
         fi
 
         print_start "Starting Zabbix Agent (${zabbix_agent_type}) ${ZABBIX_VERSION}"
+        output_on
         silent exec s6-setuidgid "${ZABBIX_USER}" ${zabbix_command}  -c "${ZABBIX_CONFIG_PATH}"/"${ZABBIX_CONFIG_FILE}" -f
     ;;
 esac

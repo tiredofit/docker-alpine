@@ -14,7 +14,7 @@
 
 Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container image.
 
-* Currently tracking 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12, 3.13, 3.14, 3.15, 3.16, 3.17 and edge.
+* Currently tracking 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12, 3.13, 3.14, 3.15, 3.16, 3.17, 3.18 and edge.
 * [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 init capabilities.
 * [zabbix-agent](https://zabbix.org) (Classic and Modern) for individual container monitoring.
 * Scheduling via cron with other helpful tools (bash, curl, less, logrotate, nano, vi) for easier management.
@@ -36,18 +36,24 @@ Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container im
 - [Installation](#installation)
   - [Build from Source](#build-from-source)
   - [Prebuilt Images](#prebuilt-images)
-    - [Multi Architecture](#multi-archictecture)
+    - [Multi Architecture](#multi-architecture)
 - [Configuration](#configuration)
   - [Quick Start](#quick-start)
   - [Persistent Storage](#persistent-storage)
   - [Environment Variables](#environment-variables)
     - [Container Options](#container-options)
     - [Scheduling Options](#scheduling-options)
+      - [Cron Options](#cron-options)
     - [Messaging Options](#messaging-options)
+      - [MSMTP Options](#msmtp-options)
     - [Monitoring Options](#monitoring-options)
       - [Zabbix Options](#zabbix-options)
     - [Logging Options](#logging-options)
+      - [Log Shipping Parsing](#log-shipping-parsing)
       - [Fluent-Bit Options](#fluent-bit-options)
+    - [Firewall Options|](#firewall-options)
+      - [IPTables Options](#iptables-options)
+      - [Fail2Ban Options](#fail2ban-options)
     - [Permissions](#permissions)
     - [Process Watchdog](#process-watchdog)
   - [Networking](#networking)
@@ -61,7 +67,6 @@ Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container im
   - [Feature Requests](#feature-requests)
   - [Updates](#updates)
 - [License](#license)
-- [References](#references)
 
 ## Prerequisites and Assumptions
 
@@ -79,17 +84,18 @@ Builds of the image are available on [Docker Hub](https://hub.docker.com/r/tired
 docker pull docker.io/tiredofdit/alpine:(imagetag)
 ```
 
-Builds of the image are also available on the [Github Container Registry](https://github.com/tiredofit/docker-alpine/pkgs/container/docker-alpine) 
- 
+Builds of the image are also available on the [Github Container Registry](https://github.com/tiredofit/docker-alpine/pkgs/container/docker-alpine)
+
 ```
 docker pull ghcr.io/tiredofit/docker-alpine:(imagetag)
-``` 
+```
 
 The following image tags are available along with their tagged release based on what's written in the [Changelog](CHANGELOG.md):
 
 | Alpine version | Tag     |
 | -------------- | ------- |
 | `edge`         | `:edge` |
+| `3.18`         | `:3.18` |
 | `3.17`         | `:3.17` |
 | `3.16`         | `:3.16` |
 | `3.15`         | `:3.15` |
@@ -134,29 +140,31 @@ The following directories are used for configuration and can be mapped for persi
 ### Environment Variables
 
 Below is the complete list of available options that can be used to customize your installation.
+Variables showing an 'x' under the `_FILE` column can be used for storing the information inside of a file, useful for secrets.
+
 #### Container Options
-| Parameter                                | Description                                                                                                                           | Default                            |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| `CONAINER_ENABLE_LOG_TIMESTAMP`          | Prefix this images container logs with timestamp                                                                                      | `TRUE`                             |
-| `CONTAINER_COLORIZE_OUTPUT`              | Enable/Disable colorized console output                                                                                               | `TRUE`                             |
-| `CONTAINER_CUSTOM_BASH_PROMPT`           | If you wish to set a different bash prompt then '(imagename):(version) HH:MM:SS # '                                                   |                                    |
-| `CONTAINER_CUSTOM_PATH`                  | Used for adding custom files into the image upon startup                                                                              | `/assets/custom`                   |
-| `CONTAINER_CUSTOM_SCRIPTS_PATH`          | Used for adding custom scripts to execute upon startup                                                                                | `/assets/custom-scripts`           |
-| `CONTAINER_ENABLE_PROCESS_COUNTER`       | Show how many times process has executed in console log                                                                               | `TRUE`                             |
-| `CONTAINER_LOG_LEVEL`                    | Control level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG`                                                                | `NOTICE`                           |
-| `CONTAINER_LOG_PREFIX_TIME_FMT`        | Timestamp Time Format                                                                                                                 | `%H:%M:%S`                         |
+| Parameter                             | Description                                                                                                                           | Default                            |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `CONAINER_ENABLE_LOG_TIMESTAMP`       | Prefix this images container logs with timestamp                                                                                      | `TRUE`                             |
+| `CONTAINER_COLORIZE_OUTPUT`           | Enable/Disable colorized console output                                                                                               | `TRUE`                             |
+| `CONTAINER_CUSTOM_BASH_PROMPT`        | If you wish to set a different bash prompt then '(imagename):(version) HH:MM:SS # '                                                   |                                    |
+| `CONTAINER_CUSTOM_PATH`               | Used for adding custom files into the image upon startup                                                                              | `/assets/custom`                   |
+| `CONTAINER_CUSTOM_SCRIPTS_PATH`       | Used for adding custom scripts to execute upon startup                                                                                | `/assets/custom-scripts`           |
+| `CONTAINER_ENABLE_PROCESS_COUNTER`    | Show how many times process has executed in console log                                                                               | `TRUE`                             |
+| `CONTAINER_LOG_LEVEL`                 | Control level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG`                                                                | `NOTICE`                           |
+| `CONTAINER_LOG_PREFIX_TIME_FMT`       | Timestamp Time Format                                                                                                                 | `%H:%M:%S`                         |
 | `CONTAINER_LOG_PREFIX_DATE_FMT`       | Timestamp Date Format                                                                                                                 | `%Y-%m-%d`                         |
 | `CONTAINER_LOG_PREFIX_SEPERATOR`      | Timestamp seperator                                                                                                                   | `-`                                |
-| `CONTAINER_LOG_FILE_LEVEL`               | Control level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG`                                                                | `DEBUG`                            |
-| `CONTAINER_LOG_FILE_NAME`                | Internal Container Logs filename                                                                                                      | `/var/log/container/container.log` |
-| `CONTAINER_LOG_FILE_PATH`                | Path where to find the internal container logs                                                                                        | `/var/log/container/`              |
-| `CONTAINER_LOG_FILE_PREFIX_TIME_FMT`   | Timestamp Time Format                                                                                                                 | `%H:%M:%S`                         |
+| `CONTAINER_LOG_FILE_LEVEL`            | Control level of output of container `INFO`, `WARN`, `NOTICE`, `DEBUG`                                                                | `DEBUG`                            |
+| `CONTAINER_LOG_FILE_NAME`             | Internal Container Logs filename                                                                                                      | `/var/log/container/container.log` |
+| `CONTAINER_LOG_FILE_PATH`             | Path where to find the internal container logs                                                                                        | `/var/log/container/`              |
+| `CONTAINER_LOG_FILE_PREFIX_TIME_FMT`  | Timestamp Time Format                                                                                                                 | `%H:%M:%S`                         |
 | `CONTAINER_LOG_FILE_PREFIX_DATE_FMT`  | Timestamp Date Format                                                                                                                 | `%Y-%m-%d`                         |
 | `CONTAINER_LOG_FILE_PREFIX_SEPERATOR` | Timestamp seperator                                                                                                                   | `-`                                |
-| `CONTAINER_NAME`                         | Used for setting entries in Monnitoring and Log Shipping                                                                              | (hostname)                         |
-| `CONTAINER_POST_INIT_COMMAND`            | If you wish to execute a command in the container after all services have initialized enter it here. Seperate multiple by commas      |                                    |
-| `CONTAINER_POST_INIT_SCRIPT`             | If you wish to execute a script in the container after all services have initialized enter the path here. Seperate multiple by commas |                                    |
-| `TIMEZONE`                               | Set Timezone                                                                                                                          | `Etc/GMT`                          |
+| `CONTAINER_NAME`                      | Used for setting entries in Monnitoring and Log Shipping                                                                              | (hostname)                         |
+| `CONTAINER_POST_INIT_COMMAND`         | If you wish to execute a command in the container after all services have initialized enter it here. Seperate multiple by commas      |                                    |
+| `CONTAINER_POST_INIT_SCRIPT`          | If you wish to execute a script in the container after all services have initialized enter the path here. Seperate multiple by commas |                                    |
+| `TIMEZONE`                            | Set Timezone                                                                                                                          | `Etc/GMT`                          |
 
 
 #### Scheduling Options
@@ -196,19 +204,19 @@ If you wish to send mail, set `CONTAINER_ENABLE_MESSAGING=TRUE` and configure th
 ##### MSMTP Options
 
 See the [MSMTP Configuration Options](https://marlam.de/msmtp/msmtp.html) for further information on options to configure MSMTP.
-| Parameter             | Description                                       | Default         |
-| --------------------- | ------------------------------------------------- | --------------- |
-| `SMTP_AUTO_FROM`      | Add setting to support sending through Gmail SMTP | `FALSE`         |
-| `SMTP_HOST`           | Hostname of SMTP Server                           | `postfix-relay` |
-| `SMTP_PORT`           | Port of SMTP Server                               | `25`            |
-| `SMTP_DOMAIN`         | HELO Domain                                       | `docker`        |
-| `SMTP_MAILDOMAIN`     | Mail Domain From                                  | `local`         |
-| `SMTP_AUTHENTICATION` | SMTP Authentication                               | `none`          |
-| `SMTP_USER`           | SMTP Username                                     | ``              |
-| `SMTP_PASS`           | SMTP Password                                     | ``              |
-| `SMTP_TLS`            | Use TLS                                           | `FALSE`         |
-| `SMTP_STARTTLS`       | Start TLS from within session                     | `FALSE`         |
-| `SMTP_TLSCERTCHECK`   | Check remote certificate                          | `FALSE`         |
+| Parameter             | Description                                       | Default         | `_FILE` |
+| --------------------- | ------------------------------------------------- | --------------- | ------- |
+| `SMTP_AUTO_FROM`      | Add setting to support sending through Gmail SMTP | `FALSE`         |         |
+| `SMTP_HOST`           | Hostname of SMTP Server                           | `postfix-relay` | x       |
+| `SMTP_PORT`           | Port of SMTP Server                               | `25`            | x       |
+| `SMTP_DOMAIN`         | HELO Domain                                       | `docker`        |         |
+| `SMTP_MAILDOMAIN`     | Mail Domain From                                  | `local`         |         |
+| `SMTP_AUTHENTICATION` | SMTP Authentication                               | `none`          |         |
+| `SMTP_USER`           | SMTP Username                                     | ``              | x       |
+| `SMTP_PASS`           | SMTP Password                                     | ``              | x       |
+| `SMTP_TLS`            | Use TLS                                           | `FALSE`         |         |
+| `SMTP_STARTTLS`       | Start TLS from within session                     | `FALSE`         |         |
+| `SMTP_TLSCERTCHECK`   | Check remote certificate                          | `FALSE`         |         |
 
 See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/5.4/manual/appendix/config/zabbix_agentd)
 for information about the following Zabbix values.
@@ -225,40 +233,40 @@ This image includes the capability of using agents inside the image to monitor m
 
 This image comes with Zabbix Agent 1 (Classic or C compiled) and Zabbix Agent 2 (Modern, or Go compiled). See which variables work for each version and make your agent choice. Drop files in `/etc/zabbix/zabbix_agentd.conf.d` to setup your metrics. The environment variables below only affect the system end of the configuration. If you wish to use your own system configuration without these variables, change `ZABBIX_SETUP_TYPE` to `MANUAL`
 
-| Parameter                            | Description                                                                                   | Default                  | 1   | 2   |
-| ------------------------------------ | --------------------------------------------------------------------------------------------- | ------------------------ | --- | --- |
-| `ZABBIX_SETUP_TYPE`                  | Automatically generate configuration based on these variables `AUTO` or `MANUAL`              | `AUTO`                   | x   | x   |
-| `ZABBIX_AGENT_TYPE`                  | Which version of Zabbix Agent to load `1` or `2`                                              | 1                        | N/A | N/A |
-| `ZABBIX_AGENT_LOG_PATH`              | Log File Path                                                                                 | `/var/log/zabbix/agent/` | x   | x   |
-| `ZABBIX_AGENT_LOG_FILE`              | Logfile name                                                                                  | `zabbix_agentd.log`      | x   | x   |
-| `ZABBIX_CERT_PATH`                   | Zabbix Certificates Path                                                                      | `/etc/zabbix/certs/`     | x   | x   |
-| `ZABBIX_ENABLE_AUTOREGISTRATION`     | Use internal routine for Agent autoregistration based on config files with # Autoregister tag | `TRUE`                   | x   | x   |
-| `ZABBIX_ENABLE_AUTOREGISTRATION_DNS` | Register with DNS name instead of IP Address when autoregistering                             | `TRUE`                   | x   | x   |
-| `ZABBIX_AUTOREGISTRATION_DNS_NAME`   | (optional) DNS Name to provide for auto register. Uses `CONTAINER_NAME` as default            | `$CONTAINER_NAME`        | x   | x   |
-| `ZABBIX_AUTOREGISTRATION_DNS_SUFFIX` | If you want to append something after the generated DNS Name                                  | ``                       | x   | x   |
-| `ZABBIX_ENCRYPT_PSK_ID`              | Zabbix Encryption PSK ID                                                                      | ``                       | x   | x   |
-| `ZABBIX_ENCRYPT_PSK_KEY`             | Zabbix Encryption PSK Key                                                                     | ``                       | x   | x   |
-| `ZABBIX_ENCRYPT_PSK_FILE`            | Zabbix Encryption PSK File (If not using above env var)                                       | ``                       | x   | x   |
-| `ZABBIX_LOG_FILE_SIZE`               | Logfile size                                                                                  | `0`                      | x   | x   |
-| `ZABBIX_DEBUGLEVEL`                  | Debug level                                                                                   | `1`                      | x   | x   |
-| `ZABBIX_REMOTECOMMANDS_ALLOW`        | Enable remote commands                                                                        | `*`                      | x   | x   |
-| `ZABBIX_REMOTECOMMANDS_DENY`         | Deny remote commands                                                                          | ``                       | x   | x   |
-| `ZABBIX_REMOTECOMMANDS_LOG`          | Enable remote commands Log (`0`/`1`)                                                          | `1`                      | x   | ``  |
-| `ZABBIX_SERVER`                      | Allow connections from Zabbix server IP                                                       | `0.0.0.0/0`              | x   | x   |
-| `ZABBIX_STATUS_PORT`                 | Agent will listen to this port for status requests (http://localhost:port/status)             | `10050`                  | ``  | x   |
-| `ZABBIX_LISTEN_PORT`                 | Zabbix Agent listening port                                                                   | `10050`                  | x   | x   |
-| `ZABBIX_LISTEN_IP`                   | Zabbix Agent listening IP                                                                     | `0.0.0.0`                | x   | x   |
-| `ZABBIX_START_AGENTS`                | How many Zabbix Agents to start                                                               | `1`                      | x   | ``  |
-| `ZABBIX_SERVER_ACTIVE`               | Server for active checks                                                                      | `zabbix-proxy`           | x   | x   |
-| `ZABBIX_HOSTNAME`                    | Container hostname to report to server                                                        | `$CONTAINER_NAME`        | x   | x   |
-| `ZABBIX_REFRESH_ACTIVE_CHECKS`       | Seconds to refresh Active Checks                                                              | `120`                    | x   | x   |
-| `ZABBIX_BUFFER_SEND`                 | Buffer Send                                                                                   | `5`                      | x   | x   |
-| `ZABBIX_BUFFER_SIZE`                 | Buffer Size                                                                                   | `100`                    | x   | x   |
-| `ZABBIX_MAXLINES_SECOND`             | Max Lines Per Second                                                                          | `20`                     | x   | ``  |
-| `ZABBIX_SOCKET`                      | Socket for communicating                                                                      | `/tmp/zabbix.sock`       | ``  | x   |
-| `ZABBIX_ALLOW_ROOT`                  | Allow running as root                                                                         | `1`                      | x   | ``  |
-| `ZABBIX_USER`                        | User to start agent                                                                           | `zabbix`                 | x   | x   |
-| `ZABBIX_USER_SUDO`                   | Allow Zabbix user to utilize sudo commands                                                    | `TRUE`                   | x   | x   |
+| Parameter | Description | Default | 1   | 2   | `_FILE` |
+| --------- | ----------- | ------- | --- | --- | ------- ||
+| `ZABBIX_SETUP_TYPE`                  | Automatically generate configuration based on these variables `AUTO` or `MANUAL`              | `AUTO`                   | x   | x   | |
+| `ZABBIX_AGENT_TYPE`                  | Which version of Zabbix Agent to load `1` or `2`                                              | 1                        | N/A | N/A | |
+| `ZABBIX_AGENT_LOG_PATH`              | Log File Path                                                                                 | `/var/log/zabbix/agent/` | x   | x   | |
+| `ZABBIX_AGENT_LOG_FILE`              | Logfile name                                                                                  | `zabbix_agentd.log`      | x   | x   | |
+| `ZABBIX_CERT_PATH`                   | Zabbix Certificates Path                                                                      | `/etc/zabbix/certs/`     | x   | x   | |
+| `ZABBIX_ENABLE_AUTOREGISTRATION`     | Use internal routine for Agent autoregistration based on config files with # Autoregister tag | `TRUE`                   | x   | x   | |
+| `ZABBIX_ENABLE_AUTOREGISTRATION_DNS` | Register with DNS name instead of IP Address when autoregistering                             | `TRUE`                   | x   | x   | |
+| `ZABBIX_AUTOREGISTRATION_DNS_NAME`   | (optional) DNS Name to provide for auto register. Uses `CONTAINER_NAME` as default            | `$CONTAINER_NAME`        | x   | x   | |
+| `ZABBIX_AUTOREGISTRATION_DNS_SUFFIX` | If you want to append something after the generated DNS Name                                  | ``                       | x   | x   | |
+| `ZABBIX_ENCRYPT_PSK_ID`              | Zabbix Encryption PSK ID                                                                      | ``                       | x   | x   | x |
+| `ZABBIX_ENCRYPT_PSK_KEY`             | Zabbix Encryption PSK Key                                                                     | ``                       | x   | x   | x |
+| `ZABBIX_ENCRYPT_PSK_FILE`            | Zabbix Encryption PSK File (If not using above env var)                                       | ``                       | x   | x   | |
+| `ZABBIX_LOG_FILE_SIZE`               | Logfile size                                                                                  | `0`                      | x   | x   | |
+| `ZABBIX_DEBUGLEVEL`                  | Debug level                                                                                   | `1`                      | x   | x   | |
+| `ZABBIX_REMOTECOMMANDS_ALLOW`        | Enable remote commands                                                                        | `*`                      | x   | x   | |
+| `ZABBIX_REMOTECOMMANDS_DENY`         | Deny remote commands                                                                          | ``                       | x   | x   | |
+| `ZABBIX_REMOTECOMMANDS_LOG`          | Enable remote commands Log (`0`/`1`)                                                          | `1`                      | x   | ``  | |
+| `ZABBIX_SERVER`                      | Allow connections from Zabbix server IP                                                       | `0.0.0.0/0`              | x   | x   | |
+| `ZABBIX_STATUS_PORT`                 | Agent will listen to this port for status requests (http://localhost:port/status)             | `10050`                  | ``  | x   | |
+| `ZABBIX_LISTEN_PORT`                 | Zabbix Agent listening port                                                                   | `10050`                  | x   | x   | |
+| `ZABBIX_LISTEN_IP`                   | Zabbix Agent listening IP                                                                     | `0.0.0.0`                | x   | x   | |
+| `ZABBIX_START_AGENTS`                | How many Zabbix Agents to start                                                               | `1`                      | x   | ``  | |
+| `ZABBIX_SERVER_ACTIVE`               | Server for active checks                                                                      | `zabbix-proxy`           | x   | x   | x |
+| `ZABBIX_HOSTNAME`                    | Container hostname to report to server                                                        | `$CONTAINER_NAME`        | x   | x   | |
+| `ZABBIX_REFRESH_ACTIVE_CHECKS`       | Seconds to refresh Active Checks                                                              | `120`                    | x   | x   | |
+| `ZABBIX_BUFFER_SEND`                 | Buffer Send                                                                                   | `5`                      | x   | x   | |
+| `ZABBIX_BUFFER_SIZE`                 | Buffer Size                                                                                   | `100`                    | x   | x   | |
+| `ZABBIX_MAXLINES_SECOND`             | Max Lines Per Second                                                                          | `20`                     | x   | ``  | |
+| `ZABBIX_SOCKET`                      | Socket for communicating                                                                      | `/tmp/zabbix.sock`       | ``  | x   | |
+| `ZABBIX_ALLOW_ROOT`                  | Allow running as root                                                                         | `1`                      | x   | ``  | |
+| `ZABBIX_USER`                        | User to start agent                                                                           | `zabbix`                 | x   | x   | |
+| `ZABBIX_USER_SUDO`                   | Allow Zabbix user to utilize sudo commands                                                    | `TRUE`                   | x   | x   | |
 
 This image supports autoregistering configuration as an Active Agent to a Zabbix Proxy or a Server. It looks in `/etc/zabbix_agent.conf.d/*.conf` for the string `# Autoregister=` and takes these values and adds it to the `HostMetadata` configuration entry automatically wrapped around `:` eg `:application:` . Use it by creating an Auto register rule and search for that string. You can find server templates in this repository in the `[zabbix_templates](zabbix_templates/)` directory.
 
@@ -294,54 +302,54 @@ Create a line in the `logrotate.d/<file>` that looks like `# logship: <parser>`.
 
 Drop files in `/etc/fluent-bit/conf.d` to setup your inputs and outputs. The environment variables below only affect the system end of the configuration. If you wish to use your own system configuration without these variables, change `FLUENTBIT_SETUP_TYPE` to `MANUAL`. Container will attempt to automatically create configuration to send to a destination, or can also be set to act as a receiver from other fluent-bit hosts and forward data to a remote log analysis service.
 
-| Parameter                             | Description                                                                                      | Default                  |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------ |
-| `FLUENTBIT_CONFIG_PARSERS`            | Parsers config file name                                                                         | `parsers.conf`           |
-| `FLUENTBIT_CONFIG_PLUGINS`            | Plugins config file name                                                                         | `plugins.conf`           |
-| `FLUENTBIT_ENABLE_HTTP_SERVER`        | Embedded HTTP Server for metrics `TRUE` / `FALSE`                                                | `TRUE`                   |
-| `FLUENTBIT_ENABLE_STORAGE_METRICS`    | Public storage pipeline metrics in /api/v1/storage                                               | `TRUE`                   |
-| `FLUENTBIT_FLUSH_SECONDS`             | Wait time to flush records in seconds                                                            | `1`                      |
-| `FLUENTBIT_FORWARD_BUFFER_CHUNK_SIZE` | Buffer Chunk Size                                                                                | `32KB`                   |
-| `FLUENTBIT_FORWARD_BUFFER_MAX_SIZE`   | Buffer Maximum Size                                                                              | `64KB`                   |
-| `FLUENTBIT_FORWARD_PORT`              | What port when using `PROXY` (listen) mode or `FORWARD` (client) output                          | `24224`                  |
-| `FLUENTBIT_GRACE_SECONDS`             | Wait time before exit in seconds                                                                 | `1`                      |
-| `FLUENTBIT_HTTP_LISTEN_IP`            | HTTP Listen IP                                                                                   | `0.0.0.0`                |
-| `FLUENTBIT_HTTP_LISTEN_PORT`          | HTTP Listening Port                                                                              | `2020`                   |
-| `FLUENTBIT_LOG_FILE`                  | Log File                                                                                         | `fluentbit.log`          |
-| `FLUENTBIT_LOG_LEVEL`                 | Log Level `info` `warn` `error` `debug` `trace`                                                  | `info`                   |
-| `FLUENTBIT_LOG_PATH`                  | Log Path                                                                                         | `/var/log/fluentbit/`    |
-| `FLUENTBIT_MODE`                      | Type of operation - Client `NORMAL` or Proxy `PROXY`                                             | `NORMAL`                 |
-| `FLUENTBIT_OUTPUT_FORWARD_HOST`       | Where to forward Fluent-Bit data to                                                              | `fluent-proxy`           |
-| `FLUENTBIT_OUTPUT_FORWARD_TLS_VERIFY` | Verify certificates when using TLS                                                               | `FALSE`                  |
-| `FLUENTBIT_OUTPUT_FORWARD_TLS`        | Enable TLS when forwading                                                                        | `FALSE`                  |
-| `FLUENTBIT_OUTPUT_LOKI_HOST`          | Host for Loki Output                                                                             | `loki`                   |
-| `FLUENTBIT_OUTPUT_LOKI_PORT`          | Port for Loki Output                                                                             | `3100`                   |
-| `FLUENTBIT_OUTPUT_LOKI_TLS`           | Enable TLS For Loki Output                                                                       | `FALSE`                  |
-| `FLUENTBIT_OUTPUT_LOKI_TLS_VERIFY`    | Enable TLS Certificate Verification For Loki Output                                              | `FALSE`                  |
-| `FLUENTBIT_OUTPUT_LOKI_USER`          | (optional) Username to authenticate to Loki Server                                               | ``                       |
-| `FLUENTBIT_OUTPUT_LOKI_PASS`          | (optional) Password to authenticate to Loki Server                                               | ``                       |
-| `FLUENTBIT_OUTPUT_TENANT_ID`          | (optional) Tenant ID to pass to Loki Server                                                      | ``                       |
-| `FLUENTBIT_OUTPUT`                    | Output plugin to use `LOKI` , `FORWARD`, `NULL`                                                  | `FORWARD`                |
-| `FLUENTBIT_TAIL_BUFFER_CHUNK_SIZE`    | Buffer Chunk Size for Tail                                                                       | `32k`                    |
-| `FLUENTBIT_TAIL_BUFFER_MAX_SIZE`      | Maximum size for Tail                                                                            | `32k`                    |
-| `FLUENTBIT_TAIL_READ_FROM_HEAD`       | Read from Head instead of Tail                                                                   | `FALSE`                  |
-| `FLUENTBIT_TAIL_SKIP_EMPTY_LINES`     | Skip Empty Lines when Tailing                                                                    | `TRUE`                   |
-| `FLUENTBIT_TAIL_SKIP_LONG_LINES`      | Skip Long Lines when Tailing                                                                     | `TRUE`                   |
-| `FLUENTBIT_TAIL_DB_ENABLE`            | Enable Offset DB per tracked file (will be same name as log file yet hidden and a suffix of `db` | `TRUE`                   |
-| `FLUENTBIT_TAIL_DB_SYNC`              | DB Sync Type `normal` or `full`                                                                  | `normal`                 |
-| `FLUENTBIT_TAIL_DB_LOCK`              | Lock access to DB File                                                                           | `TRUE`                   |
-| `FLUENTBIT_TAIL_DB_JOURNAL_MODE`      | Journal Mode for DB `WAL` `DELETE` `TRUNCATE` `PERSIST` `MEMORY` `OFF`                           | `WAL`                    |
-| `FLUENTBIT_TAIL_KEY_PATH_ENABLE`      | Enable sending Key for Log Filename/Path                                                         | `TRUE`                   |
-| `FLUENTBIT_TAIL_KEY_PATH`             | Path Key Name                                                                                    | `filename`               |
-| `FLUENTBIT_TAIL_KEY_OFFSET_ENABLE`    | Enable sending Key for Offset in Log file                                                        | `FALSE`                  |
-| `FLUENTBIT_TAIL_KEY_OFFSET`           | Offset Path Key Name                                                                             | `offset`                 |
-| `FLUENTBIT_SETUP_TYPE`                | Automatically generate configuration based on these variables `AUTO` or `MANUAL`                 | `AUTO`                   |
-| `FLUENTBIT_STORAGE_BACKLOG_LIMIT`     | Maximum about of memory to use for backlogged/unsent records                                     | `5M`                     |
-| `FLUENTBIT_STORAGE_CHECKSUM`          | Create CRC32 checkcum for filesystem RW functions                                                | `FALSE`                  |
-| `FLUENTBIT_STORAGE_PATH`              | Absolute file system path to store filesystem data buffers                                       | `/tmp/fluentbit/storage` |
-| `FLUENTBIT_STORAGE_SYNC`              | Synchronization mode to store data in filesystem `normal` or `full`                              | `normal`                 |
+| Parameter | Description | Default | `_FILE` |
+| --------- | ----------- | ------- || ------- |
+| `FLUENTBIT_CONFIG_PARSERS`            | Parsers config file name                                                                         | `parsers.conf`           ||
+| `FLUENTBIT_CONFIG_PLUGINS`            | Plugins config file name                                                                         | `plugins.conf`           ||
+| `FLUENTBIT_ENABLE_HTTP_SERVER`        | Embedded HTTP Server for metrics `TRUE` / `FALSE`                                                | `TRUE`                   ||
+| `FLUENTBIT_ENABLE_STORAGE_METRICS`    | Public storage pipeline metrics in /api/v1/storage                                               | `TRUE`                   ||
+| `FLUENTBIT_FLUSH_SECONDS`             | Wait time to flush records in seconds                                                            | `1`                      ||
+| `FLUENTBIT_FORWARD_BUFFER_CHUNK_SIZE` | Buffer Chunk Size                                                                                | `32KB`                   ||
+| `FLUENTBIT_FORWARD_BUFFER_MAX_SIZE`   | Buffer Maximum Size                                                                              | `64KB`                   ||
+| `FLUENTBIT_FORWARD_PORT`              | What port when using `PROXY` (listen) mode or `FORWARD` (client) output                          | `24224`                  ||
+| `FLUENTBIT_GRACE_SECONDS`             | Wait time before exit in seconds                                                                 | `1`                      ||
+| `FLUENTBIT_HTTP_LISTEN_IP`            | HTTP Listen IP                                                                                   | `0.0.0.0`                ||
+| `FLUENTBIT_HTTP_LISTEN_PORT`          | HTTP Listening Port                                                                              | `2020`                   ||
+| `FLUENTBIT_LOG_FILE`                  | Log File                                                                                         | `fluentbit.log`          ||
+| `FLUENTBIT_LOG_LEVEL`                 | Log Level `info` `warn` `error` `debug` `trace`                                                  | `info`                   ||
+| `FLUENTBIT_LOG_PATH`                  | Log Path                                                                                         | `/var/log/fluentbit/`    ||
+| `FLUENTBIT_MODE`                      | Type of operation - Client `NORMAL` or Proxy `PROXY`                                             | `NORMAL`                 ||
+| `FLUENTBIT_OUTPUT_FORWARD_HOST`       | Where to forward Fluent-Bit data to                                                              | `fluent-proxy`           | x |
+| `FLUENTBIT_OUTPUT_FORWARD_TLS_VERIFY` | Verify certificates when using TLS                                                               | `FALSE`                  ||
+| `FLUENTBIT_OUTPUT_FORWARD_TLS`        | Enable TLS when forwading                                                                        | `FALSE`                  ||
+| `FLUENTBIT_OUTPUT_LOKI_HOST`          | Host for Loki Output                                                                             | `loki`                   | x |
+| `FLUENTBIT_OUTPUT_LOKI_PORT`          | Port for Loki Output                                                                             | `3100`                   | x |
+| `FLUENTBIT_OUTPUT_LOKI_TLS`           | Enable TLS For Loki Output                                                                       | `FALSE`                  ||
+| `FLUENTBIT_OUTPUT_LOKI_TLS_VERIFY`    | Enable TLS Certificate Verification For Loki Output                                              | `FALSE`                  ||
+| `FLUENTBIT_OUTPUT_LOKI_USER`          | (optional) Username to authenticate to Loki Server                                               | ``                       | x |
+| `FLUENTBIT_OUTPUT_LOKI_PASS`          | (optional) Password to authenticate to Loki Server                                               | ``                       | x |
+| `FLUENTBIT_OUTPUT_TENANT_ID`          | (optional) Tenant ID to pass to Loki Server                                                      | ``                       | x |
+| `FLUENTBIT_OUTPUT`                    | Output plugin to use `LOKI` , `FORWARD`, `NULL`                                                  | `FORWARD`                ||
+| `FLUENTBIT_TAIL_BUFFER_CHUNK_SIZE`    | Buffer Chunk Size for Tail                                                                       | `32k`                    ||
+| `FLUENTBIT_TAIL_BUFFER_MAX_SIZE`      | Maximum size for Tail                                                                            | `32k`                    ||
+| `FLUENTBIT_TAIL_READ_FROM_HEAD`       | Read from Head instead of Tail                                                                   | `FALSE`                  ||
+| `FLUENTBIT_TAIL_SKIP_EMPTY_LINES`     | Skip Empty Lines when Tailing                                                                    | `TRUE`                   ||
+| `FLUENTBIT_TAIL_SKIP_LONG_LINES`      | Skip Long Lines when Tailing                                                                     | `TRUE`                   ||
+| `FLUENTBIT_TAIL_DB_ENABLE`            | Enable Offset DB per tracked file (will be same name as log file yet hidden and a suffix of `db` | `TRUE`                   ||
+| `FLUENTBIT_TAIL_DB_SYNC`              | DB Sync Type `normal` or `full`                                                                  | `normal`                 ||
+| `FLUENTBIT_TAIL_DB_LOCK`              | Lock access to DB File                                                                           | `TRUE`                   ||
+| `FLUENTBIT_TAIL_DB_JOURNAL_MODE`      | Journal Mode for DB `WAL` `DELETE` `TRUNCATE` `PERSIST` `MEMORY` `OFF`                           | `WAL`                    ||
+| `FLUENTBIT_TAIL_KEY_PATH_ENABLE`      | Enable sending Key for Log Filename/Path                                                         | `TRUE`                   ||
+| `FLUENTBIT_TAIL_KEY_PATH`             | Path Key Name                                                                                    | `filename`               ||
+| `FLUENTBIT_TAIL_KEY_OFFSET_ENABLE`    | Enable sending Key for Offset in Log file                                                        | `FALSE`                  ||
+| `FLUENTBIT_TAIL_KEY_OFFSET`           | Offset Path Key Name                                                                             | `offset`                 ||
+| `FLUENTBIT_SETUP_TYPE`                | Automatically generate configuration based on these variables `AUTO` or `MANUAL`                 | `AUTO`                   ||
+| `FLUENTBIT_STORAGE_BACKLOG_LIMIT`     | Maximum about of memory to use for backlogged/unsent records                                     | `5M`                     ||
+| `FLUENTBIT_STORAGE_CHECKSUM`          | Create CRC32 checkcum for filesystem RW functions                                                | `FALSE`                  ||
+| `FLUENTBIT_STORAGE_PATH`              | Absolute file system path to store filesystem data buffers                                       | `/tmp/fluentbit/storage` ||
+| `FLUENTBIT_STORAGE_SYNC`              | Synchronization mode to store data in filesystem `normal` or `full`                              | `normal`                 ||
 
-#### Firewall Options
+#### Firewall Options|
 
 Included when proper capabilities are set on image is the capability to set up detailed block / allow rules via a firewall on container start. Presently only `iptables` is supported.
 You must use run your containers with the following capabilities added: `NET_ADMIN`, `NET_RAW`
@@ -364,10 +372,10 @@ FIREWALL_RULE_01=-I INPUT -p tcp -m tcp -s 0.0.0.0/0 --dport 389 -j DROP
 
 Instead of relying on environment variables one can put a `iptables-restore` compatible ruleset below and it will be imported on container start.
 
-| Parameter                   | Description                                                                        | Default                                        |
-| --------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `IPTABLES_RULES_PATH`        | Path for IPTables Rules                                     | `/assets/iptables/` |
-| `IPTABLES_RULES_FILE`        | IPTables Rules File to restore if exists on container start | `iptables.rules`    |
+| Parameter             | Description                                                 | Default             |
+| --------------------- | ----------------------------------------------------------- | ------------------- |
+| `IPTABLES_RULES_PATH` | Path for IPTables Rules                                     | `/assets/iptables/` |
+| `IPTABLES_RULES_FILE` | IPTables Rules File to restore if exists on container start | `iptables.rules`    |
 
 
 ##### Fail2Ban Options
@@ -497,12 +505,11 @@ print_start "Starting processname"    # Show STARTING log prefix, and also show 
 fakeprocess (args)                    # whatever your process you want to start is
 ````
 
-| Parameter                         | Description                                                                    | Default     |
-| --------------------------------- | ------------------------------------------------------------------------------ | ----------- |
-| `CONTAINER_ENABLE_DOCKER_SECRETS` | Check Docker Secrets when checking for environment variables                   | `TRUE`      |
-| `CONTAINER_SKIP_SANITY_CHECK`     | Skip the checking to see if all scripts in /etc/cont-init.d executed correctly | `FALSE`     |
-| `DEBUG_MODE`                      | Show all script output (set -x)                                                | `FALSE`     |
-| `PROCESS_NAME`                    | Used for prefixing the script that is running                                  | `container` |
+| Parameter                     | Description                                                                    | Default     |
+| ----------------------------- | ------------------------------------------------------------------------------ | ----------- |
+| `CONTAINER_SKIP_SANITY_CHECK` | Skip the checking to see if all scripts in /etc/cont-init.d executed correctly | `FALSE`     |
+| `DEBUG_MODE`                  | Show all script output (set -x)                                                | `FALSE`     |
+| `PROCESS_NAME`                | Used for prefixing the script that is running                                  | `container` |
 
 ## Debug Mode
 
@@ -528,6 +535,7 @@ These images were built to serve a specific need in a production environment and
 ### Usage
 - The [Discussions board](../../discussions) is a great place for working with the community on tips and tricks of using this image.
 - Consider [sponsoring me](https://github.com/sponsors/tiredofit) for personalized support
+
 ### Bugfixes
 - Please, submit a [Bug Report](issues/new) if something isn't working as expected. I'll do my best to issue a fix in short order.
 

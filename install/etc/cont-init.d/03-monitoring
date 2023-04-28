@@ -1,9 +1,9 @@
 #!/command/with-contenv bash
 
 source /assets/functions/00-container
+output_off
 prepare_service single
 PROCESS_NAME="monitoring"
-output_off
 
 ## Legacy
 if var_false "${ENABLE_ZABBIX}"; then CONTAINER_ENABLE_MONITORING=FALSE ; fi
@@ -31,6 +31,10 @@ if var_true "${CONTAINER_ENABLE_MONITORING}" ; then
             fi
 
             if [ -n "${ZABBIX_ENCRYPT_PSK_ID}" ] || [ -n "${ZABBIX_ENCRYPT_PSK_KEY}" ] || [ -n "${ZABBIX_ENCRYPT_PSK_FILE}" ] ; then
+                transform_file_var \
+                                ZABBIX_ENCRYPT_PSK_ID \
+                                ZABBIX_ENCRYPT_PSK_KEY
+
                 print_debug "Zabbix Agent - Using PSK Encryption"
                 if [ ! -n "${ZABBIX_ENCRYPT_PSK_FILE}" ] && [ ! -n "${ZABBIX_ENCRYPT_PSK_KEY}" ] ; then
                     print_error "You've selected Zabbix Agent PSK Encryption but haven't supplied a file or a Key!"
@@ -54,6 +58,8 @@ TLSPSKFile=${ZABBIX_CERT_PATH}/${ZABBIX_ENCRYPT_PSK_FILE}
 EOF
                 )
                 fi
+
+                transform_file_var ZABBIX_SERVER
 
                 case "${ZABBIX_AGENT_TYPE,,}" in
                     "1" | "classic" | "c" | "legacy" | "old" )
@@ -175,5 +181,5 @@ else
     service_stop "$(basename "$0")"
 fi
 
-output_on
 liftoff
+output_on

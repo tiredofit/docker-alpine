@@ -1,10 +1,10 @@
 #!/command/with-contenv bash
 
 source /assets/functions/00-container
+output_off
 # shellcheck disable=SC2034
 PROCESS_NAME="permissions"
 
-output_off
 ## Legacy
 if var_true "${ENABLE_PERMISSIONS}" ; then
     CONTAINER_ENABLE_PERMISSIONS=TRUE
@@ -75,5 +75,5 @@ if var_true "${CONTAINER_ENABLE_PERMISSIONS}" ; then
     done
 fi
 
-output_on
 liftoff
+output_on

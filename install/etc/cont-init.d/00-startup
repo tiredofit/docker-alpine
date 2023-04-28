@@ -3,6 +3,7 @@
 chmod -f -R 0755 /assets/{defaults,functions} > /dev/null 2&>1
 chmod -f -R 0755 /etc/{cont-init.d,cont-finish.d,services.available} > /dev/null 2&>1
 source /assets/functions/00-container
+output_off
 PROCESS_NAME="container-init"
 showoff
 
@@ -158,6 +159,5 @@ zcat () {
 }
 EOF
 
-
-
 liftoff
+output_on

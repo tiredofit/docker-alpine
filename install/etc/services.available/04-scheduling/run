@@ -2,12 +2,10 @@
 
 source /assets/functions/00-container
 PROCESS_NAME="scheduling"
-prepare_service
-
 output_off
+prepare_service
 check_container_initialized
 check_service_initialized init
-output_on
 
 if var_true "${CONTAINER_ENABLE_LOGROTATE}" ; then
     print_debug "[logrotate] Setting Logrotate retention days after all services have finished initializing"
@@ -40,9 +38,11 @@ case "${CONTAINER_SCHEDULING_BACKEND}" in
       os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
       case ${os} in
         "alpine" )
+          output_on
           silent exec /usr/sbin/crond -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
         ;;
         "debian" | "ubuntu" )
+          output_on
           silent exec /usr/sbin/crond -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
         ;;
         esac
