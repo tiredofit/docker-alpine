@@ -1,3 +1,12 @@
+## 7.8.1 2023-05-03 <dave at tiredofit dot ca>
+
+   ### Added
+      - Golang 1.20.4
+
+   ### Changed
+      - Cleanup
+
+
 ## 7.8.0 2023-04-26 <dave at tiredofit dot ca>
 
    ### Added

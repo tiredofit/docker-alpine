@@ -1321,7 +1321,7 @@ showoff() {
     echo "${is}"
     echo "${ir}"
     echo ""
-    echo "H4sIAAAAAAAAA22MsRXCMAwF+0zxB4DQ01JRMISIZdDDtowkJy/bkwG46t4Vd8+Itzik0ovRTVdJ 7Nh1YKUyGDjjps2PavB+mJq0F+qOTe2DrIZFW0gbnDAlXrlor9zihJDKZcfoiYL9BGoJmSmGMYy/ gz18Pu61si1CBT56VwvQSlLoWXieJvzhocfh3rJegXdE9+vlsm3bHGKcNEvMC00/MF6uwtoAAAA=" | base64 -d | gunzip
+    echo "H4sIAAAAAAAAA22MsRXCMAwF+0zxB4DQ01JRMISIZdDDtowkJy/bkwG46t4Vd8+Itzik0ovRTVdJ7Nh1YKUyGDjjps2PavB+mJq0F+qOTe2DrIZFW0gbnDAlXrlor9zihJDKZcfoiYL9BGoJmSmGMYy/gz18Pu61si1CBT56VwvQSlLoWXieJvzhocfh3rJegXdE9+vlsm3bHGKcNEvMC00/MF6uwtoAAAA=" | base64 -d | gunzip
     echo ""
     output_on
 }
@@ -1406,7 +1406,7 @@ transform_file_var() {
     ##    ie: transform_file_var 'XYZ_DB_PASSWORD'
     ##        (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
     local variables
-    variables=$(echo "${1}" | tr " " "\n")
+    variables=$(echo "$@" | tr " " "\n")
     for variable in $variables; do
         if [ -v "${variable}"_FILE ] ; then
             file_variable=${variable}_FILE
