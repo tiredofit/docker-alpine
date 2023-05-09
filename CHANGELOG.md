@@ -1,3 +1,9 @@
+## 7.8.2 2023-05-09 <dave at tiredofit dot ca>
+
+   ### Added
+      - Introduce Alpine 3.18
+
+
 ## 7.8.1 2023-05-03 <dave at tiredofit dot ca>
 
    ### Added
