@@ -278,6 +278,14 @@ db_ready() {
             done
         ;;
         "mysql" | "mariadb" | "MARIADB" | "MYSQL" )
+            if command -v "mysqladmin" &> /dev/null ; then
+                mysqladmin_bin="$(which mysqladmin)"
+            elif command -v "mariadb-admin" &> /dev/null ; then
+                mysqladmin_bin="$(which mariadb-admin)"
+            else
+                print_error "No MySQL or MariaDB client detected - Cannot check for Database"
+                exit 1
+            fi
             transform_file_var DB_PORT
             if [ -n "${DB_PORT}" ] ; then maria_port=${DB_PORT} ; fi ;
             transform_file_var MYSQL_PORT
@@ -310,13 +318,19 @@ db_ready() {
             transform_file_var MARIA_NAME
             if [ -n "${MARIA_NAME}" ] ; then maria_name=${MARIA_NAME} ; fi ;
             counter=0
-            while ! (mysqladmin -u"${maria_user}" -P"${maria_port}" -h"${maria_host}" -p"${maria_pass}" status > /dev/null 2>&1) ; do
+            while ! ("${mysqladmin_bin}" -u"${maria_user}" -P"${maria_port}" -h"${maria_host}" -p"${maria_pass}" status > /dev/null 2>&1) ; do
                 sleep 5
                 (( counter+=5 ))
                 print_warn "MySQL/MariaDB Server '${maria_host}' is not accessible, retrying.. (${counter} seconds so far)"
             done
         ;;
         "pgsql" | "psql" | "postgres" | "postgresql" )
+            if command -v "pg_isready" &> /dev/null ; then
+                pg_isready_bin="$(which pg_isready)"
+            else
+                print_error "No Postgresql client installation installation detected - Cannot check for Database"
+                exit 1
+            fi
             transform_file_var DB_PORT
             if [ -n "${DB_PORT}" ] ; then postgres_port=${DB_PORT} ; fi ;
             transform_file_var POSTGRES_HOST
@@ -340,7 +354,7 @@ db_ready() {
             if [ -n "${POSTGRES_NAME}" ] ; then postgres_name=${POSTGRES_NAME} ; fi ;
             counter=0
             export PGPASSWORD=${postgres_pass}
-            until pg_isready --dbname="${postgres_name}" --host="${postgres_host}" --port="${postgres_port}" --username="${postgres_user}" -q
+            until "${pg_isready_bin}" --dbname="${postgres_name}" --host="${postgres_host}" --port="${postgres_port}" --username="${postgres_user}" -q
             do
                 sleep 5
                 (( counter+=5 ))

@@ -1,3 +1,14 @@
+## 7.8.6 2023-07-28 <dave at tiredofit dot ca>
+
+   ### Added
+      - Golang 1.20.6 build chain
+      - YQ 4.34.2
+      - Fluent-bit 2.1.8
+
+   ### Changed
+      - Modify db_ready routines to accomodate for MariaDB 11 binary name changes
+
+
 ## 7.8.5 2023-06-27 <dave at tiredofit dot ca>
 
    ### Added
