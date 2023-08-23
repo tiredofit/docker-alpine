@@ -204,19 +204,20 @@ If you wish to send mail, set `CONTAINER_ENABLE_MESSAGING=TRUE` and configure th
 ##### MSMTP Options
 
 See the [MSMTP Configuration Options](https://marlam.de/msmtp/msmtp.html) for further information on options to configure MSMTP.
-| Parameter             | Description                                       | Default         | `_FILE` |
-| --------------------- | ------------------------------------------------- | --------------- | ------- |
-| `SMTP_AUTO_FROM`      | Add setting to support sending through Gmail SMTP | `FALSE`         |         |
-| `SMTP_HOST`           | Hostname of SMTP Server                           | `postfix-relay` | x       |
-| `SMTP_PORT`           | Port of SMTP Server                               | `25`            | x       |
-| `SMTP_DOMAIN`         | HELO Domain                                       | `docker`        |         |
-| `SMTP_MAILDOMAIN`     | Mail Domain From                                  | `local`         |         |
-| `SMTP_AUTHENTICATION` | SMTP Authentication                               | `none`          |         |
-| `SMTP_USER`           | SMTP Username                                     | ``              | x       |
-| `SMTP_PASS`           | SMTP Password                                     | ``              | x       |
-| `SMTP_TLS`            | Use TLS                                           | `FALSE`         |         |
-| `SMTP_STARTTLS`       | Start TLS from within session                     | `FALSE`         |         |
-| `SMTP_TLSCERTCHECK`   | Check remote certificate                          | `FALSE`         |         |
+| Parameter                  | Description                                       | Default         | `_FILE` |
+| -------------------------- | ------------------------------------------------- | --------------- | ------- |
+| `SMTP_AUTO_FROM`           | Add setting to support sending through Gmail SMTP | `FALSE`         |         |
+| `SMTP_HOST`                | Hostname of SMTP Server                           | `postfix-relay` | x       |
+| `SMTP_PORT`                | Port of SMTP Server                               | `25`            | x       |
+| `SMTP_DOMAIN`              | HELO Domain                                       | `docker`        |         |
+| `SMTP_MAILDOMAIN`          | Mail Domain From                                  | `local`         |         |
+| `SMTP_AUTHENTICATION`      | SMTP Authentication                               | `none`          |         |
+| `SMTP_USER`                | SMTP Username                                     | ``              | x       |
+| `SMTP_PASS`                | SMTP Password                                     | ``              | x       |
+| `SMTP_TLS`                 | Use TLS                                           | `FALSE`         |         |
+| `SMTP_STARTTLS`            | Start TLS from within session                     | `FALSE`         |         |
+| `SMTP_TLSCERTCHECK`        | Check remote certificate                          | `FALSE`         |         |
+| `SMTP_ALLOW_FROM_OVERRIDE` | SMTP Allow From Override                          | ``              |         |
 
 See The [Official Zabbix Agent Documentation](https://www.zabbix.com/documentation/5.4/manual/appendix/config/zabbix_agentd)
 for information about the following Zabbix values.

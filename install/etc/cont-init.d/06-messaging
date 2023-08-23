@@ -44,6 +44,7 @@ if var_true "${CONTAINER_ENABLE_MESSAGING}" ; then
                 echo "tls ${SMTP_TLS}"
                 echo "tls_starttls ${SMTP_STARTTLS}"
                 echo "tls_certcheck ${SMTP_TLSCERTCHECK}"
+                if [ -n "$SMTP_ALLOW_FROM_OVERRIDE" ]; then echo "allow_from_override ${SMTP_ALLOW_FROM_OVERRIDE}"; fi             
                 ### Gmail Specific SMTP Config
                 if var_true "${ENABLE_SMTP_GMAIL}" || var_true "${SMTP_AUTO_FROM}"; then echo "auto_from on"; fi
             } >> /etc/msmtprc
