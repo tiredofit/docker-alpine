@@ -303,52 +303,52 @@ Create a line in the `logrotate.d/<file>` that looks like `# logship: <parser>`.
 
 Drop files in `/etc/fluent-bit/conf.d` to setup your inputs and outputs. The environment variables below only affect the system end of the configuration. If you wish to use your own system configuration without these variables, change `FLUENTBIT_SETUP_TYPE` to `MANUAL`. Container will attempt to automatically create configuration to send to a destination, or can also be set to act as a receiver from other fluent-bit hosts and forward data to a remote log analysis service.
 
-| Parameter | Description | Default | `_FILE` |
-| --------- | ----------- | ------- | ------- |
-| `FLUENTBIT_CONFIG_PARSERS`            | Parsers config file name                                                                         | `parsers.conf`           ||
-| `FLUENTBIT_CONFIG_PLUGINS`            | Plugins config file name                                                                         | `plugins.conf`           ||
-| `FLUENTBIT_ENABLE_HTTP_SERVER`        | Embedded HTTP Server for metrics `TRUE` / `FALSE`                                                | `TRUE`                   ||
-| `FLUENTBIT_ENABLE_STORAGE_METRICS`    | Public storage pipeline metrics in /api/v1/storage                                               | `TRUE`                   ||
-| `FLUENTBIT_FLUSH_SECONDS`             | Wait time to flush records in seconds                                                            | `1`                      ||
-| `FLUENTBIT_FORWARD_BUFFER_CHUNK_SIZE` | Buffer Chunk Size                                                                                | `32KB`                   ||
-| `FLUENTBIT_FORWARD_BUFFER_MAX_SIZE`   | Buffer Maximum Size                                                                              | `64KB`                   ||
-| `FLUENTBIT_FORWARD_PORT`              | What port when using `PROXY` (listen) mode or `FORWARD` (client) output                          | `24224`                  ||
-| `FLUENTBIT_GRACE_SECONDS`             | Wait time before exit in seconds                                                                 | `1`                      ||
-| `FLUENTBIT_HTTP_LISTEN_IP`            | HTTP Listen IP                                                                                   | `0.0.0.0`                ||
-| `FLUENTBIT_HTTP_LISTEN_PORT`          | HTTP Listening Port                                                                              | `2020`                   ||
-| `FLUENTBIT_LOG_FILE`                  | Log File                                                                                         | `fluentbit.log`          ||
-| `FLUENTBIT_LOG_LEVEL`                 | Log Level `info` `warn` `error` `debug` `trace`                                                  | `info`                   ||
-| `FLUENTBIT_LOG_PATH`                  | Log Path                                                                                         | `/var/log/fluentbit/`    ||
-| `FLUENTBIT_MODE`                      | Type of operation - Client `NORMAL` or Proxy `PROXY`                                             | `NORMAL`                 ||
-| `FLUENTBIT_OUTPUT_FORWARD_HOST`       | Where to forward Fluent-Bit data to                                                              | `fluent-proxy`           | x |
-| `FLUENTBIT_OUTPUT_FORWARD_TLS_VERIFY` | Verify certificates when using TLS                                                               | `FALSE`                  ||
-| `FLUENTBIT_OUTPUT_FORWARD_TLS`        | Enable TLS when forwading                                                                        | `FALSE`                  ||
-| `FLUENTBIT_OUTPUT_LOKI_HOST`          | Host for Loki Output                                                                             | `loki`                   | x |
-| `FLUENTBIT_OUTPUT_LOKI_PORT`          | Port for Loki Output                                                                             | `3100`                   | x |
-| `FLUENTBIT_OUTPUT_LOKI_TLS`           | Enable TLS For Loki Output                                                                       | `FALSE`                  ||
-| `FLUENTBIT_OUTPUT_LOKI_TLS_VERIFY`    | Enable TLS Certificate Verification For Loki Output                                              | `FALSE`                  ||
-| `FLUENTBIT_OUTPUT_LOKI_USER`          | (optional) Username to authenticate to Loki Server                                               | ``                       | x |
-| `FLUENTBIT_OUTPUT_LOKI_PASS`          | (optional) Password to authenticate to Loki Server                                               | ``                       | x |
-| `FLUENTBIT_OUTPUT_TENANT_ID`          | (optional) Tenant ID to pass to Loki Server                                                      | ``                       | x |
-| `FLUENTBIT_OUTPUT`                    | Output plugin to use `LOKI` , `FORWARD`, `NULL`                                                  | `FORWARD`                ||
-| `FLUENTBIT_TAIL_BUFFER_CHUNK_SIZE`    | Buffer Chunk Size for Tail                                                                       | `32k`                    ||
-| `FLUENTBIT_TAIL_BUFFER_MAX_SIZE`      | Maximum size for Tail                                                                            | `32k`                    ||
-| `FLUENTBIT_TAIL_READ_FROM_HEAD`       | Read from Head instead of Tail                                                                   | `FALSE`                  ||
-| `FLUENTBIT_TAIL_SKIP_EMPTY_LINES`     | Skip Empty Lines when Tailing                                                                    | `TRUE`                   ||
-| `FLUENTBIT_TAIL_SKIP_LONG_LINES`      | Skip Long Lines when Tailing                                                                     | `TRUE`                   ||
-| `FLUENTBIT_TAIL_DB_ENABLE`            | Enable Offset DB per tracked file (will be same name as log file yet hidden and a suffix of `db` | `TRUE`                   ||
-| `FLUENTBIT_TAIL_DB_SYNC`              | DB Sync Type `normal` or `full`                                                                  | `normal`                 ||
-| `FLUENTBIT_TAIL_DB_LOCK`              | Lock access to DB File                                                                           | `TRUE`                   ||
-| `FLUENTBIT_TAIL_DB_JOURNAL_MODE`      | Journal Mode for DB `WAL` `DELETE` `TRUNCATE` `PERSIST` `MEMORY` `OFF`                           | `WAL`                    ||
-| `FLUENTBIT_TAIL_KEY_PATH_ENABLE`      | Enable sending Key for Log Filename/Path                                                         | `TRUE`                   ||
-| `FLUENTBIT_TAIL_KEY_PATH`             | Path Key Name                                                                                    | `filename`               ||
-| `FLUENTBIT_TAIL_KEY_OFFSET_ENABLE`    | Enable sending Key for Offset in Log file                                                        | `FALSE`                  ||
-| `FLUENTBIT_TAIL_KEY_OFFSET`           | Offset Path Key Name                                                                             | `offset`                 ||
-| `FLUENTBIT_SETUP_TYPE`                | Automatically generate configuration based on these variables `AUTO` or `MANUAL`                 | `AUTO`                   ||
-| `FLUENTBIT_STORAGE_BACKLOG_LIMIT`     | Maximum about of memory to use for backlogged/unsent records                                     | `5M`                     ||
-| `FLUENTBIT_STORAGE_CHECKSUM`          | Create CRC32 checkcum for filesystem RW functions                                                | `FALSE`                  ||
-| `FLUENTBIT_STORAGE_PATH`              | Absolute file system path to store filesystem data buffers                                       | `/tmp/fluentbit/storage` ||
-| `FLUENTBIT_STORAGE_SYNC`              | Synchronization mode to store data in filesystem `normal` or `full`                              | `normal`                 ||
+| Parameter                             | Description                                                                                      | Default                  | `_FILE` |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------ | ------- |
+| `FLUENTBIT_CONFIG_PARSERS`            | Parsers config file name                                                                         | `parsers.conf`           |         |
+| `FLUENTBIT_CONFIG_PLUGINS`            | Plugins config file name                                                                         | `plugins.conf`           |         |
+| `FLUENTBIT_ENABLE_HTTP_SERVER`        | Embedded HTTP Server for metrics `TRUE` / `FALSE`                                                | `TRUE`                   |         |
+| `FLUENTBIT_ENABLE_STORAGE_METRICS`    | Public storage pipeline metrics in /api/v1/storage                                               | `TRUE`                   |         |
+| `FLUENTBIT_FLUSH_SECONDS`             | Wait time to flush records in seconds                                                            | `1`                      |         |
+| `FLUENTBIT_FORWARD_BUFFER_CHUNK_SIZE` | Buffer Chunk Size                                                                                | `32KB`                   |         |
+| `FLUENTBIT_FORWARD_BUFFER_MAX_SIZE`   | Buffer Maximum Size                                                                              | `64KB`                   |         |
+| `FLUENTBIT_FORWARD_PORT`              | What port when using `PROXY` (listen) mode or `FORWARD` (client) output                          | `24224`                  |         |
+| `FLUENTBIT_GRACE_SECONDS`             | Wait time before exit in seconds                                                                 | `1`                      |         |
+| `FLUENTBIT_HTTP_LISTEN_IP`            | HTTP Listen IP                                                                                   | `0.0.0.0`                |         |
+| `FLUENTBIT_HTTP_LISTEN_PORT`          | HTTP Listening Port                                                                              | `2020`                   |         |
+| `FLUENTBIT_LOG_FILE`                  | Log File                                                                                         | `fluentbit.log`          |         |
+| `FLUENTBIT_LOG_LEVEL`                 | Log Level `info` `warn` `error` `debug` `trace`                                                  | `info`                   |         |
+| `FLUENTBIT_LOG_PATH`                  | Log Path                                                                                         | `/var/log/fluentbit/`    |         |
+| `FLUENTBIT_MODE`                      | Type of operation - Client `NORMAL` or Proxy `PROXY`                                             | `NORMAL`                 |         |
+| `FLUENTBIT_OUTPUT_FORWARD_HOST`       | Where to forward Fluent-Bit data to                                                              | `fluent-proxy`           | x       |
+| `FLUENTBIT_OUTPUT_FORWARD_TLS_VERIFY` | Verify certificates when using TLS                                                               | `FALSE`                  |         |
+| `FLUENTBIT_OUTPUT_FORWARD_TLS`        | Enable TLS when forwading                                                                        | `FALSE`                  |         |
+| `FLUENTBIT_OUTPUT_LOKI_HOST`          | Host for Loki Output                                                                             | `loki`                   | x       |
+| `FLUENTBIT_OUTPUT_LOKI_PORT`          | Port for Loki Output                                                                             | `3100`                   | x       |
+| `FLUENTBIT_OUTPUT_LOKI_TLS`           | Enable TLS For Loki Output                                                                       | `FALSE`                  |         |
+| `FLUENTBIT_OUTPUT_LOKI_TLS_VERIFY`    | Enable TLS Certificate Verification For Loki Output                                              | `FALSE`                  |         |
+| `FLUENTBIT_OUTPUT_LOKI_USER`          | (optional) Username to authenticate to Loki Server                                               | ``                       | x       |
+| `FLUENTBIT_OUTPUT_LOKI_PASS`          | (optional) Password to authenticate to Loki Server                                               | ``                       | x       |
+| `FLUENTBIT_OUTPUT_TENANT_ID`          | (optional) Tenant ID to pass to Loki Server                                                      | ``                       | x       |
+| `FLUENTBIT_OUTPUT`                    | Output plugin to use `LOKI` , `FORWARD`, `NULL`                                                  | `FORWARD`                |         |
+| `FLUENTBIT_TAIL_BUFFER_CHUNK_SIZE`    | Buffer Chunk Size for Tail                                                                       | `32k`                    |         |
+| `FLUENTBIT_TAIL_BUFFER_MAX_SIZE`      | Maximum size for Tail                                                                            | `32k`                    |         |
+| `FLUENTBIT_TAIL_READ_FROM_HEAD`       | Read from Head instead of Tail                                                                   | `FALSE`                  |         |
+| `FLUENTBIT_TAIL_SKIP_EMPTY_LINES`     | Skip Empty Lines when Tailing                                                                    | `TRUE`                   |         |
+| `FLUENTBIT_TAIL_SKIP_LONG_LINES`      | Skip Long Lines when Tailing                                                                     | `TRUE`                   |         |
+| `FLUENTBIT_TAIL_DB_ENABLE`            | Enable Offset DB per tracked file (will be same name as log file yet hidden and a suffix of `db` | `TRUE`                   |         |
+| `FLUENTBIT_TAIL_DB_SYNC`              | DB Sync Type `normal` or `full`                                                                  | `normal`                 |         |
+| `FLUENTBIT_TAIL_DB_LOCK`              | Lock access to DB File                                                                           | `TRUE`                   |         |
+| `FLUENTBIT_TAIL_DB_JOURNAL_MODE`      | Journal Mode for DB `WAL` `DELETE` `TRUNCATE` `PERSIST` `MEMORY` `OFF`                           | `WAL`                    |         |
+| `FLUENTBIT_TAIL_KEY_PATH_ENABLE`      | Enable sending Key for Log Filename/Path                                                         | `TRUE`                   |         |
+| `FLUENTBIT_TAIL_KEY_PATH`             | Path Key Name                                                                                    | `filename`               |         |
+| `FLUENTBIT_TAIL_KEY_OFFSET_ENABLE`    | Enable sending Key for Offset in Log file                                                        | `FALSE`                  |         |
+| `FLUENTBIT_TAIL_KEY_OFFSET`           | Offset Path Key Name                                                                             | `offset`                 |         |
+| `FLUENTBIT_SETUP_TYPE`                | Automatically generate configuration based on these variables `AUTO` or `MANUAL`                 | `AUTO`                   |         |
+| `FLUENTBIT_STORAGE_BACKLOG_LIMIT`     | Maximum about of memory to use for backlogged/unsent records                                     | `5M`                     |         |
+| `FLUENTBIT_STORAGE_CHECKSUM`          | Create CRC32 checkcum for filesystem RW functions                                                | `FALSE`                  |         |
+| `FLUENTBIT_STORAGE_PATH`              | Absolute file system path to store filesystem data buffers                                       | `/tmp/fluentbit/storage` |         |
+| `FLUENTBIT_STORAGE_SYNC`              | Synchronization mode to store data in filesystem `normal` or `full`                              | `normal`                 |         |
 
 #### Firewall Options|
 
