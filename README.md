@@ -323,6 +323,7 @@ Drop files in `/etc/fluent-bit/conf.d` to setup your inputs and outputs. The env
 | `FLUENTBIT_OUTPUT_FORWARD_HOST`       | Where to forward Fluent-Bit data to                                                              | `fluent-proxy`           | x       |
 | `FLUENTBIT_OUTPUT_FORWARD_TLS_VERIFY` | Verify certificates when using TLS                                                               | `FALSE`                  |         |
 | `FLUENTBIT_OUTPUT_FORWARD_TLS`        | Enable TLS when forwading                                                                        | `FALSE`                  |         |
+| `FLUENTBIT_OUTPUT_LOKI_COMPRESS_GZIP` | Enable GZIP compression when sending to loki host                                                | `TRUE`                   |         |
 | `FLUENTBIT_OUTPUT_LOKI_HOST`          | Host for Loki Output                                                                             | `loki`                   | x       |
 | `FLUENTBIT_OUTPUT_LOKI_PORT`          | Port for Loki Output                                                                             | `3100`                   | x       |
 | `FLUENTBIT_OUTPUT_LOKI_TLS`           | Enable TLS For Loki Output                                                                       | `FALSE`                  |         |
