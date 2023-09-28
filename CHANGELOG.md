@@ -1,3 +1,11 @@
+## 7.8.12 2023-09-28 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 6.4.7
+      - Fluent-bit 2.1.10
+      - Add option for gzip compression for fluent-bit output/loki
+
+
 ## 7.8.7 2023-08-23 <dave at tiredofit dot ca>
 
    ### Added
