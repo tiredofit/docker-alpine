@@ -352,7 +352,7 @@ EOF
     port                   ${FLUENTBIT_OUTPUT_LOKI_PORT}
     tls                    ${FLUENTBIT_OUTPUT_LOKI_TLS,,}
     tls.verify             ${FLUENTBIT_OUTPUT_LOKI_TLS_VERIFY,,}
-    compress_zip           ${FLUENTBIT_OUTPUT_LOKI_COMPRESS_GZIP,,}
+    compress               ${FLUENTBIT_OUTPUT_LOKI_COMPRESS_GZIP,,}
     labels                 logshipper=${CONTAINER_NAME}
     Label_keys             \$hostname,\$container_name,\$product
 ${loki_user}
