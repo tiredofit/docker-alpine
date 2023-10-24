@@ -1,3 +1,9 @@
+## 7.8.13 2023-10-24 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Prepare for imminent Alpine 3.19 release
+
+
 ## 7.8.12 2023-09-28 <dave at tiredofit dot ca>
 
    ### Added
