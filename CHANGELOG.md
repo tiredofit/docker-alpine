@@ -1,3 +1,9 @@
+## 7.8.14 2023-10-24 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Restore building Zabbix Agent 2 with Alpine Edge/3.19
+
+
 ## 7.8.13 2023-10-24 <dave at tiredofit dot ca>
 
    ### Changed

@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.18
+ARG ALPINE_VERSION=edge
 
 FROM docker.io/alpine:${ALPINE_VERSION}
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
@@ -196,6 +196,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     cd /usr/src/zabbix && \
     ./bootstrap.sh 1>/dev/null && \
     export CFLAGS="-fPIC -pie -Wl,-z,relro -Wl,-z,now" && \
+    sed -i "s|CGO_CFLAGS=\"\${CGO_CFLAGS}\"| CGO_CFLAGS=\"-D_LARGEFILE64_SOURCE \${CGO_CFLAGS}\"|g" /usr/src/zabbix/src/go/Makefile.am && \
     ./configure \
             --prefix=/usr \
             --silent \
