@@ -1,3 +1,9 @@
+## 7.8.18 2023-12-05 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Mod service_stop function to not pass DONOTSTART when turning off a different service"
+
+
 ## 7.8.17 2023-11-09 <dave at tiredofit dot ca>
 
    ### Added
