@@ -1299,9 +1299,10 @@ service_start() {
 }
 
 service_stop() {
-    if [ "${1}" != "$(basename "$0")" ] ; then
-        echo "DONOTSTART added by $(basename \""$0"\")" >> /tmp/.container/"${1}"-init
-    fi
+    echo "DONOTSTART added by $(basename \""$0"\")" >> /tmp/.container/"${1}"-init
+    #if [ "${1}" != "$(basename "$0")" ] ; then
+    #    echo "DONOTSTART added by $(basename \""$0"\")" >> /tmp/.container/"${1}"-init
+    #fi
     #DONOTSTART=TRUE
 }
 

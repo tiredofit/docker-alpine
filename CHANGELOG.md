@@ -1,3 +1,9 @@
+## 7.8.19 2023-12-08 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix issues with service_stop function
+
+
 ## 7.8.18 2023-12-05 <dave at tiredofit dot ca>
 
    ### Changed
