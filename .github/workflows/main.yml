@@ -32,7 +32,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
@@ -140,7 +140,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
@@ -249,7 +249,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
@@ -357,7 +357,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
@@ -466,7 +466,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
@@ -574,7 +574,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
@@ -682,7 +682,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
@@ -790,7 +790,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
@@ -898,7 +898,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
@@ -1006,7 +1006,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
@@ -1114,7 +1114,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
@@ -1222,7 +1222,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
@@ -1330,7 +1330,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
@@ -1438,7 +1438,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
@@ -1546,7 +1546,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
@@ -1655,7 +1655,7 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${DISTRO_VARIANT}" = "${{ secrets.LATEST }}" ]; then
+                      if [ "${{ vars.LATEST }}" = "TRUE" ] || [ "${{ vars.LATEST }}" = "${DISTRO_VARIANT}" ]; then
                           image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
