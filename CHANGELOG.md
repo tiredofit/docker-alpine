@@ -1,3 +1,9 @@
+## 7.8.21 2024-02-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 6.4.11
+
+
 ## 7.8.20 2023-12-13 <dave at tiredofit dot ca>
 
    ### Added
