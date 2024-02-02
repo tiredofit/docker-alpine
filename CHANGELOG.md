@@ -1,3 +1,9 @@
+## 7.8.22 2024-02-02 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix issue with creating blank files on startup
+
+
 ## 7.8.21 2024-02-01 <dave at tiredofit dot ca>
 
    ### Added
