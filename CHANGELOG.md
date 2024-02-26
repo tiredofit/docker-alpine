@@ -1,3 +1,9 @@
+## 7.8.23 2024-02-26 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix 6.4.12
+
+
 ## 7.8.22 2024-02-02 <dave at tiredofit dot ca>
 
    ### Changed
