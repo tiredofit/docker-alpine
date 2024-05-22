@@ -227,7 +227,7 @@ jobs:
              ALPINE_VERSION=${{ env.DISTRO_VARIANT }}
 
 ###
-v3_20:
+  v3_20:
     env:
       DISTRO_VARIANT: "3.20"
       build_file: Dockerfile
