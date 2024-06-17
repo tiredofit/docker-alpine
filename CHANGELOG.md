@@ -1,3 +1,9 @@
+## 7.8.35 2024-06-17 <dave at tiredofit dot ca>
+
+   ### Added
+      - YQ 4.44.2
+
+
 ## 7.8.34 2024-06-11 <dave at tiredofit dot ca>
 
    ### Added
