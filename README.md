@@ -453,6 +453,7 @@ Change time and date and settings with these environment variables
 | `CONTAINER_PROCESS_HELPER_DATE_FMT`           | Date format passed to external script                           | `%Y-%m-%d`                         |
 | `CONTAINER_PROCESS_HELPER_TIME_FMT`           | Time format passed to external script                           | `%H:%M:%S`                         |
 | `CONTAINER_PROCESS_RUNAWAY_PROTECTOR`         | Disables a service if executed more than (x) amount of times    | `TRUE`                             |
+| `CONTAINER_PROCESS_RUNAWAY_DELAY`             | Delay in seconds to restart process                             | `1`                                |
 | `CONTAINER_PROCESS_RUNAWAY_LIMIT`             | The amount of times it needs to restart before disabling        | `50`                               |
 | `CONTAINER_PROCESS_RUNAWAY_SHOW_OUTPUT_FINAL` | Show the program Output on the final execution before disabling | `TRUE`                             |
 

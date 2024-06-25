@@ -1038,6 +1038,8 @@ print_start() {
                 sleep 3
                 exit 1
             fi
+            print_debug "[process_restart] - Sleeping for ${CONTAINER_PROCESS_RUNAWAY_DELAY} seconds"
+            sleep "${CONTAINER_PROCESS_RUNAWAY_DELAY}"
         fi
     fi
 
@@ -1335,6 +1337,7 @@ showoff() {
     echo "H4sIAAAAAAAAA61RQRLEIAi78wpvXAq971t68CE8vgni2s7urWUGEyRBHVt7JTYzc+Ga4WD+T+Q/pm9jmQNbIZpNN9OOpGSqnA6I4jJlp1RZZ2OZUbrK3B9nxWw5VB9NiOFNCt5ta8s0kSD3suiBxOQDRh0WxSWQcbuYj9Mp4KuksKAoOVm3qlvRfq1Vl4Nj5fkvZnCsnEeFItgXAgAA" | base64 -d | gunzip
     echo "${is}"
     echo "${ir}"
+    echo "H4sIAAAAAAAAA/PJTE7NK061UvD1DFGoUTi0UsHIwMhEwSWxLFXBOT+vKL+SCwCc9R6MIwAAAA==" | base64 -d | gunzip
     echo ""
     echo "H4sIAAAAAAAAA22MsRXCMAwF+0zxB4DQ01JRMISIZdDDtowkJy/bkwG46t4Vd8+Itzik0ovRTVdJ7Nh1YKUyGDjjps2PavB+mJq0F+qOTe2DrIZFW0gbnDAlXrlor9zihJDKZcfoiYL9BGoJmSmGMYy/gz18Pu61si1CBT56VwvQSlLoWXieJvzhocfh3rJegXdE9+vlsm3bHGKcNEvMC00/MF6uwtoAAAA=" | base64 -d | gunzip
     echo ""

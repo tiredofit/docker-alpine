@@ -30,6 +30,7 @@ fi
 
 print_debug "Adding shortcuts to .bashrc"
 cat <<EOF >> /root/.bashrc
+source /assets/functions/00-container
 alias env='with-contenv env | sort'
 
 service_down() {
