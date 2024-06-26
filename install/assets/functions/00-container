@@ -1039,7 +1039,7 @@ print_start() {
                 exit 1
             fi
             print_debug "[process_restart] - Sleeping for ${CONTAINER_PROCESS_RUNAWAY_DELAY} seconds"
-            sleep "${CONTAINER_PROCESS_RUNAWAY_DELAY}"
+            if [ "${proc_start_count}" -g 1 ] ; then sleep "${CONTAINER_PROCESS_RUNAWAY_DELAY}" ; fi
         fi
     fi
 
