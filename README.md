@@ -52,6 +52,7 @@ Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container im
       - [Log Shipping Parsing](#log-shipping-parsing)
       - [Fluent-Bit Options](#fluent-bit-options)
     - [Firewall Options|](#firewall-options)
+      - [Host Override Options](#host-override-options)
       - [IPTables Options](#iptables-options)
       - [Fail2Ban Options](#fail2ban-options)
     - [Permissions](#permissions)
@@ -371,6 +372,19 @@ One can use the `FIREWALL_RULE_XX` environment variables to pass rules to the fi
 FIREWALL_RULE_00=-I INPUT -p tcp -m tcp -s 101.69.69.101 --dport 389 -j ACCEPT
 FIREWALL_RULE_01=-I INPUT -p tcp -m tcp -s 0.0.0.0/0 --dport 389 -j DROP
 ````
+
+##### Host Override Options
+
+Sometimes you may need to do some host file trickery. This will add an entry to the contains hosts file.
+
+Instead of relying on environment variables one can put a `iptables-restore` compatible ruleset below and it will be imported on container start.
+
+| Parameter                    | Description               | Default |
+| ---------------------------- | ------------------------- | ------- |
+| `CONTAINER_HOST_OVERRIDE_01` | Create manual hosts entry |         |
+
+Make the value `<destination> override1 override2` eg `1.2.3.4 example.org example.com`. If you omit an IP Address and instead use a domain name it will attempt to look it up to an IP eg `proxy example.com example.org`
+
 
 ##### IPTables Options
 

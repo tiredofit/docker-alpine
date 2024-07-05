@@ -1,3 +1,9 @@
+## 7.10.0 2024-07-05 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add host_override function
+
+
 ## 7.9.1 2024-06-26 <dave at tiredofit dot ca>
 
    ### Changed
