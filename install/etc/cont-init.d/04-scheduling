@@ -5,8 +5,6 @@ output_off
 prepare_service single
 PROCESS_NAME="scheduling"
 
-
-
 ## Legacy
 if var_false "${ENABLE_CRON}" ; then CONTAINER_ENABLE_SCHEDULING=FALSE ; fi
 if var_true "${ENABLE_CRON}" ; then

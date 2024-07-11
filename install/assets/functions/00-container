@@ -681,6 +681,25 @@ grant_sudo() {
     output_on
 }
 
+host_override() {
+    ## Adds entry to /etc/hosts file
+    ## Usage CONTAINER_HOST_OVERRIDE01=destination_ip domain1 domain2 domain3
+    ## If you use a host name instead of destination_ip it will attempt to resolve it
+    _hostnum=$(printenv | sort | grep -cE '^CONTAINER_HOST_OVERRIDE_([0-9].)')
+    for (( _host = 01; _host <= _hostnum; _host++ )) ; do
+        _host=$(printf "%02d" $_host)
+        host_line=CONTAINER_HOST_OVERRIDE_${_host}
+        host_ip=$(echo ${!host_line} | awk '{print $1}')
+
+        if [[ ! "${host_ip}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            host_ip="$(getent ahostsv4 "${host_ip}" | grep -m 1 STREAM  | awk '{print $1}')"
+        fi
+
+        echo "# Added automatically by CONTAINER_HOST_OVERRIDE_${_host}" >> /etc/hosts
+        echo "${host_ip} $(echo ${!host_line} | cut -d' ' -f2-)" >> /etc/hosts
+    done
+}
+
 install_template() {
     ## Copies configuration template to the destination as the specified USER
     ## Usage install_template <copy-as-user> <source_file> <desintation_location+file> <optional chmod mode>
@@ -1038,6 +1057,8 @@ print_start() {
                 sleep 3
                 exit 1
             fi
+            print_debug "[process_restart] - Sleeping for ${CONTAINER_PROCESS_RUNAWAY_DELAY} seconds"
+            if [ "${proc_start_count}" -gt 1 ] ; then sleep "${CONTAINER_PROCESS_RUNAWAY_DELAY}" ; fi
         fi
     fi
 
@@ -1299,10 +1320,11 @@ service_start() {
 }
 
 service_stop() {
-    if [ "${1}" != "$(basename "$0")" ] ; then
-        echo "DONOTSTART added by $(basename \""$0"\")" >> /tmp/.container/"${1}"-init
-    fi
-    DONOTSTART=TRUE
+    echo "DONOTSTART added by $(basename \""$0"\")" >> /tmp/.container/"${1}"-init
+    #if [ "${1}" != "$(basename "$0")" ] ; then
+    #    echo "DONOTSTART added by $(basename \""$0"\")" >> /tmp/.container/"${1}"-init
+    #fi
+    #DONOTSTART=TRUE
 }
 
 set_timezone() {
@@ -1334,6 +1356,7 @@ showoff() {
     echo "H4sIAAAAAAAAA61RQRLEIAi78wpvXAq971t68CE8vgni2s7urWUGEyRBHVt7JTYzc+Ga4WD+T+Q/pm9jmQNbIZpNN9OOpGSqnA6I4jJlp1RZZ2OZUbrK3B9nxWw5VB9NiOFNCt5ta8s0kSD3suiBxOQDRh0WxSWQcbuYj9Mp4KuksKAoOVm3qlvRfq1Vl4Nj5fkvZnCsnEeFItgXAgAA" | base64 -d | gunzip
     echo "${is}"
     echo "${ir}"
+    echo "H4sIAAAAAAAAA/PJTE7NK061UvD1DFGoUTi0UsHIwMhEwSWxLFXBOT+vKL+SCwCc9R6MIwAAAA==" | base64 -d | gunzip
     echo ""
     echo "H4sIAAAAAAAAA22MsRXCMAwF+0zxB4DQ01JRMISIZdDDtowkJy/bkwG46t4Vd8+Itzik0ovRTVdJ7Nh1YKUyGDjjps2PavB+mJq0F+qOTe2DrIZFW0gbnDAlXrlor9zihJDKZcfoiYL9BGoJmSmGMYy/gz18Pu61si1CBT56VwvQSlLoWXieJvzhocfh3rJegXdE9+vlsm3bHGKcNEvMC00/MF6uwtoAAAA=" | base64 -d | gunzip
     echo ""

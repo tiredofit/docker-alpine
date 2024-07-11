@@ -39,11 +39,11 @@ case "${CONTAINER_SCHEDULING_BACKEND}" in
       case ${os} in
         "alpine" )
           output_on
-          silent exec /usr/sbin/crond -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
+          exec /usr/sbin/crond -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
         ;;
         "debian" | "ubuntu" )
           output_on
-          silent exec /usr/sbin/crond -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
+          exec /usr/sbin/crond -f -l ${SCHEDULING_LOG_LEVEL} ${cron_log_file}
         ;;
         esac
     ;;

@@ -1,3 +1,171 @@
+## 7.10.2 2024-07-10 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 3.1.1
+
+
+## 7.10.1 2024-07-10 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 3.10
+
+
+## 7.10.0 2024-07-05 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add host_override function
+
+
+## 7.9.1 2024-06-26 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Tweak to print_start function solving unneccessary delays
+
+
+## 7.9.0 2024-06-25 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add CONTAINER_PROCESS_RUNAWAY_DELAY environment variable to add a configurable (default 1) second delay in between restarting processes
+
+
+## 7.8.35 2024-06-17 <dave at tiredofit dot ca>
+
+   ### Added
+      - YQ 4.44.2
+
+
+## 7.8.34 2024-06-11 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent Bit 3.0.7
+
+
+## 7.8.33 2024-06-04 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 7.0.0
+
+
+## 7.8.32 2024-05-27 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent Bit 3.0.6
+
+
+## 7.8.31 2024-05-23 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 3.0.5
+
+
+## 7.8.30 2024-05-21 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 6.4.15
+
+
+## 7.8.29 2024-05-21 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 3.0.4
+
+
+## 7.8.28 2024-04-27 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 3.0.3
+
+
+## 7.8.27 2024-04-12 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-bit 3.0.2
+
+
+## 7.8.26 2024-04-04 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-Bit 3.0.1
+
+
+## 7.8.25 2024-03-25 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 6.4.13
+
+
+## 7.8.24 2024-03-21 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-Bit 3.0.0
+
+
+## 7.8.23 2024-02-26 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix 6.4.12
+
+
+## 7.8.22 2024-02-02 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix issue with creating blank files on startup
+
+
+## 7.8.21 2024-02-01 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 6.4.11
+
+
+## 7.8.20 2023-12-13 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 6.4.10
+
+
+## 7.8.19 2023-12-08 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix issues with service_stop function
+
+
+## 7.8.18 2023-12-05 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Mod service_stop function to not pass DONOTSTART when turning off a different service"
+
+
+## 7.8.17 2023-11-09 <dave at tiredofit dot ca>
+
+   ### Added
+      - Fluent-Bit 2.2.0
+
+
+## 7.8.16 2023-11-08 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 6.4.8
+
+
+## 7.8.15 2023-11-06 <dave at tiredofit dot ca>
+
+   ### Added
+      - S6 Overlay 3.16.0
+
+
+## 7.8.14 2023-10-24 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Restore building Zabbix Agent 2 with Alpine Edge/3.19
+
+
+## 7.8.13 2023-10-24 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Prepare for imminent Alpine 3.19 release
+
+
 ## 7.8.12 2023-09-28 <dave at tiredofit dot ca>
 
    ### Added

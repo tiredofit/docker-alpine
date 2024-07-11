@@ -1,9 +1,9 @@
-ARG ALPINE_VERSION=3.18
+ARG ALPINE_VERSION=3.20
 
 FROM docker.io/alpine:${ALPINE_VERSION}
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
-ARG GOLANG_VERSION=1.20.7
+ARG GOLANG_VERSION=1.21.10
 ARG DOAS_VERSION
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
@@ -11,10 +11,10 @@ ARG YQ_VERSION
 ARG ZABBIX_VERSION
 
 ### Set defaults
-ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"2.1.10"} \
-    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.5.0"} \
-    YQ_VERSION=${YQ_VERSION:-"v4.35.2"} \
-    ZABBIX_VERSION=${ZABBIX_VERSION:-"6.4.7"} \
+ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"3.1.1"} \
+    S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.1.6.2"} \
+    YQ_VERSION=${YQ_VERSION:-"v4.44.2"} \
+    ZABBIX_VERSION=${ZABBIX_VERSION:-"7.0.0"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
@@ -38,22 +38,26 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     esac ; \
     \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2 | cut -d _ -f 1)" in \
-        3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16 | 3.17* | 3.18* | edge ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ; echo "** Building Zabbix Agent 2" ; echo "** Building Fluent Bit" ; echo "** Building yq" ;; \
+        3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16 | 3.17* | 3.18* | 3.19* | 3.20* | 3.21* | edge ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; fluentbit_make=true ; echo "** Building Zabbix Agent 2" ; echo "** Building Fluent Bit"  ;; \
         *) : ;; \
     esac ; \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2 | cut -d _ -f 1)" in \
-        3.11 | 3.12 | 3.13 | 3.14 ) export GOLANG_VERSION=1.19.3 ;; \
+        3.11 | 3.12 | 3.13 | 3.14 ) export GOLANG_VERSION=1.19.5 ; yq=false ;; \
         *) : ;; \
     esac ; \
     \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2 | cut -d _ -f 1)" in \
+        3.5 | 3.6 | 3.7 | 3.8 | 3.9 | 3.10 | 3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16 ) yq=false ;; \
+        *) : ;; \
+    esac ; \
+    case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2 | cut -d _ -f 1)" in \
         3.5 | 3.6 | 3.7 | 3.8 | 3.9 | 3.10 | 3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16 ) fts=fts ;; \
-        3.17 | 3.18* ) fts=musl-fts ;; \
+        3.17 | 3.18* | 3.19* | 3.20* | 3.21* ) fts=musl-fts ;; \
         *) : ;; \
     esac ; \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2 | cut -d _ -f 1)" in \
         3.5 | 3.6 | 3.7 | 3.8 | 3.9 | 3.10 | 3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16 ) alpine_ssl=libressl ;; \
-        3.17* | 3.18* ) alpine_ssl=openssl ;; \
+        3.17* | 3.18* | 3.19* | 3.20* | 3.21* ) alpine_ssl=openssl ;; \
         *) : ;; \
     esac ; \
     \
@@ -158,6 +162,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     make ; \
     make install ; \
     fi ; \
+    \
     ### Golang installation
     if [ "$zabbix_agent2" = "true" ] ; then \
     mkdir -p /usr/src/golang ; \
@@ -166,8 +171,10 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     ./make.bash 1>/dev/null ; \
     export GOROOT=/usr/src/golang/ ; \
     export PATH="/usr/src/golang/bin:$PATH" ; \
+    fi ; \
     \
     ### YQ compilation and install
+    if [ "$yq" != "false" ] ; then \
     git clone https://github.com/mikefarah/yq /usr/src/yq ;\
     cd /usr/src/yq ;\
     git checkout ${YQ_VERSION} ;\
@@ -196,6 +203,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     cd /usr/src/zabbix && \
     ./bootstrap.sh 1>/dev/null && \
     export CFLAGS="-fPIC -pie -Wl,-z,relro -Wl,-z,now" && \
+    sed -i "s|CGO_CFLAGS=\"\${CGO_CFLAGS}\"| CGO_CFLAGS=\"-D_LARGEFILE64_SOURCE \${CGO_CFLAGS}\"|g" /usr/src/zabbix/src/go/Makefile.am && \
     ./configure \
             --prefix=/usr \
             --silent \
