@@ -29,6 +29,46 @@ Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container im
 
 ## Table of Contents
 
+- [github.com/tiredofit/docker-alpine](#githubcomtiredofitdocker-alpine)
+  - [About](#about)
+  - [Maintainer](#maintainer)
+  - [Table of Contents](#table-of-contents)
+  - [Prerequisites and Assumptions](#prerequisites-and-assumptions)
+  - [Installation](#installation)
+    - [Build from Source](#build-from-source)
+    - [Prebuilt Images](#prebuilt-images)
+      - [Multi Architecture](#multi-architecture)
+  - [Configuration](#configuration)
+    - [Quick Start](#quick-start)
+    - [Persistent Storage](#persistent-storage)
+    - [Environment Variables](#environment-variables)
+      - [Container Options](#container-options)
+      - [Scheduling Options](#scheduling-options)
+        - [Cron Options](#cron-options)
+      - [Messaging Options](#messaging-options)
+        - [MSMTP Options](#msmtp-options)
+      - [Monitoring Options](#monitoring-options)
+        - [Zabbix Options](#zabbix-options)
+      - [Logging Options](#logging-options)
+        - [Log Shipping Parsing](#log-shipping-parsing)
+        - [Fluent-Bit Options](#fluent-bit-options)
+      - [Firewall Options|](#firewall-options)
+        - [IPTables Options](#iptables-options)
+        - [Fail2Ban Options](#fail2ban-options)
+      - [Permissions](#permissions)
+      - [Process Watchdog](#process-watchdog)
+    - [Networking](#networking)
+  - [Developing / Overriding](#developing--overriding)
+  - [Debug Mode](#debug-mode)
+  - [Maintenance](#maintenance)
+    - [Shell Access](#shell-access)
+  - [Support](#support)
+    - [Usage](#usage)
+    - [Bugfixes](#bugfixes)
+    - [Feature Requests](#feature-requests)
+    - [Updates](#updates)
+  - [License](#license)
+=======
 - [About](#about)
 - [Maintainer](#maintainer)
 - [Table of Contents](#table-of-contents)
@@ -271,6 +311,7 @@ This image comes with Zabbix Agent 1 (Classic or C compiled) and Zabbix Agent 2 
 | `ZABBIX_ALLOW_ROOT`                  | Allow running as root                                                                         | `1`                      | x   | ``  |         |
 | `ZABBIX_USER`                        | User to start agent                                                                           | `zabbix`                 | x   | x   |         |
 | `ZABBIX_USER_SUDO`                   | Allow Zabbix user to utilize sudo commands                                                    | `TRUE`                   | x   | x   |         |
+| `ZABBIX_AGENT_TIMEOUT`                   |  Zabbix agent timeout (sec) for userparameter checks                                                   | `3`                   | x   | x   |         |
 
 This image supports autoregistering configuration as an Active Agent to a Zabbix Proxy or a Server. It looks in `/etc/zabbix_agent.conf.d/*.conf` for the string `# Autoregister=` and takes these values and adds it to the `HostMetadata` configuration entry automatically wrapped around `:` eg `:application:` . Use it by creating an Auto register rule and search for that string. You can find server templates in this repository in the `[zabbix_templates](zabbix_templates/)` directory.
 
