@@ -1,3 +1,9 @@
+## 7.10.5 2024-07-22 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 7.0.1
+
+
 ## 7.10.4 2024-07-17 <dave at tiredofit dot ca>
 
    ### Added
