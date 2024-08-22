@@ -1,3 +1,9 @@
+## 7.10.11 2024-08-22 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Allow for changing CONTAINER_USER and CONTAINER_GROUP names with hyphens in them
+
+
 ## 7.10.10 2024-08-19 <dave at tiredofit dot ca>
 
    ### Added
