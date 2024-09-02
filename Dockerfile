@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.20
+ARG ALPINE_VERSION=edge
 
 FROM docker.io/alpine:${ALPINE_VERSION}
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
@@ -11,7 +11,7 @@ ARG YQ_VERSION
 ARG ZABBIX_VERSION
 
 ### Set defaults
-ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"3.1.6"} \
+ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"3.1.7"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.2.0.0"} \
     YQ_VERSION=${YQ_VERSION:-"v4.44.2"} \
     ZABBIX_VERSION=${ZABBIX_VERSION:-"7.0.3"} \
@@ -140,6 +140,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
                 ${fts}-dev \
                 linux-headers \
                 openssl-dev \
+                snappy-dev \
                 yaml-dev \
                 && \
     \
@@ -245,52 +246,101 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
         -DFLB_DEBUG=No \
         -DFLB_EXAMPLES=No \
         -DFLB_FILTER_AWS=No \
+        -DFLB_FILTER_ECS=No \
+        -DFLB_FILTER_NIGHTFALL=No \
+        -DFLB_FILTER_GEOIP2=No \
         -DFLB_FILTER_KUBERNETES=No \
+        -DFLB_FILTER_TENSORFLOW=No \
+        -DFLB_FILTER_WASM=No \
         -DFLB_HTTP_SERVER=Yes \
+        -DFLB_IN_CALYPTIA_FLEET=No \
         -DFLB_IN_COLLECTD=No \
         -DFLB_IN_CPU=No \
+        -DFLB_IN_DISK=No \
         -DFLB_IN_DOCKER=No \
         -DFLB_IN_DOCKER_EVENTS=No \
+        -DFLB_IN_EMITTER=Ywa \
+        -DFLB_IN_EXEC=Yes \
+        -DFLB_IN_EXEC_WASI=No \
+        -DFLB_IN_ELASTICSEARCH=No \
+        -DFLB_IN_HEALTH=No \
+        -DFLB_IN_KAFKA=Yes \
         -DFLB_IN_KMSG=No \
+        -DFLB_IN_KUBERNETES_EVENTS=No \
         -DFLB_IN_MEM=No \
         -DFLB_IN_MQTT=No \
         -DFLB_IN_NETIF=No \
+        -DFLB_IN_NGINX_EXPORTER_METRICS=No \
+        -DFLB_IN_NODE_EXPORTER_METRICS=No \
+        -DFLB_IN_OPENTELEMETRY=No \
+        -DFLB_IN_PODMAN_METRICS=No \
+        -DFLB_IN_PROCESS_EXPORTER_METRICS=No \
+        -DFLB_IN_PROC=No \
+        -DFLB_IN_PROMETHEUS_REMOTE_WRITE=Yes \
+        -DFLB_IN_PROMETHEUS_SCRAPE=No \
         -DFLB_IN_SERIAL=No \
+        -DFLB_IN_SPLUNK=No \
+        -DFLB_IN_STATSD=No \
         -DFLB_IN_SYSTEMD=No \
+        -DFLB_IN_SYSLOG=No \
         -DFLB_IN_TCP=No \
+        -DFLB_IN_UDP=No \
+        -DFLB_IN_UNIX_SOCKET=No \
         -DFLB_IN_THERMAL=No \
         -DFLB_IN_WINLOG=No \
+        -DFLB_IN_WINDOWS_EXPORTER_METRICS=No \
         -DFLB_IN_WINSTAT=No \
         -DFLB_JEMALLOC=Yes \
         -DFLB_LUAJIT=No \
+        -DFLB_PROCESSOR_OPENTELEMETRY_ENVELOPE=No \
+        -DFLB_PROCESSOR_SQL=No \
         -DFLB_OUT_AZURE=No \
         -DFLB_OUT_AZURE_BLOB=No \
+        -DFLB_OUT_AZURE_KUSTO=No \
+        -DFLB_OUT_AZURE_LOGS_INGESTION=No \
         -DFLB_OUT_BIGQUERY=No \
         -DFLB_OUT_CALYPTIA=No \
+        -DFLB_OUT_CHRONICLE=No \
         -DFLB_OUT_CLOUDWATCH_LOGS=No \
         -DFLB_OUT_COUNTER=No \
         -DFLB_OUT_DATADOG=No \
+        -DFLB_OUT_ES=No \
+        -DFLB_OUT_FLOWCOUNTER=No \
         -DFLB_OUT_GELF=No \
         -DFLB_OUT_INFLUXDB=No \
         -DFLB_OUT_KAFKA=No \
         -DFLB_OUT_KAFKA_REST=No \
         -DFLB_OUT_KINESIS_FIREHOSE=No \
         -DFLB_OUT_KINESIS_STREAMS=No \
+        -DFLB_OUT_LIB=No \
         -DFLB_OUT_LOGDNA=No \
         -DFLB_OUT_NATS=No \
         -DFLB_OUT_NRLOGS=No \
+        -DFLB_OUT_OPENSEARCH=No \
+        -DFLB_OUT_ORACLE_LOG_ANALYTICS=No \
+        -DFLB_OUT_OPENTELEMETRY=No \
+        -DFLB_OUT_PROMETHEUS_EXPORTER=No \
+        -DFLB_OUT_PROMETHEUS_REMOTE_WRITE=No \
         -DFLB_OUT_PGSQL=No \
+        -DFLB_OUT_PLOT=No \
         -DFLB_OUT_S3=No \
+        -DFLB_OUT_SKYWALKING=No \
         -DFLB_OUT_SLACK=No \
         -DFLB_OUT_SPLUNK=No \
         -DFLB_OUT_STACKDRIVER=No \
         -DFLB_OUT_TCP=No \
         -DFLB_OUT_TD=No \
+        -DFLB_OUT_UDP=No \
+        -DFLB_OUT_VIVO_EXPORTER=No \
+        -DFLB_OUT_WEBSOCKET=No \
         -DFLB_RELEASE=Yes \
         -DFLB_SHARED_LIB=No \
         -DFLB_SIGNV4=No \
         -DFLB_SMALL=Yes \
-        . && \
+        -DFLB_WASM=No \
+        . \
+        && \
+    \
     if [ "$fluentbit_make" = "true" ] ; then if [ "$apkArch" = "x86_64" ] ; then make -j"$(nproc)" ; make install ; mv /usr/etc/fluent-bit /etc/fluent-bit ; mkdir -p /etc/fluent-bit/parsers.d; mkdir -p /etc/fluent-bit/conf.d ; strip /usr/bin/fluent-bit ; if [ "$apkArch" = "x86_64" ] && [ "$no_upx" != "true" ]; then upx /usr/bin/fluent-bit ; fi ; fi ; fi ;\
     \
     ### Promtail (Disabled)

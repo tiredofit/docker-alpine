@@ -26,8 +26,8 @@ if var_true "${CONTAINER_ENABLE_PERMISSIONS}" ; then
     unames+="$(set -o posix ; set | sort | grep -e '^CONTAINER_USER_' | sed "s|^CONTAINER_USER_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n')"
 
     for upair in $unames; do
-        uname=$(echo $upair | cut -d = -f 1)
-        uid=$(echo $upair | cut -d = -f 2)
+        uname=$(echo "${upair}" | cut -d = -f 1)
+        uid=$(echo "${upair}" | cut -d = -f 2)
         if grep -e "^${uname}" /etc/passwd > /dev/null; then
            _userexists=true
         elif grep -e "^${uname/_/-}" /etc/passwd > /dev/null; then
@@ -47,8 +47,8 @@ if var_true "${CONTAINER_ENABLE_PERMISSIONS}" ; then
     groups+="$(set -o posix ; set | sort | grep -e '^CONTAINER_GROUP_' | sed "s|^CONTAINER_GROUP_||g" | tr '[:upper:]' '[:lower:]' | tr ' ' '\n' | sed '/add_.*/d' ) "
 
     for gpair in $groups; do
-        gname=$(echo $gpair | cut -d = -f 1)
-        gid=$(echo $gpair | cut -d = -f 2)
+        gname=$(echo "${gpair}" | cut -d = -f 1)
+        gid=$(echo "${gpair}" | cut -d = -f 2)
         if grep -e "^${gname}" /etc/group > /dev/null; then
            _groupexists=true
         elif grep -e "^${gname/_/-}" /etc/group > /dev/null; then
@@ -57,12 +57,9 @@ if var_true "${CONTAINER_ENABLE_PERMISSIONS}" ; then
         fi
 
         if [ "${_groupexists}" = true ] ; then
-            opu=$(grep -e "^${gname}" /etc/passwd | awk -F: '{print $1}')
-            opuid=$(grep -e "^${gname}" /etc/passwd | awk -F: '{print $3}')
             opgid=$(grep -e "^${gname}" /etc/passwd | awk -F: '{print $4}')
             og=$(grep -e "^${gname}" /etc/group | awk -F: '{print $1}')
             oggid=$(grep -e "^${gname}" /etc/group | awk -F: '{print $3}')
-
             print_debug "Changing group '${gname}' to gid '${gid}' from '${oggid}'"
             sed -i "s|\(.*\):\(.*\):\(.*\):${opgid}:|\1:\2:\3:${gid}:|g" /etc/passwd
             sed -i "s|${og}:x:${oggid}|${og}:x:${gid}|g" /etc/group
@@ -73,8 +70,8 @@ if var_true "${CONTAINER_ENABLE_PERMISSIONS}" ; then
     groupsadd="$(set -o posix ; set | sort | grep -e '^GROUP_ADD_' | sed 's|^GROUP_ADD_||g' | tr '[:upper:]' '[:lower:]' ) "
     groupsadd+="$(set -o posix ; set | sort | grep -e '^CONTAINER_GROUP_ADD_' | sed 's|^CONTAINER_GROUP_ADD_||g' | tr '[:upper:]' '[:lower:]' )"
 
-    for gau in $groupsadd; do
-        gname=$(echo ${gau} | cut -d = -f1 )
+    for gapair in $groupsadd; do
+        gname=$(echo "${gapair}" | cut -d = -f1 )
         if grep -e "^${gname}" /etc/group > /dev/null; then
            _groupexists=true
         elif grep -e "^${gname/_/-}" /etc/group > /dev/null; then
@@ -83,8 +80,7 @@ if var_true "${CONTAINER_ENABLE_PERMISSIONS}" ; then
         fi
 
         if [ "${_groupexists}" = true ] ; then
-            uta=$(echo ${gau} | cut -d = -f2 | tr ',' '\n')
-
+            uta=$(echo ${gapair} | cut -d = -f2 | tr ',' '\n')
             for userstogroup in ${uta} ; do
                 print_debug "Adding user '${userstogroup}' to '${gname}'"
                 os=$(cat /etc/os-release |grep ^ID= | cut -d = -f2)
