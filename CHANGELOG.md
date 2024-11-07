@@ -1,3 +1,9 @@
+## 7.10.19 2024-11-07 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Add patches to support GCC 14 with Fluent-Bit > 3.1.9
+
+
 ## 7.10.18 2024-11-04 <dave at tiredofit dot ca>
 
    ### Added

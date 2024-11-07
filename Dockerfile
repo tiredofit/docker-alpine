@@ -1,9 +1,9 @@
-ARG ALPINE_VERSION=edge
+ARG ALPINE_VERSION=3.20
 
 FROM docker.io/alpine:${ALPINE_VERSION}
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
-ARG GOLANG_VERSION=1.21.10
+ARG GOLANG_VERSION=1.21.13
 ARG DOAS_VERSION
 ARG FLUENTBIT_VERSION
 ARG S6_OVERLAY_VERSION
@@ -235,6 +235,9 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     curl -sSL https://github.com/fluent/fluent-bit/archive/v${FLUENTBIT_VERSION}.tar.gz | tar xfz - --strip 1 -C /usr/src/fluentbit && \
     cd /usr/src/fluentbit && \
     curl -sSL https://git.alpinelinux.org/aports/plain/testing/fluent-bit/chunkio-static-lib-fts.patch | patch -p1 && \
+    curl -sSL https://git.alpinelinux.org/aports/plain/testing/fluent-bit/exclude-luajit.patch | patch -p1 && \
+    curl -sSL https://git.alpinelinux.org/aports/plain/testing/fluent-bit/musl-strerror_r.patch | patch -p1 && \
+    \
 #    curl -sSL https://git.alpinelinux.org/aports/plain/testing/fluent-bit/10-def-core-stack-size.patch | patch -p1 && \
     cmake \
         -DCMAKE_INSTALL_PREFIX=/usr \
