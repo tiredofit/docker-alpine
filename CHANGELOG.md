@@ -1,3 +1,9 @@
+## 7.10.23 2024-11-27 <dave at tiredofit dot ca>
+
+   ### Added
+      - Downgrade to Zabbix Agent 7.0.5
+
+
 ## 7.10.22 2024-11-20 <dave at tiredofit dot ca>
 
    ### Added
