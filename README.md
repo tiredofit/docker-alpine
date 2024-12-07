@@ -14,7 +14,7 @@
 
 Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container image.
 
-* Currently tracking 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12, 3.13, 3.14, 3.15, 3.16, 3.17, 3.18 , 3.19, 3.20 and edge.
+* Currently tracking 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12, 3.13, 3.14, 3.15, 3.16, 3.17, 3.18 , 3.19, 3.20, 3.21, and edge.
 * [s6 overlay](https://github.com/just-containers/s6-overlay) enabled for PID 1 init capabilities.
 * [zabbix-agent](https://zabbix.org) (Classic and Modern) for individual container monitoring.
 * Scheduling via cron with other helpful tools (bash, curl, less, logrotate, nano, vi) for easier management.
@@ -29,46 +29,6 @@ Dockerfile to build an [alpine](https://www.alpinelinux.org/) linux container im
 
 ## Table of Contents
 
-- [github.com/tiredofit/docker-alpine](#githubcomtiredofitdocker-alpine)
-  - [About](#about)
-  - [Maintainer](#maintainer)
-  - [Table of Contents](#table-of-contents)
-  - [Prerequisites and Assumptions](#prerequisites-and-assumptions)
-  - [Installation](#installation)
-    - [Build from Source](#build-from-source)
-    - [Prebuilt Images](#prebuilt-images)
-      - [Multi Architecture](#multi-architecture)
-  - [Configuration](#configuration)
-    - [Quick Start](#quick-start)
-    - [Persistent Storage](#persistent-storage)
-    - [Environment Variables](#environment-variables)
-      - [Container Options](#container-options)
-      - [Scheduling Options](#scheduling-options)
-        - [Cron Options](#cron-options)
-      - [Messaging Options](#messaging-options)
-        - [MSMTP Options](#msmtp-options)
-      - [Monitoring Options](#monitoring-options)
-        - [Zabbix Options](#zabbix-options)
-      - [Logging Options](#logging-options)
-        - [Log Shipping Parsing](#log-shipping-parsing)
-        - [Fluent-Bit Options](#fluent-bit-options)
-      - [Firewall Options|](#firewall-options)
-        - [IPTables Options](#iptables-options)
-        - [Fail2Ban Options](#fail2ban-options)
-      - [Permissions](#permissions)
-      - [Process Watchdog](#process-watchdog)
-    - [Networking](#networking)
-  - [Developing / Overriding](#developing--overriding)
-  - [Debug Mode](#debug-mode)
-  - [Maintenance](#maintenance)
-    - [Shell Access](#shell-access)
-  - [Support](#support)
-    - [Usage](#usage)
-    - [Bugfixes](#bugfixes)
-    - [Feature Requests](#feature-requests)
-    - [Updates](#updates)
-  - [License](#license)
-=======
 - [About](#about)
 - [Maintainer](#maintainer)
 - [Table of Contents](#table-of-contents)
