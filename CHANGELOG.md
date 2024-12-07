@@ -1,3 +1,12 @@
+## 7.10.24 2024-12-07 <dave at tiredofit dot ca>
+
+   ### Added
+      - Alpine 3.21 support
+
+   ### Changed
+      - Stop building Zabbix Modern Agent for Alpine 3.11-3.14
+
+
 ## 7.10.23 2024-11-27 <dave at tiredofit dot ca>
 
    ### Added
