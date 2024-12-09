@@ -1,3 +1,9 @@
+## 7.10.25 2024-12-09 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add --skip-ssl default to DB_MYSQLADMIN_ARGS environment variable for change in client defaults
+
+
 ## 7.10.24 2024-12-07 <dave at tiredofit dot ca>
 
    ### Added
