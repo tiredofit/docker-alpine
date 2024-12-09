@@ -224,7 +224,7 @@ db_ready() {
     ## Usage db_ready <dbtype>
     output_off
     print_debug "Checking to see if Database Type $1 is ready"
-    case "$1" in
+    case "${1,,}" in
         "couch" | "couchdb" )
             transform_file_var DB_PORT
             if [ -n "${DB_PORT}" ] ; then couch_port=${DB_PORT} ; fi ;
@@ -277,7 +277,7 @@ db_ready() {
                 print_warn "Mongo Host '${mongo_host}' is not accessible, retrying.. ($counter seconds so far)"
             done
         ;;
-        "mysql" | "mariadb" | "MARIADB" | "MYSQL" )
+        "mysql" | "mariadb" )
             if command -v "mariadb-admin" &> /dev/null ; then
                 mysqladmin_bin="$(which mariadb-admin)"
             elif command -v "mysqladmin" &> /dev/null ; then
