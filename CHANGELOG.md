@@ -1,3 +1,9 @@
+## 7.10.27 2024-12-11 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Fix for 7.10.26
+
+
 ## 7.10.26 2024-12-11 <dave at tiredofit dot ca>
 
    ### Changed
