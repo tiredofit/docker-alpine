@@ -1,3 +1,9 @@
+## 7.10.26 2024-12-11 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Redo the mechanism to by default disable SSL for mysql checks
+
+
 ## 7.10.25 2024-12-09 <dave at tiredofit dot ca>
 
    ### Added
