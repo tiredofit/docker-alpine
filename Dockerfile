@@ -270,7 +270,7 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
         -DFLB_IN_EXEC_WASI=No \
         -DFLB_IN_ELASTICSEARCH=No \
         -DFLB_IN_HEALTH=No \
-        -DFLB_IN_KAFKA=Yes \
+        -DFLB_IN_KAFKA=No \
         -DFLB_IN_KMSG=No \
         -DFLB_IN_KUBERNETES_EVENTS=No \
         -DFLB_IN_MEM=No \
@@ -344,9 +344,6 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
         -DFLB_SIGNV4=No \
         -DFLB_SMALL=Yes \
 	-DFLB_TLS=Yes \ 
-        -DFLB_WITHOUT_flb-it-pack=Yes \
-        -DFLB_WITHOUT_flb-it-utils=Yes \
-        -DFLB_WITHOUT_flb-it-aws_credentials_process=Yes \
         -DFLB_WASM=No \
         . \
         && \
