@@ -1,3 +1,12 @@
+## 7.10.30 2025-04-26 <dave at tiredofit dot ca>
+
+   ### Added
+      - Zabbix Agent 7.2.6
+
+   ### Changed
+      - Restore Fluent-bit Building broken in 7.10.29
+
+
 ## 7.10.29 2025-02-24 <dave at tiredofit dot ca>
 
    ### Added

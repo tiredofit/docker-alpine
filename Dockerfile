@@ -14,7 +14,7 @@ ARG ZABBIX_VERSION
 ENV FLUENTBIT_VERSION=${FLUENTBIT_VERSION:-"3.1.10"} \
     S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-"3.2.0.2"} \
     YQ_VERSION=${YQ_VERSION:-"v4.44.2"} \
-    ZABBIX_VERSION=${ZABBIX_VERSION:-"7.0.10"} \
+    ZABBIX_VERSION=${ZABBIX_VERSION:-"7.2.6"} \
     DOAS_VERSION=${DOAS_VERSION:-"v6.8.2"} \
     DEBUG_MODE=FALSE \
     TIMEZONE=Etc/GMT \
@@ -238,11 +238,10 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     mkdir -p /usr/src/fluentbit && \
     curl -sSL https://github.com/fluent/fluent-bit/archive/v${FLUENTBIT_VERSION}.tar.gz | tar xfz - --strip 1 -C /usr/src/fluentbit && \
     cd /usr/src/fluentbit && \
-    curl -sSL https://git.alpinelinux.org/aports/plain/testing/fluent-bit/chunkio-static-lib-fts.patch | patch -p1 && \
-    curl -sSL https://git.alpinelinux.org/aports/plain/testing/fluent-bit/exclude-luajit.patch | patch -p1 && \
-    curl -sSL https://git.alpinelinux.org/aports/plain/testing/fluent-bit/musl-strerror_r.patch | patch -p1 && \
+    curl -sSL https://gitlab.alpinelinux.org/alpine/aports/-/raw/master/testing/fluent-bit/chunkio-static-lib-fts.patch | patch -p1 && \
+    curl -sSL https://gitlab.alpinelinux.org/alpine/aports/-/raw/master/testing/fluent-bit/exclude-luajit.patch | patch -p1 && \
+    curl -sSL https://gitlab.alpinelinux.org/alpine/aports/-/raw/master/testing/fluent-bit/musl-strerror_r.patch | patch -p1 && \
     \
-#    curl -sSL https://git.alpinelinux.org/aports/plain/testing/fluent-bit/10-def-core-stack-size.patch | patch -p1 && \
     cmake \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_INSTALL_LIBDIR=lib \
@@ -344,6 +343,10 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
         -DFLB_SHARED_LIB=No \
         -DFLB_SIGNV4=No \
         -DFLB_SMALL=Yes \
+	-DFLB_TLS=Yes \ 
+        -DFLB_WITHOUT_flb-it-pack=Yes \
+        -DFLB_WITHOUT_flb-it-utils=Yes \
+        -DFLB_WITHOUT_flb-it-aws_credentials_process=Yes \
         -DFLB_WASM=No \
         . \
         && \
