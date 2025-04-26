@@ -38,11 +38,11 @@ RUN case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 
     esac ; \
     \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2 | cut -d _ -f 1)" in \
-        3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16 | 3.17* | 3.18* | 3.19* | 3.20* | 3.21* | edge ) fluentbit_make=true ; echo "** Building Fluent Bit"  ;; \
+        3.11 | 3.12 | 3.13 | 3.14 | 3.15 | 3.16 | 3.17* | 3.18* | 3.19* | 3.20* | 3.21* | 3.22* | edge ) fluentbit_make=true ; echo "** Building Fluent Bit"  ;; \
         *) : ;; \
     esac ; \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2 | cut -d _ -f 1)" in \
-        3.15 | 3.16 | 3.17* | 3.18* | 3.19* | 3.20* | 3.21* | edge ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; echo "** Building Zabbix Agent 2" ;; \
+        3.15 | 3.16 | 3.17* | 3.18* | 3.19* | 3.20* | 3.21* | 3.22* | edge ) zabbix_args=" --enable-agent2 " ; zabbix_agent2=true ; echo "** Building Zabbix Agent 2" ;; \
         *) : ;; \
     esac ; \
     case "$(cat /etc/os-release | grep VERSION_ID | cut -d = -f 2 | cut -d . -f 1,2 | cut -d _ -f 1)" in \
