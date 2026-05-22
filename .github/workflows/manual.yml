@@ -86,7 +86,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -194,7 +194,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -302,7 +302,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -411,7 +411,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -520,7 +520,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -628,7 +628,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -737,7 +737,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -845,7 +845,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -953,7 +953,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -1061,7 +1061,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -1169,7 +1169,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -1277,7 +1277,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -1385,7 +1385,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -1493,7 +1493,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -1601,7 +1601,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -1709,7 +1709,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -1817,7 +1817,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
@@ -1926,7 +1926,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm,arm64
 
